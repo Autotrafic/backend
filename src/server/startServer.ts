@@ -1,10 +1,7 @@
 import "../loadEnvironment";
-import Debug from "debug";
 import chalk from "chalk";
 import app from "./index";
 import CustomError from "../errors/CustomError";
-
-const debug = Debug("server:startServer");
 
 const startServer = (port: number) =>
     new Promise((resolve, reject) => {
