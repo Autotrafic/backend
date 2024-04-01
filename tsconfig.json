@@ -9,5 +9,6 @@
         "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
         "noImplicitAny": true /* Enable error reporting for expressions and declarations with an implied `any` type.. */
     },
-    "include": ["src/**/*.ts", ".eslintrc.js", "jest.config.js"]
+    "include": ["src/**/*.ts", ".eslintrc.js", "jest.config.js", "index.ts"]
 }
+
