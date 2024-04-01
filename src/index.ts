@@ -13,7 +13,6 @@ const mongoURL = process.env.MONGODB_URL;
         console.log('one');
         await connectDB(mongoURL);
         await startServer(port);
-        console.log('two');
     } catch (error) {
         process.exit(1);
     }
