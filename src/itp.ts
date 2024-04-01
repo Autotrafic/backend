@@ -5,6 +5,7 @@ interface OrderData {
     potenciaFiscal: number;
     cilindrada: number;
     tipoVehiculo: string;
+    precioVenta: number;
 }
 
 export function calculateItp(orderData: OrderData) {
@@ -214,7 +215,7 @@ export function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "PBA") {
+    if (orderData.comunidadAutonoma === "PVA") {
         prevItpValue = 0.04;
     }
 
@@ -316,11 +317,31 @@ export function calculateItp(orderData: OrderData) {
         //Vehículos adquiridos al final de su vida útil para su valorización y eliminación: 2%
     }
 
+    if (orderData.comunidadAutonoma === "MUR") {
+        if (yearsDifference >= 12) {
+            if (orderData.cilindrada <= 1000) {
+                prevItpValue = 0;
+            } else if (
+                orderData.cilindrada > 1000 &&
+                orderData.cilindrada <= 1500
+            ) {
+                prevItpValue = 30;
+            } else if (
+                orderData.cilindrada > 1500 &&
+                orderData.cilindrada <= 2000
+            ) {
+                prevItpValue = 50;
+            }
+        } else {
+            prevItpValue = 0.04;
+        }
+    }
+
     if (prevItpValue > 1) {
         ITP = prevItpValue;
-    } else {
-        ITP = valorFiscal * prevItpValue;
-    }
+    } else if (orderData.precioVenta > valorFiscal) {
+        ITP = orderData.precioVenta * prevItpValue;
+    } else ITP = valorFiscal * prevItpValue;
 
     console.log(ITP);
 
