@@ -4,6 +4,7 @@ import {
     getAllBrandNames,
     getModelNamesByBrandAndDate,
     getModelById,
+    getItp,
     getFuelsByModels,
 } from "../controllers/carsController";
 
@@ -18,6 +19,8 @@ carsRouter.get("/models", getModelNamesByBrandAndDate);
 carsRouter.get("/fuels", getFuelsByModels);
 
 carsRouter.get("/model", getModelById);
+
+carsRouter.get("/itp", getItp);
 
 export default carsRouter;
 
