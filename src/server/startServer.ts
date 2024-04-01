@@ -1,6 +1,6 @@
 import "../loadEnvironment";
 import chalk from "chalk";
-import app from "../../api/index";
+import app from "./index";
 import CustomError from "../errors/CustomError";
 
 const startServer = (port: number) =>

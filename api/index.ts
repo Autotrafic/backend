@@ -1,19 +1,19 @@
-import cors from "cors";
-import morgan from "morgan";
-import express from "express";
-import { generalError, notFoundError } from "../src/errors/generalError";
-import carsRouter from "../src/server/routes/carsRouter";
+import "../src/loadEnvironment";
+import connectDB from "../src/database";
+import startServer from "../src/server/startServer";
 
-const app = express();
+const http = require("http");
 
-app.use(cors());
-app.use(morgan("dev"));
-app.use(express.json());
+const port = +process.env.PORT || 3100;
 
-app.use("/cars", carsRouter);
+const mongoURL = process.env.MONGODB_URL;
 
-app.use(notFoundError);
-app.use(generalError);
-
-export default app;
+(async () => {
+    try {
+        await connectDB(mongoURL);
+        await startServer(port);
+    } catch (error) {
+        process.exit(1);
+    }
+})();
 
