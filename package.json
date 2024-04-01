@@ -8,7 +8,8 @@
         "tsc:dev": "tsc -w",
         "start": "node .",
         "start:dev": "nodemon -q",
-        "build": "npm run tsc"
+        "build": "npm run tsc",
+        "vercel-build": "echo hello"
     },
     "keywords": [],
     "author": "",
@@ -16,7 +17,6 @@
     "dependencies": {
         "chalk": "4.1.2",
         "cors": "^2.8.5",
-        "debug": "^4.3.4",
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
         "express-validation": "^4.1.0",
@@ -25,7 +25,6 @@
     },
     "devDependencies": {
         "@types/cors": "^2.8.17",
-        "@types/debug": "^4.1.12",
         "@types/express": "^4.17.21",
         "@types/morgan": "^1.9.9",
         "@types/multer": "^1.4.11",

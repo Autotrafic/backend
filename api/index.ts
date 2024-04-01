@@ -1,6 +1,6 @@
-import "./loadEnvironment";
-import connectDB from "./database";
-import startServer from "./server/startServer";
+import "../src/loadEnvironment";
+import connectDB from "../src/database";
+import startServer from "../src/server/startServer";
 
 const http = require("http");
 
@@ -16,3 +16,4 @@ const mongoURL = process.env.MONGODB_URL;
         process.exit(1);
     }
 })();
+

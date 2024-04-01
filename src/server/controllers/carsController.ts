@@ -23,7 +23,7 @@ export const getAllCars = async (
     }
 };
 
-export const getBrandNames = async (
+export const getAllBrandNames = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -42,7 +42,7 @@ export const getBrandNames = async (
     }
 };
 
-export const getSpecificModelNames = async (
+export const getModelNamesByBrandAndDate = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -57,6 +57,34 @@ export const getSpecificModelNames = async (
             startYear: { $lte: carYear },
             endYear: { $gte: carYear },
         });
+
+        res.status(200).json(modelNames);
+    } catch (error) {
+        console.log(error);
+        const finalError = new CustomError(
+            400,
+            "Error loading models.",
+            "Error loading models."
+        );
+        next(finalError);
+    }
+};
+
+export const getFuelsByModels = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { brandName, carYear } = req.body;
+
+    try {
+        const brand = await BrandModel.find({ brandName: brandName });
+
+        const modelNames = await CarModel.find({
+            modelOf: brand[0]._id,
+            startYear: { $lte: carYear },
+            endYear: { $gte: carYear },
+        }).distinct("fuel");
 
         res.status(200).json(modelNames);
     } catch (error) {

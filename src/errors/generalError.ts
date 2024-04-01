@@ -1,11 +1,8 @@
 import "../loadEnvironment";
-import Debug from "debug";
 import chalk from "chalk";
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
 import CustomError from "./CustomError";
-
-const debug = Debug("utils:errors");
 
 export const notFoundError = (req: Request, res: Response) => {
     res.statusCode = 404;
