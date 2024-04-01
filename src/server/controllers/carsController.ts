@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CarModel } from "../../database/models/CarModel/CarModel";
 import CustomError from "../../errors/CustomError";
 import { BrandModel } from "../../database/models/Brand/Brand";
+import { calculateItp } from "../../itp";
 
 export const getAllCars = async (
     req: Request,
@@ -84,6 +85,30 @@ export const getModelById = async (
             400,
             "Error finding model.",
             "Error finding model."
+        );
+        next(finalError);
+    }
+};
+
+export const getItp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { orderData } = req.body;
+
+    try {
+        const itpResponse = calculateItp(orderData);
+        res.status(200).json({
+            ITP: itpResponse.ITP,
+            valorFiscal: itpResponse.valorFiscal,
+            imputacionItp: itpResponse.prevItpValue,
+        });
+    } catch (error) {
+        const finalError = new CustomError(
+            400,
+            "Error calculating ITP value.",
+            "Error calculating ITP value."
         );
         next(finalError);
     }
