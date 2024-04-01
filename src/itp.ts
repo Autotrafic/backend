@@ -324,6 +324,6 @@ export function calculateItp(orderData: OrderData) {
 
     console.log(ITP);
 
-    return { ITP, valorFiscal: valorFiscal, prevItpValue };
+    return { ITP, valorFiscal, prevItpValue };
 }
 
