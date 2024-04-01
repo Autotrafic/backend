@@ -8,7 +8,8 @@
         "tsc:dev": "tsc -w",
         "start": "node .",
         "start:dev": "nodemon -q",
-        "build": "npm run tsc"
+        "build": "npm run tsc",
+        "vercel-build": "echo hello"
     },
     "keywords": [],
     "author": "",
@@ -40,3 +41,4 @@
         "typescript": "^5.4.3"
     }
 }
+

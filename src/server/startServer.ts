@@ -22,3 +22,4 @@ const startServer = (port: number) =>
     });
 
 export default startServer;
+
