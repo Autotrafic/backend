@@ -1,18 +1,21 @@
 import express from "express";
 import {
     getAllCars,
-    getBrandNames,
-    getSpecificModelNames,
+    getAllBrandNames,
+    getModelNamesByBrandAndDate,
     getModelById,
+    getFuelsByModels,
 } from "../controllers/carsController";
 
 const carsRouter = express.Router();
 
 carsRouter.get("/", getAllCars);
 
-carsRouter.get("/brands", getBrandNames);
+carsRouter.get("/brands", getAllBrandNames);
 
-carsRouter.get("/models", getSpecificModelNames);
+carsRouter.get("/models", getModelNamesByBrandAndDate);
+
+carsRouter.get("/fuels", getFuelsByModels);
 
 carsRouter.get("/model", getModelById);
 
