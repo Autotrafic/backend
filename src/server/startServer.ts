@@ -1,6 +1,6 @@
 import "../loadEnvironment";
 import chalk from "chalk";
-import app from "./index";
+import app from "../../api/index";
 import CustomError from "../errors/CustomError";
 
 const startServer = (port: number) =>
@@ -22,3 +22,4 @@ const startServer = (port: number) =>
     });
 
 export default startServer;
+
