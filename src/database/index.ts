@@ -22,7 +22,6 @@ const connectDB = (mongoUrl: string) =>
         mongoose.set("strictQuery", false);
 
         try {
-            console.log(mongoUrl)
             mongoose.connect(mongoUrl);
 
             console.log(

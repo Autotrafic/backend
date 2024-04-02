@@ -2,7 +2,7 @@ import express from "express";
 import {
     getAllCars,
     getAllBrandNames,
-    getModelNamesByBrandAndDate,
+    getModelNamesWithFilters,
     getModelById,
     getItp,
     getFuelsByModels,
@@ -14,13 +14,13 @@ carsRouter.get("/", getAllCars);
 
 carsRouter.get("/brands", getAllBrandNames);
 
-carsRouter.get("/models", getModelNamesByBrandAndDate);
+carsRouter.post("/fuels", getFuelsByModels);
 
-carsRouter.get("/fuels", getFuelsByModels);
+carsRouter.post("/models", getModelNamesWithFilters);
 
-carsRouter.get("/model", getModelById);
+carsRouter.post("/model", getModelById);
 
-carsRouter.get("/itp", getItp);
+carsRouter.post("/itp", getItp);
 
 export default carsRouter;
 

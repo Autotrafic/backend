@@ -1,13 +1,14 @@
 import cors from "cors";
-import morgan from "morgan";
 import express from "express";
 import { generalError, notFoundError } from "../errors/generalError";
 import carsRouter from "./routes/carsRouter";
 
 const app = express();
 
+console.log(cors());
 app.use(cors());
-app.use(morgan("dev"));
+
+
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("Working!"));

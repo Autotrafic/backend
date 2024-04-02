@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CarModel } from "../../database/models/CarModel/CarModel";
 import CustomError from "../../errors/CustomError";
 import { BrandModel } from "../../database/models/Brand/Brand";
-import { calculateItp } from "../../itp";
+import { calculateItp } from "../../utils/itp";
 
 export const getAllCars = async (
     req: Request,
@@ -42,12 +42,12 @@ export const getAllBrandNames = async (
     }
 };
 
-export const getModelNamesByBrandAndDate = async (
+export const getModelNamesWithFilters = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const { brandName, carYear } = req.body;
+    const { brandName, carYear, fuel } = req.body;
 
     try {
         const brand = await BrandModel.find({ brandName: brandName });
@@ -56,6 +56,7 @@ export const getModelNamesByBrandAndDate = async (
             modelOf: brand[0]._id,
             startYear: { $lte: carYear },
             endYear: { $gte: carYear },
+            fuel
         });
 
         res.status(200).json(modelNames);
