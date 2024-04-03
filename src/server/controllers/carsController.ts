@@ -56,7 +56,7 @@ export const getModelNamesWithFilters = async (
             modelOf: brand[0]._id,
             startYear: { $lte: carYear },
             endYear: { $gte: carYear },
-            fuel
+            fuel,
         });
 
         res.status(200).json(modelNames);
@@ -136,8 +136,8 @@ export const getItp = async (
     } catch (error) {
         const finalError = new CustomError(
             400,
-            "Error calculating ITP value.",
-            "Error calculating ITP value."
+            error,
+            error
         );
         next(finalError);
     }

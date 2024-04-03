@@ -1,14 +1,24 @@
+import { VEHICLE_TYPE } from "./constants";
+
 interface OrderData {
-    dataMatriculacion: string;
+    fechaMatriculacion: string;
     comunidadAutonoma: string;
     valorVehiculo: number;
     potenciaFiscal: number;
     cilindrada: number;
-    tipoVehiculo: string;
+    tipoVehiculo: number;
     precioVenta: number;
 }
 
 export function calculateItp(orderData: OrderData) {
+    console.log(orderData);
+    if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
+        orderData.potenciaFiscal = 0;
+    if (orderData.tipoVehiculo === VEHICLE_TYPE.CARAVAN) {
+        orderData.valorVehiculo = 0;
+        orderData.cilindrada = 0;
+    }
+
     let deprecationValue;
     let prevItpValue;
     let ITP;
@@ -18,7 +28,7 @@ export function calculateItp(orderData: OrderData) {
         const [day, month, year] = dateStr.split("/");
         return new Date(year, month - 1, day);
     }
-    const matriculationDate = parseDate(orderData.dataMatriculacion) as any;
+    const matriculationDate = parseDate(orderData.fechaMatriculacion) as any;
     const actualDate = new Date();
     const differenceMs = (actualDate as any) - matriculationDate;
     const differenceDays = differenceMs / (1000 * 60 * 60 * 24);
@@ -64,7 +74,10 @@ export function calculateItp(orderData: OrderData) {
     }
 
     if (orderData.comunidadAutonoma === "ARA") {
-        if (orderData.tipoVehiculo === "turismo" && yearsDifference > 10) {
+        if (
+            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
+            yearsDifference > 10
+        ) {
             if (orderData.cilindrada <= 1000) {
                 prevItpValue = 0.04;
             } else if (
@@ -85,7 +98,7 @@ export function calculateItp(orderData: OrderData) {
 
     if (orderData.comunidadAutonoma === "AST") {
         if (
-            orderData.tipoVehiculo === "turismo" &&
+            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
             orderData.potenciaFiscal > 15
         ) {
             prevItpValue = 0.08;
@@ -96,7 +109,7 @@ export function calculateItp(orderData: OrderData) {
 
     if (orderData.comunidadAutonoma === "BAL") {
         if (
-            orderData.tipoVehiculo === "turismo" &&
+            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
             orderData.potenciaFiscal > 15
         ) {
             prevItpValue = 0.08;
@@ -126,7 +139,10 @@ export function calculateItp(orderData: OrderData) {
     }
 
     if (orderData.comunidadAutonoma === "CANT") {
-        if (orderData.tipoVehiculo === "turismo" && yearsDifference > 10) {
+        if (
+            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
+            yearsDifference > 10
+        ) {
             if (orderData.cilindrada < 1000) {
                 prevItpValue = 55;
             } else if (
@@ -151,7 +167,7 @@ export function calculateItp(orderData: OrderData) {
 
     if (orderData.comunidadAutonoma === "CASL") {
         if (
-            orderData.tipoVehiculo === "turismo" &&
+            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
             orderData.potenciaFiscal > 15
         ) {
             prevItpValue = 0.08;
@@ -179,7 +195,10 @@ export function calculateItp(orderData: OrderData) {
     }
 
     if (orderData.comunidadAutonoma === "GAL") {
-        if (orderData.tipoVehiculo === "turismo" && yearsDifference >= 15) {
+        if (
+            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
+            yearsDifference >= 15
+        ) {
             if (orderData.cilindrada < 1200) {
                 prevItpValue = 22;
             } else if (
@@ -222,41 +241,41 @@ export function calculateItp(orderData: OrderData) {
     if (orderData.comunidadAutonoma === "VAL") {
         if (valorFiscal < 20000 && yearsDifference > 12) {
             if (
-                orderData.tipoVehiculo === "turismo" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
                 orderData.cilindrada <= 1500
             ) {
                 prevItpValue = 40;
             } else if (
-                orderData.tipoVehiculo === "turismo" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
                 orderData.cilindrada > 1500 &&
                 orderData.cilindrada <= 2000
             ) {
                 prevItpValue = 60;
             } else if (
-                orderData.tipoVehiculo === "turismo" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
                 orderData.cilindrada > 2000
             ) {
                 prevItpValue = 140;
             } else if (
                 (orderData.cilindrada <= 50 ||
-                    orderData.tipoVehiculo === "moto") &&
+                    orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) &&
                 orderData.cilindrada <= 250
             ) {
                 prevItpValue = 10;
             } else if (
-                orderData.tipoVehiculo === "moto" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
                 orderData.cilindrada > 250 &&
                 orderData.cilindrada <= 550
             ) {
                 prevItpValue = 20;
             } else if (
-                orderData.tipoVehiculo === "moto" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
                 orderData.cilindrada > 550 &&
                 orderData.cilindrada <= 750
             ) {
                 prevItpValue = 35;
             } else if (
-                orderData.tipoVehiculo === "moto" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
                 orderData.cilindrada > 750
             ) {
                 prevItpValue = 55;
@@ -267,41 +286,41 @@ export function calculateItp(orderData: OrderData) {
             yearsDifference <= 12
         ) {
             if (
-                orderData.tipoVehiculo === "turismo" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
                 orderData.cilindrada <= 1500
             ) {
                 prevItpValue = 120;
             } else if (
-                orderData.tipoVehiculo === "turismo" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
                 orderData.cilindrada > 1500 &&
                 orderData.cilindrada <= 2000
             ) {
                 prevItpValue = 180;
             } else if (
-                orderData.tipoVehiculo === "turismo" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
                 orderData.cilindrada > 2000
             ) {
                 prevItpValue = 280;
             } else if (
                 (orderData.cilindrada <= 50 ||
-                    orderData.tipoVehiculo === "moto") &&
+                    orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) &&
                 orderData.cilindrada <= 250
             ) {
                 prevItpValue = 30;
             } else if (
-                orderData.tipoVehiculo === "moto" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
                 orderData.cilindrada > 250 &&
                 orderData.cilindrada <= 550
             ) {
                 prevItpValue = 60;
             } else if (
-                orderData.tipoVehiculo === "moto" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
                 orderData.cilindrada > 550 &&
                 orderData.cilindrada <= 750
             ) {
                 prevItpValue = 90;
             } else if (
-                orderData.tipoVehiculo === "moto" &&
+                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
                 orderData.cilindrada > 750
             ) {
                 prevItpValue = 140;

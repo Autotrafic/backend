@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => res.send("Working!"));
 
-app.use("/vehicle", vehicleRouter);
+app.use("/vehicles", vehicleRouter);
 
 app.use(notFoundError);
 app.use(generalError);
