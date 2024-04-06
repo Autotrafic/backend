@@ -19,7 +19,7 @@ export function calculateItp(orderData: OrderData) {
         orderData.cilindrada = 0;
     }
 
-    let deprecationValue;
+    let valorDepreciacion;
     let prevItpValue;
     let ITP;
 
@@ -36,34 +36,34 @@ export function calculateItp(orderData: OrderData) {
     const yearsDifference = differenceDays / 365;
 
     if (yearsDifference < 1) {
-        deprecationValue = 100;
+        valorDepreciacion = 100;
     } else if (yearsDifference >= 1 && yearsDifference < 2) {
-        deprecationValue = 0.84;
+        valorDepreciacion = 0.84;
     } else if (yearsDifference >= 2 && yearsDifference < 3) {
-        deprecationValue = 0.67;
+        valorDepreciacion = 0.67;
     } else if (yearsDifference >= 3 && yearsDifference < 4) {
-        deprecationValue = 0.56;
+        valorDepreciacion = 0.56;
     } else if (yearsDifference >= 4 && yearsDifference < 5) {
-        deprecationValue = 0.47;
+        valorDepreciacion = 0.47;
     } else if (yearsDifference >= 5 && yearsDifference < 6) {
-        deprecationValue = 0.39;
+        valorDepreciacion = 0.39;
     } else if (yearsDifference >= 6 && yearsDifference < 7) {
-        deprecationValue = 0.34;
+        valorDepreciacion = 0.34;
     } else if (yearsDifference >= 7 && yearsDifference < 8) {
-        deprecationValue = 0.28;
+        valorDepreciacion = 0.28;
     } else if (yearsDifference >= 8 && yearsDifference < 9) {
-        deprecationValue = 0.24;
+        valorDepreciacion = 0.24;
     } else if (yearsDifference >= 9 && yearsDifference < 10) {
-        deprecationValue = 0.19;
+        valorDepreciacion = 0.19;
     } else if (yearsDifference >= 10 && yearsDifference < 11) {
-        deprecationValue = 0.17;
+        valorDepreciacion = 0.17;
     } else if (yearsDifference >= 11 && yearsDifference < 12) {
-        deprecationValue = 0.13;
+        valorDepreciacion = 0.13;
     } else if (yearsDifference >= 12) {
-        deprecationValue = 0.1;
+        valorDepreciacion = 0.1;
     }
 
-    const valorFiscal = orderData.valorVehiculo * deprecationValue;
+    const valorFiscal = orderData.valorVehiculo * valorDepreciacion;
 
     if (orderData.comunidadAutonoma === "AND") {
         if (orderData.potenciaFiscal > 15) {
@@ -358,12 +358,16 @@ export function calculateItp(orderData: OrderData) {
 
     if (prevItpValue > 1) {
         ITP = prevItpValue;
-    } else if (orderData.precioVenta > valorFiscal) {
-        ITP = orderData.precioVenta * prevItpValue;
-    } else ITP = valorFiscal * prevItpValue;
+    } else if (prevItpValue < 1 && orderData.precioVenta < valorFiscal) {
+        ITP = valorFiscal * prevItpValue;
+        console.log("Calculated with Valor Fiscal");
+    } else ITP = orderData.precioVenta * prevItpValue;
+    console.log("Calculated with Precio Venta");
 
-    console.log(ITP);
+    console.log(
+        `Valor fiscal: ${valorFiscal}. Deprecicacion: ${valorDepreciacion}. Años dif.: ${yearsDifference}`
+    );
 
-    return { ITP, valorFiscal, prevItpValue };
+    return { ITP, valorFiscal, prevItpValue, valorDepreciacion };
 }
 
