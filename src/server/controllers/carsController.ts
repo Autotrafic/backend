@@ -130,7 +130,7 @@ export const getItp = async (
         const itpResponse = calculateItp(orderData);
         res.status(200).json({
             ITP: +itpResponse.ITP.toFixed(2),
-            valorFiscal: itpResponse.valorFiscal,
+            valorFiscal: +itpResponse.valorFiscal.toFixed(),
             imputacionItp: itpResponse.prevItpValue,
             valorDepreciacion: itpResponse.valorDepreciacion,
         });
