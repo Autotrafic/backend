@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import "../src/loadEnvironment";
+import "../../src/loadEnvironment";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {});
 
