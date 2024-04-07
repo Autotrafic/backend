@@ -5,7 +5,6 @@ import vehicleRouter from "./routes/vehicleRouter";
 
 const app = express();
 
-console.log(cors());
 app.use(cors());
 
 app.use(express.json());
