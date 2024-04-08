@@ -10,13 +10,12 @@ export const createPaymentIntent = async (
     res: Response,
     next: NextFunction
 ) => {
-    const { transactionCode, amount = AMOUNT } = req.body;
+    const { amount = AMOUNT } = req.body;
 
     try {
         const paymentIntent = await createStripePaymentIntent({
             paymentMethods: ["card"],
             amount,
-            description: `Cambio de nombre - código de transferencia: ${transactionCode}`,
             currency: CURRENCY,
         });
 

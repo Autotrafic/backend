@@ -1,25 +1,26 @@
 import Stripe from "stripe";
 import "../../src/loadEnvironment";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {});
+const stripeKey = process.env.STRIPE_SECRET_KEY;
+
+const stripe = new Stripe(stripeKey, {});
 
 interface PaymentIntentProps {
     paymentMethods: string[];
     amount: number;
     currency: string;
-    description: string;
 }
 
 export const createStripePaymentIntent = async ({
     paymentMethods,
     amount,
     currency = "eur",
-    description,
-}: PaymentIntentProps) =>
-    stripe.paymentIntents.create({
+}: PaymentIntentProps) => {
+    console.log("secret key", stripeKey);
+    return stripe.paymentIntents.create({
         payment_method_types: paymentMethods,
         amount,
         currency,
-        description,
     });
+};
 
