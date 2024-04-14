@@ -36,7 +36,8 @@ export function calculateItp(orderData: OrderData) {
     const yearsDifference = differenceDays / 365;
 
     if (yearsDifference < 1) {
-        valorDepreciacion = 100;
+        deprecationValue = 1;
+
     } else if (yearsDifference >= 1 && yearsDifference < 2) {
         valorDepreciacion = 0.84;
     } else if (yearsDifference >= 2 && yearsDifference < 3) {
