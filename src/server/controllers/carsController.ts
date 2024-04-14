@@ -56,7 +56,7 @@ export const getModelNamesWithFilters = async (
             modelOf: brand[0]._id,
             startYear: { $lte: carYear },
             endYear: { $gte: carYear },
-            fuel
+            fuel,
         });
 
         res.status(200).json(modelNames);
@@ -129,9 +129,10 @@ export const getItp = async (
     try {
         const itpResponse = calculateItp(orderData);
         res.status(200).json({
-            ITP: itpResponse.ITP,
-            valorFiscal: itpResponse.valorFiscal,
+            ITP: +itpResponse.ITP.toFixed(2),
+            valorFiscal: +itpResponse.valorFiscal.toFixed(),
             imputacionItp: itpResponse.prevItpValue,
+            valorDepreciacion: itpResponse.valorDepreciacion,
         });
     } catch (error) {
         const finalError = new CustomError(
