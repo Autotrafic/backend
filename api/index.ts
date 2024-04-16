@@ -2,6 +2,8 @@ import "../src/loadEnvironment";
 import connectDB from "../src/database";
 import startServer from "../src/server/startServer";
 
+const http = require("http");
+
 const port = +process.env.PORT || 3100;
 
 const mongoURL = process.env.MONGODB_URL;
