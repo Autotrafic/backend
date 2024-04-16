@@ -15,7 +15,7 @@ app.get("/", (req, res) => res.send("Working!"));
 
 app.use("/vehicles", vehicleRouter);
 app.use("/payment", paymentRouter);
-app.get("/files", filesRouter);
+app.use("/files", filesRouter);
 
 app.use(notFoundError);
 app.use(generalError);

@@ -1,6 +1,7 @@
 import { google, drive_v3 } from "googleapis";
 import fs from "fs";
 import { googleDriveConfig } from "../../config";
+import { Readable } from "stream";
 
 interface File {
     originalname: string;
@@ -17,26 +18,30 @@ const jwtClient = new google.auth.JWT(
 );
 const drive = google.drive({ version: "v3", auth: jwtClient });
 
-export async function uploadFile(file: File): Promise<string> {
+export async function uploadFile(file: Express.Multer.File): Promise<string> {
     const fileMetadata: drive_v3.Params$Resource$Files$Create = {
         requestBody: {
             name: file.originalname,
             mimeType: file.mimetype,
+            parents: ["12DuMuGw8FISLpz0RK-y02gfalwj07lNr"],
         },
         media: {
             mimeType: file.mimetype,
-            body: fs.createReadStream(file.path),
+            body: new Readable({
+                read() {
+                    this.push(file.buffer);
+                    this.push(null);
+                },
+            }),
         },
         fields: "id",
     };
 
     try {
         const response = await drive.files.create(fileMetadata);
-        fs.unlinkSync(file.path);
         return response.data.id!;
     } catch (error) {
         console.error("Failed to upload file:", error);
-        fs.unlinkSync(file.path);
         throw error;
     }
 }

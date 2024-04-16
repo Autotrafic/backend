@@ -5,7 +5,7 @@ import CustomError from "../../errors/CustomError";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-export const uploadFiles = async (
+const uploadFiles = async (
     req: Request,
     res: Response,
     next: NextFunction
