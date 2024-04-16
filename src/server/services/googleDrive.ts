@@ -1,6 +1,6 @@
 import { google, drive_v3 } from "googleapis";
 import fs from "fs";
-import { googleDriveConfig } from "../config";
+import { googleDriveConfig } from "../../config";
 
 interface File {
     originalname: string;

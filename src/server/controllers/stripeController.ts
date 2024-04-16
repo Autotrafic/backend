@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
-import { createStripePaymentIntent } from "../../services/stripe";
+import { createStripePaymentIntent } from "../services/stripe";
 
 const CURRENCY = "eur";
 const AMOUNT = 11900;

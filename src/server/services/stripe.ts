@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import "../loadEnvironment";
+import "../../loadEnvironment";
 
 const isProduction = false;
 
