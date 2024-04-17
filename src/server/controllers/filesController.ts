@@ -7,15 +7,33 @@ export const uploadFiles = async (
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.file) {
+    const { files } = req;
+
+    if (
+        !files ||
+        (Array.isArray(files) && files.length === 0) ||
+        (typeof files === "object" && Object.keys(files).length === 0)
+    ) {
         return res.status(400).send("No file uploaded.");
     }
 
     try {
-        const fileId = await uploadToGoogleDrive(req.file);
+        if (Array.isArray(files)) {
+            for (const file of files) {
+                await uploadToGoogleDrive(file);
+            }
+        } else {
+            for (const key in files) {
+                if (files.hasOwnProperty(key)) {
+                    for (const file of files[key]) {
+                        await uploadToGoogleDrive(file);
+                    }
+                }
+            }
+        }
+
         res.status(200).send({
-            message: "File uploaded successfully",
-            fileId: fileId,
+            message: "Files uploaded successfully",
         });
     } catch (error) {
         console.error("Error uploading file to Google Drive:", error);
