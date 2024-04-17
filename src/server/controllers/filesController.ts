@@ -5,6 +5,7 @@ import {
 } from "../services/googleDrive";
 import CustomError from "../../errors/CustomError";
 import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
+import { createTextFile, formatDataForTextFile } from "../../utils/file";
 
 export const uploadFiles = async (
     req: Request,
@@ -12,7 +13,7 @@ export const uploadFiles = async (
     next: NextFunction
 ) => {
     const { body, files } = req;
-    const { folderName } = body;
+    const { orderData, folderName } = body;
 
     if (
         !files ||
@@ -27,6 +28,10 @@ export const uploadFiles = async (
             folderName,
             CUSTOMER_FILES_DRIVE_FOLDER_ID
         );
+
+        const orderDataFile = createTextFile(formatDataForTextFile(orderData));
+
+        await uploadToGoogleDrive(orderDataFile, createdFolderId);
 
         if (Array.isArray(files)) {
             for (const file of files) {
