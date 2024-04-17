@@ -1,26 +1,15 @@
 import "../../loadEnvironment";
 import { google, drive_v3 } from "googleapis";
-import fs from "fs";
-import { googleDriveConfig } from "../../config";
 import { Readable } from "stream";
-
-interface File {
-    originalname: string;
-    mimetype: string;
-    path: string;
-}
 
 const key = {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
     private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
 };
 
-const jwtClient = new google.auth.JWT(
-    key.client_email,
-    null,
-    key.private_key,
-    googleDriveConfig.scopes
-);
+const jwtClient = new google.auth.JWT(key.client_email, null, key.private_key, [
+    "https://www.googleapis.com/auth/drive",
+]);
 const drive = google.drive({ version: "v3", auth: jwtClient });
 
 export async function uploadFile(file: Express.Multer.File): Promise<string> {
