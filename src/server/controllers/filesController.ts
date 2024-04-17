@@ -1,13 +1,18 @@
 import { Request, Response, NextFunction } from "express";
-import { uploadFile as uploadToGoogleDrive } from "../services/googleDrive";
+import {
+    createFolder,
+    uploadFile as uploadToGoogleDrive,
+} from "../services/googleDrive";
 import CustomError from "../../errors/CustomError";
+import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
 
 export const uploadFiles = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const { files } = req;
+    const { body, files } = req;
+    const { folderName } = body;
 
     if (
         !files ||
@@ -18,17 +23,14 @@ export const uploadFiles = async (
     }
 
     try {
+        const createdFolderId = await createFolder(
+            folderName,
+            CUSTOMER_FILES_DRIVE_FOLDER_ID
+        );
+
         if (Array.isArray(files)) {
             for (const file of files) {
-                await uploadToGoogleDrive(file);
-            }
-        } else {
-            for (const key in files) {
-                if (files.hasOwnProperty(key)) {
-                    for (const file of files[key]) {
-                        await uploadToGoogleDrive(file);
-                    }
-                }
+                await uploadToGoogleDrive(file, createdFolderId);
             }
         }
 

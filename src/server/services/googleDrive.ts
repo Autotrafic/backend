@@ -12,12 +12,12 @@ const jwtClient = new google.auth.JWT(key.client_email, null, key.private_key, [
 ]);
 const drive = google.drive({ version: "v3", auth: jwtClient });
 
-export async function uploadFile(file: Express.Multer.File): Promise<string> {
+export async function uploadFile(file: Express.Multer.File, parentFolderId: string): Promise<string> {
     const fileMetadata: drive_v3.Params$Resource$Files$Create = {
         requestBody: {
             name: file.originalname,
             mimeType: file.mimetype,
-            parents: ["12DuMuGw8FISLpz0RK-y02gfalwj07lNr"],
+            parents: [parentFolderId],
         },
         media: {
             mimeType: file.mimetype,
@@ -36,6 +36,28 @@ export async function uploadFile(file: Express.Multer.File): Promise<string> {
         return response.data.id!;
     } catch (error) {
         console.error("Failed to upload file:", error);
+        throw error;
+    }
+}
+
+export async function createFolder(
+    folderName: string,
+    parentFolderId?: string
+): Promise<string> {
+    const fileMetadata: drive_v3.Params$Resource$Files$Create = {
+        requestBody: {
+            name: folderName,
+            mimeType: "application/vnd.google-apps.folder",
+            parents: parentFolderId ? [parentFolderId] : [],
+        },
+        fields: "id",
+    };
+
+    try {
+        const response = await drive.files.create(fileMetadata);
+        return response.data.id!;
+    } catch (error) {
+        console.error("Failed to create folder:", error);
         throw error;
     }
 }
