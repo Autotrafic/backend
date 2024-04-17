@@ -1,24 +1,41 @@
 import { Request, Response, NextFunction } from "express";
-import multer from "multer";
-import { uploadFile as uploadToGoogleDrive } from "../services/googleDrive";
+import {
+    createFolder,
+    uploadFile as uploadToGoogleDrive,
+} from "../services/googleDrive";
 import CustomError from "../../errors/CustomError";
+import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
 
-const upload = multer({ storage: multer.memoryStorage() });
-
-const uploadFiles = async (
+export const uploadFiles = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    if (!req.file) {
+    const { body, files } = req;
+    const { folderName } = body;
+
+    if (
+        !files ||
+        (Array.isArray(files) && files.length === 0) ||
+        (typeof files === "object" && Object.keys(files).length === 0)
+    ) {
         return res.status(400).send("No file uploaded.");
     }
 
     try {
-        const fileId = await uploadToGoogleDrive(req.file);
+        const createdFolderId = await createFolder(
+            folderName,
+            CUSTOMER_FILES_DRIVE_FOLDER_ID
+        );
+
+        if (Array.isArray(files)) {
+            for (const file of files) {
+                await uploadToGoogleDrive(file, createdFolderId);
+            }
+        }
+
         res.status(200).send({
-            message: "File uploaded successfully",
-            fileId: fileId,
+            message: "Files uploaded successfully",
         });
     } catch (error) {
         console.error("Error uploading file to Google Drive:", error);
@@ -30,5 +47,3 @@ const uploadFiles = async (
         next(finalError);
     }
 };
-
-export const handleFileUpload = [upload.single("file"), uploadFiles];
