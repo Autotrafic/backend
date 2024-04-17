@@ -1,3 +1,4 @@
+import "../../loadEnvironment";
 import { google, drive_v3 } from "googleapis";
 import fs from "fs";
 import { googleDriveConfig } from "../../config";
@@ -9,7 +10,11 @@ interface File {
     path: string;
 }
 
-const key = JSON.parse(fs.readFileSync(googleDriveConfig.keyFilePath, "utf8"));
+const key = {
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+};
+
 const jwtClient = new google.auth.JWT(
     key.client_email,
     null,

@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import multer from "multer";
 import { uploadFile as uploadToGoogleDrive } from "../services/googleDrive";
 import CustomError from "../../errors/CustomError";
 
-const upload = multer({ storage: multer.memoryStorage() });
-
-const uploadFiles = async (
+export const uploadFiles = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -30,5 +27,3 @@ const uploadFiles = async (
         next(finalError);
     }
 };
-
-export const handleFileUpload = [upload.single("file"), uploadFiles];
