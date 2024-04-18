@@ -1,21 +1,33 @@
-import { Readable } from "stream";
-import { OrderData } from "./models";
+import { existsSync, mkdirSync, writeFile } from "fs";
+import path from 'path';
+import { MulterFile } from "./models";
 
-export function createTextFile(data: string): Express.Multer.File {
-    const fileStream = new Readable({
-        read() {
-            this.push(data);
-            this.push(null);
-        },
+export function createTextFile(content: string): Promise<MulterFile> {
+    return new Promise((resolve, reject) => {
+        if (!existsSync('uploads/')) {
+            mkdirSync('uploads/', { recursive: true });
+        }
+
+        const filePath = path.join('uploads/', "Información Adicional");
+
+        writeFile(filePath, content, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                const fileDetails: MulterFile = {
+                    fieldname: 'uploadedFile',
+                    originalname: "Información Adicional",
+                    encoding: '7bit',
+                    mimetype: 'text/plain',
+                    destination: 'uploads/',
+                    filename: "Información Adicional",
+                    path: filePath,
+                    size: Buffer.byteLength(content),
+                };
+                resolve(fileDetails);
+            }
+        });
     });
-
-    const virtualFile: Express.Multer.File = {
-        buffer: fileStream.read() as Buffer,
-        originalname: "Order Data.txt",
-        mimetype: "text/plain",
-    } as Express.Multer.File;
-
-    return virtualFile;
 }
 
 export function formatDataForTextFile(data: string): string {
