@@ -1,26 +1,23 @@
 import { Request, Response, NextFunction } from "express";
 import {
+    uploadStreamFileToDrive as uploadToGoogleDrive,
     createFolder,
-    uploadFile as uploadToGoogleDrive,
 } from "../services/googleDrive";
-import CustomError from "../../errors/CustomError";
 import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
+import CustomError from "../../errors/CustomError";
 import { createTextFile, formatDataForTextFile } from "../../utils/file";
 
 export const uploadFiles = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
-    const { body, files } = req;
-    const { orderData, folderName } = body;
+): Promise<void> => {
+    const files = req.files as Express.Multer.File[];
+    const { orderData, folderName } = req.body;
 
-    if (
-        !files ||
-        (Array.isArray(files) && files.length === 0) ||
-        (typeof files === "object" && Object.keys(files).length === 0)
-    ) {
-        return res.status(400).send("No file uploaded.");
+    if (!files || files.length === 0) {
+        res.status(400).send("No file uploaded.");
+        return;
     }
 
     try {
@@ -29,21 +26,22 @@ export const uploadFiles = async (
             CUSTOMER_FILES_DRIVE_FOLDER_ID
         );
 
-        const orderDataFile = createTextFile(formatDataForTextFile(orderData));
+        const orderDataFile = await createTextFile(
+            formatDataForTextFile(orderData)
+        );
 
-        await uploadToGoogleDrive(orderDataFile, createdFolderId);
+        await uploadToGoogleDrive(
+            orderDataFile as Express.Multer.File,
+            createdFolderId
+        );
 
-        if (Array.isArray(files)) {
-            for (const file of files) {
-                await uploadToGoogleDrive(file, createdFolderId);
-            }
+        for (const file of files) {
+            await uploadToGoogleDrive(file, createdFolderId);
         }
 
-        res.status(200).send({
-            message: "Files uploaded successfully",
-        });
+        res.status(200).send({ message: "Files uploaded successfully" });
     } catch (error) {
-        console.error("Error uploading file to Google Drive:", error);
+        console.error("Error uploading files to Google Drive:", error);
         const finalError = new CustomError(
             500,
             "Failed to upload file to Google Drive.",

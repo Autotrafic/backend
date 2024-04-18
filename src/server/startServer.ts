@@ -12,6 +12,8 @@ const startServer = (port: number) =>
             resolve(true);
         });
 
+        server.timeout = 500000;
+
         server.on("error", (error: CustomError) => {
             console.log(chalk.bgRed.white("Error when starting the server"));
             if (error.code === "EADDRINUSE") {

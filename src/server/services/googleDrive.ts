@@ -1,6 +1,6 @@
-import "../../loadEnvironment";
+import { createReadStream, unlink } from "fs";
 import { google, drive_v3 } from "googleapis";
-import { Readable } from "stream";
+import "../../loadEnvironment";
 
 const key = {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -12,7 +12,10 @@ const jwtClient = new google.auth.JWT(key.client_email, null, key.private_key, [
 ]);
 const drive = google.drive({ version: "v3", auth: jwtClient });
 
-export async function uploadFile(file: Express.Multer.File, parentFolderId: string): Promise<string> {
+export async function uploadStreamFileToDrive(
+    file: Express.Multer.File,
+    parentFolderId: string
+) {
     const fileMetadata: drive_v3.Params$Resource$Files$Create = {
         requestBody: {
             name: file.originalname,
@@ -21,19 +24,15 @@ export async function uploadFile(file: Express.Multer.File, parentFolderId: stri
         },
         media: {
             mimeType: file.mimetype,
-            body: new Readable({
-                read() {
-                    this.push(file.buffer);
-                    this.push(null);
-                },
-            }),
+            body: createReadStream(file.path),
         },
         fields: "id",
     };
 
     try {
-        const response = await drive.files.create(fileMetadata);
-        return response.data.id!;
+        await drive.files.create(fileMetadata);
+
+        unlink(file.path, (err) => console.log(err));
     } catch (error) {
         console.error("Failed to upload file:", error);
         throw error;
