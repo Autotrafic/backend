@@ -4,9 +4,6 @@ import { MulterFile } from "./models";
 
 export function createTextFile(content: string): Promise<MulterFile> {
     return new Promise((resolve, reject) => {
-        if (!existsSync('uploads/')) {
-            mkdirSync('uploads/', { recursive: true });
-        }
 
         const filePath = path.join('uploads/', "Información Adicional");
 

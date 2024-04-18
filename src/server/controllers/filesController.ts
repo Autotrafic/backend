@@ -12,6 +12,7 @@ export const uploadFiles = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
+    console.log('inside');
     const files = req.files as Express.Multer.File[];
     const { orderData, folderName } = req.body;
 
