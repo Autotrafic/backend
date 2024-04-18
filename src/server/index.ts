@@ -5,10 +5,6 @@ import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
 
-console.log("one");
-
-console.log("two");
-
 const app = express();
 
 app.use(cors());

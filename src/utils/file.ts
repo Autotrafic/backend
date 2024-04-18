@@ -5,7 +5,7 @@ import { MulterFile } from "./models";
 export function createTextFile(content: string): Promise<MulterFile> {
     return new Promise((resolve, reject) => {
 
-        const filePath = path.join('uploads/', "Información Adicional");
+        const filePath = path.join('tmp/uploads', "Información Adicional");
 
         writeFile(filePath, content, (err) => {
             if (err) {
@@ -16,7 +16,7 @@ export function createTextFile(content: string): Promise<MulterFile> {
                     originalname: "Información Adicional",
                     encoding: '7bit',
                     mimetype: 'text/plain',
-                    destination: 'uploads/',
+                    destination: 'tmp/uploads',
                     filename: "Información Adicional",
                     path: filePath,
                     size: Buffer.byteLength(content),

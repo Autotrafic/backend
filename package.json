@@ -15,6 +15,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "busboy": "^1.6.0",
         "chalk": "4.1.2",
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
@@ -27,6 +28,7 @@
         "stripe": "^14.24.0"
     },
     "devDependencies": {
+        "@types/busboy": "^1.5.3",
         "@types/cors": "^2.8.17",
         "@types/express": "^4.17.21",
         "@types/multer": "^1.4.11",
