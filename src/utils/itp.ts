@@ -11,7 +11,6 @@ interface OrderData {
 }
 
 export function calculateItp(orderData: OrderData) {
-    console.log(orderData);
     if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
         orderData.potenciaFiscal = 0;
     if (orderData.tipoVehiculo === VEHICLE_TYPE.CARAVAN) {
@@ -212,7 +211,7 @@ export function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "RIO") {
+    if (orderData.comunidadAutonoma === "MAD") {
         prevItpValue = 0.04;
     }
 
@@ -370,4 +369,3 @@ export function calculateItp(orderData: OrderData) {
 
     return { ITP, valorFiscal, prevItpValue, valorDepreciacion };
 }
-
