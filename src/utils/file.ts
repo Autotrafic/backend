@@ -1,25 +1,25 @@
 import { existsSync, mkdirSync, writeFile } from "fs";
-import path from 'path';
+import path from "path";
 import { MulterFile } from "./models";
 
 export function createTextFile(content: string): Promise<MulterFile> {
     return new Promise((resolve, reject) => {
-        if (!existsSync('uploads/')) {
-            mkdirSync('uploads/', { recursive: true });
+        if (!existsSync("uploads/")) {
+            mkdirSync("uploads/", { recursive: true });
         }
 
-        const filePath = path.join('uploads/', "Información Adicional");
+        const filePath = path.join("uploads/", "Información Adicional");
 
         writeFile(filePath, content, (err) => {
             if (err) {
                 reject(err);
             } else {
                 const fileDetails: MulterFile = {
-                    fieldname: 'uploadedFile',
+                    fieldname: "uploadedFile",
                     originalname: "Información Adicional",
-                    encoding: '7bit',
-                    mimetype: 'text/plain',
-                    destination: 'uploads/',
+                    encoding: "7bit",
+                    mimetype: "text/plain",
+                    destination: "uploads/",
                     filename: "Información Adicional",
                     path: filePath,
                     size: Buffer.byteLength(content),
@@ -31,6 +31,7 @@ export function createTextFile(content: string): Promise<MulterFile> {
 }
 
 export function formatDataForTextFile(data: string): string {
+    if (!data) return "";
     const { vehicle, buyer, seller, customer, order } = JSON.parse(data);
 
     const vehicleInfo = `
