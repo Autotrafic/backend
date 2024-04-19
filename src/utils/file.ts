@@ -31,9 +31,9 @@ export function createTextFile(content: string): Promise<MulterFile> {
 }
 
 export function formatDataForTextFile(data: string): string {
-    if (!data) return "";
     const { vehicle, buyer, seller, customer, order } = JSON.parse(data);
-
+    if (!vehicle && !buyer && !seller && !customer && !order) return "";
+    
     const vehicleInfo = `
 - Vehículo (Datos no fiables):
     Matrícula: ${vehicle.plate}
@@ -70,9 +70,9 @@ export function formatDataForTextFile(data: string): string {
 - Información adicional:
     Dirección de envío: ${order.shippingAddress}
 
-    Precio ITP: ${order.itpPrice.toFixed(2)} €
+    Precio ITP: ${order?.itpPrice ? order.itpPrice.toFixed(2) : 0} €
 
-    Precio total venta: ${order.totalPrice.toFixed(2)} €
+    Precio total venta: ${order?.totalPrice ? order.totalPrice.toFixed(2) : 0} €
 `;
 
     return `
