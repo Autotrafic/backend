@@ -18,6 +18,8 @@ export function calculateItp(orderData: OrderData) {
         orderData.cilindrada = 0;
     }
 
+    console.log(orderData);
+
     let valorDepreciacion;
     let prevItpValue;
     let ITP;
@@ -349,6 +351,8 @@ export function calculateItp(orderData: OrderData) {
                 orderData.cilindrada <= 2000
             ) {
                 prevItpValue = 50;
+            } else {
+                prevItpValue = 0.04;
             }
         } else {
             prevItpValue = 0.04;
@@ -364,7 +368,7 @@ export function calculateItp(orderData: OrderData) {
     console.log("Calculated with Precio Venta");
 
     console.log(
-        `Valor fiscal: ${valorFiscal}. Deprecicacion: ${valorDepreciacion}. Años dif.: ${yearsDifference}`
+        `Valor fiscal: ${valorFiscal}. Deprecicacion: ${valorDepreciacion}. Años dif.: ${yearsDifference}. Prev ITP value: ${prevItpValue}`
     );
 
     return { ITP, valorFiscal, prevItpValue, valorDepreciacion };
