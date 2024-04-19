@@ -16,7 +16,7 @@ export const uploadFiles = async (
     const { orderData, folderName } = req.body;
 
     if (!files || files.length === 0) {
-        res.status(400).send("No file uploaded.");
+        res.status(400).send(`No file uploaded. Files: ${files}`);
         return;
     }
 
