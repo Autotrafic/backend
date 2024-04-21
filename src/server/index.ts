@@ -31,11 +31,15 @@ app.use(
     })
 );
 
-app.get("/", (req, res) => res.send("Working!"));
-
 app.use("/vehicles", vehicleRouter);
 app.use("/payment", paymentRouter);
 app.use("/files", filesRouter);
+
+app.get("/", (req, res) => res.send("Working!"));
+
+app.get('/get-csrf-token', csrfProtection, (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+  });
 
 app.use(notFoundError);
 app.use(generalError);
