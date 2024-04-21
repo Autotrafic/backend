@@ -14,10 +14,26 @@ const app = express();
 
 const csrfProtection = csurf({ cookie: true });
 
-app.use(cors({credentials: true}));
+const corsOptions = {
+    origin: '*', // Replace with the URL of your frontend
+    credentials: true, // This allows cookies and credentials to be submitted across domains
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.options('*', cors(corsOptions));
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(csrfProtection);
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Specify the exact origin
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, CSRF-Token');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    next();
+});
 
 
 app.use(
