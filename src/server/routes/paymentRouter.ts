@@ -6,3 +6,4 @@ const paymentRouter = express.Router();
 paymentRouter.post("/create-intent", createPaymentIntent);
 
 export default paymentRouter;
+

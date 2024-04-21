@@ -31,3 +31,4 @@ vehicleRouter.get("/electric-ccs", getAllElectricMotorbikeCCs);
 vehicleRouter.post("/itp", getItp);
 
 export default vehicleRouter;
+
