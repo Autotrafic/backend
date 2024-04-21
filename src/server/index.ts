@@ -7,7 +7,6 @@ import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
-import { verifyCsrfHeader } from "../utils/security";
 import csurf from "csurf";
 import CustomError from "../errors/CustomError";
 
