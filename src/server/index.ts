@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
+import cookieParser from 'cookie-parser';
 import helmet from "helmet";
 import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
@@ -14,11 +15,11 @@ const app = express();
 
 const csrfProtection = csurf({ cookie: true });
 
-app.use(cors());
-app.use(verifyCsrfHeader);
+app.use(cors({credentials: true}));
+app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(csrfProtection);
 
-app.use(bodyParser.json());
 
 app.use(
     helmet.contentSecurityPolicy({
