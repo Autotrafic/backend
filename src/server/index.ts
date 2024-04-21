@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import bodyParser from "body-parser";
 import helmet from "helmet";
 import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
@@ -10,7 +11,7 @@ const app = express();
 
 app.use(cors());
 
-app.use(express.json());
+app.use(bodyParser.json());
 
 app.use(
     helmet.contentSecurityPolicy({
