@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
@@ -12,15 +12,18 @@ import CustomError from "../errors/CustomError";
 
 const app = express();
 
-const csrfProtection = csurf({ cookie: true });
+const csrfProtection = csurf({
+    cookie: true,
+    value: (req) => req.headers["csrf-token"] || req.body._csrf,
+});
 
 const corsOptions = {
-    origin: '*', // Replace with the URL of your frontend
+    origin: "*", // Replace with the URL of your frontend
     credentials: true, // This allows cookies and credentials to be submitted across domains
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -28,13 +31,18 @@ app.use(cookieParser());
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*'); // Specify the exact origin
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, CSRF-Token');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header("Access-Control-Allow-Origin", "*"); // Specify the exact origin
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, CSRF-Token"
+    );
+    res.header(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+    );
     next();
 });
-
 
 app.use(
     helmet.contentSecurityPolicy({
