@@ -7,14 +7,18 @@ import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
 import { verifyCsrfHeader } from "../utils/security";
+import csurf from "csurf";
 
 const app = express();
 
+const csrfProtection = csurf({ cookie: true });
+
 app.use(cors());
+app.use(verifyCsrfHeader);
+app.use(csrfProtection);
 
 app.use(bodyParser.json());
 
-app.use(verifyCsrfHeader);
 
 app.use(
     helmet.contentSecurityPolicy({
