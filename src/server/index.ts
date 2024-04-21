@@ -8,6 +8,7 @@ import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
 import { verifyCsrfHeader } from "../utils/security";
 import csurf from "csurf";
+import CustomError from "../errors/CustomError";
 
 const app = express();
 
@@ -18,7 +19,6 @@ app.use(verifyCsrfHeader);
 app.use(csrfProtection);
 
 app.use(bodyParser.json());
-
 
 app.use(
     helmet.contentSecurityPolicy({
@@ -37,9 +37,18 @@ app.use("/files", filesRouter);
 
 app.get("/", (req, res) => res.send("Working!"));
 
-app.get('/get-csrf-token', csrfProtection, (req, res) => {
-    res.json({ csrfToken: req.csrfToken() });
-  });
+app.get("/get-csrf-token", csrfProtection, (req, res, next) => {
+    try {
+        res.json({ csrfToken: req.csrfToken() });
+    } catch (error) {
+        const finalError = new CustomError(
+            400,
+            "Error generating csrf token.",
+            "Error generating csrf token."
+        );
+        next(finalError);
+    }
+});
 
 app.use(notFoundError);
 app.use(generalError);
