@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import helmet from "helmet";
 import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
@@ -10,6 +11,17 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
+
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "https://trusted.cdn.com"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: [],
+        },
+    })
+);
 
 app.get("/", (req, res) => res.send("Working!"));
 
