@@ -11,24 +11,26 @@ import {
     getAllElectricMotorbikeCCs,
     getAllFuelMotorbikeCCs,
 } from "../controllers/motorBikesController";
+import csurf from "csurf";
 
 const vehicleRouter = express.Router();
 
-vehicleRouter.get("/", getAllCars);
+const csrfProtection = csurf({ cookie: true });
 
-vehicleRouter.get("/brands", getAllBrandNames);
+vehicleRouter.get("/", csrfProtection, getAllCars);
 
-vehicleRouter.post("/fuels", getFuelsByModels);
+vehicleRouter.get("/brands", csrfProtection, getAllBrandNames);
 
-vehicleRouter.post("/models", getModelNamesWithFilters);
+vehicleRouter.post("/fuels", csrfProtection, getFuelsByModels);
 
-vehicleRouter.post("/model", getModelById);
+vehicleRouter.post("/models", csrfProtection, getModelNamesWithFilters);
 
-vehicleRouter.get("/fuel-ccs", getAllFuelMotorbikeCCs);
+vehicleRouter.post("/model", csrfProtection, getModelById);
 
-vehicleRouter.get("/electric-ccs", getAllElectricMotorbikeCCs);
+vehicleRouter.get("/fuel-ccs", csrfProtection, getAllFuelMotorbikeCCs);
 
-vehicleRouter.post("/itp", getItp);
+vehicleRouter.get("/electric-ccs", csrfProtection, getAllElectricMotorbikeCCs);
+
+vehicleRouter.post("/itp", csrfProtection, getItp);
 
 export default vehicleRouter;
-

@@ -6,12 +6,15 @@ import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
+import { verifyCsrfHeader } from "../utils/security";
 
 const app = express();
 
 app.use(cors());
 
 app.use(bodyParser.json());
+
+app.use(verifyCsrfHeader);
 
 app.use(
     helmet.contentSecurityPolicy({
