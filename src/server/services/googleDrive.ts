@@ -18,7 +18,7 @@ export async function uploadStreamFileToDrive(
 ) {
     const fileMetadata: drive_v3.Params$Resource$Files$Create = {
         requestBody: {
-            name: file.originalname,
+            name: `📋 ${file.originalname}`,
             mimeType: file.mimetype,
             parents: [parentFolderId],
         },

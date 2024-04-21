@@ -28,6 +28,7 @@
         "hpp": "^0.2.3",
         "mongoose": "^8.2.4",
         "multer": "^1.4.5-lts.1",
+        "nodemailer": "^6.9.13",
         "stripe": "^14.24.0"
     },
     "devDependencies": {
@@ -36,6 +37,7 @@
         "@types/hpp": "^0.2.6",
         "@types/multer": "^1.4.11",
         "@types/node": "^20.11.30",
+        "@types/nodemailer": "^6.4.14",
         "@typescript-eslint/eslint-plugin": "^7.4.0",
         "@typescript-eslint/parser": "^7.4.0",
         "eslint": "^8.57.0",
