@@ -1,13 +1,10 @@
 import express from "express";
-import multer, { FileFilterCallback } from "multer";
-import path from "path";
+import multer from "multer";
 import { uploadFiles } from "../controllers/filesController";
 
 const filesRouter = express.Router();
 
-const MAX_SIZE = 50 * 1024 * 1024;
-
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ limits: { fileSize: 3000000 }, dest: "uploads/" });
 
 filesRouter.post("/upload", upload.any(), uploadFiles);
 
