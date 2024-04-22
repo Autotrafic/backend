@@ -33,9 +33,11 @@ export function createTextFile(content: string): Promise<MulterFile> {
 export function formatDataForTextFile(data: string): string {
     if (!data) return "";
 
-    const { vehicle, buyer, seller, customer, order } = JSON.parse(data);
+    const { vehicle, buyer, seller, customer, plusServices, order } =
+        JSON.parse(data);
 
-    if (!vehicle && !buyer && !seller && !customer && !order) return "";
+    if (!vehicle && !buyer && !seller && !customer && !plusServices && !order)
+        return "";
 
     const vehicleInfo = `
 - Vehículo (Datos no fiables):
@@ -69,6 +71,13 @@ export function formatDataForTextFile(data: string): string {
     Correo electrónico: ${customer.email}
 `;
 
+    const plusServicesInfo = `
+- PRODUCTOS AÑADIDOS:
+    Etiqueta medioambiental: ${plusServices.etiquetaMedioambiental}
+
+    Informe DGT: ${plusServices.informeDgt}
+`;
+
     const orderInfo = `
 - Información adicional:
     Dirección de envío: ${order.shippingAddress}
@@ -79,6 +88,16 @@ export function formatDataForTextFile(data: string): string {
 `;
 
     return `
+    ${
+        plusServices &&
+        `!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    
+    ${plusServicesInfo}
+    
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    `
+    }
+
     ${vehicleInfo}
     
     ******************************************************
