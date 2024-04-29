@@ -124,7 +124,7 @@ export const getActivityLogsFromSessionId = async (
     try {
         const { sessionId } = req.params;
 
-        const activityLogs = await SessionLog.find({ sessionId: sessionId });
+        const activityLogs = await ActivityLog.find({ sessionId: sessionId });
         res.status(200).json(activityLogs);
     } catch (error) {
         console.log(error);
