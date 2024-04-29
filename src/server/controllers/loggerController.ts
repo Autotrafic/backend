@@ -77,7 +77,7 @@ export const getAllLogs = async (
 ) => {
     try {
         const logs = await ActivityLog.find({});
-        res.status(200).json({ logs });
+        res.status(200).json(logs);
     } catch (error) {
         console.log(error);
         const finalError = new CustomError(
