@@ -26,7 +26,7 @@ export const logActivity = async (
             sessionLog = new SessionLog({
                 sessionId: sessionId,
                 userId: userId,
-                startTime: newActivityLog.timestamp,
+                timestamp: newActivityLog.timestamp,
                 activityLogs: [newActivityLog],
             });
             await sessionLog.save();
