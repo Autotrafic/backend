@@ -70,13 +70,13 @@ export const logActivity = async (
     }
 };
 
-export const getAllLogs = async (
+export const getUserLogs = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        const logs = await ActivityLog.find({});
+        const logs = await UserLogs.find({});
         res.status(200).json(logs);
     } catch (error) {
         console.log(error);
@@ -87,4 +87,4 @@ export const getAllLogs = async (
         );
         next(finalError);
     }
-}
+};
