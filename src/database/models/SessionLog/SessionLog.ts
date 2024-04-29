@@ -1,21 +1,22 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { IActivityLog } from "../ActivityLog/ActivityLog";
 
-interface ISessionLog extends Document {
+export interface ISessionLog extends Document {
     sessionId: string;
+    userId: string;
     startTime: Date;
     activityLogs: IActivityLog[];
 }
 
 const SessionLogSchema = new Schema({
     sessionId: { type: String, required: true },
+    userId: { type: String, required: true },
     startTime: { type: Date, required: true },
     activityLogs: [{ type: Schema.Types.ObjectId, ref: "ActivityLog" }],
 });
 
-const SessionLog = mongoose.model<ISessionLog>(
+export const SessionLog = mongoose.model<ISessionLog>(
     "SessionLog",
     SessionLogSchema,
     "session-logs"
 );
-export default SessionLog;

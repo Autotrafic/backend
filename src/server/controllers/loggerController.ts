@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
 import { ActivityLog } from "../../database/models/ActivityLog/ActivityLog";
-import SessionLog from "../../database/models/SessionLog/SessionLog";
+import { SessionLog } from "../../database/models/SessionLog/SessionLog";
+import { UserLogs } from "../../database/models/UserLog/UserLog";
 
 export const logActivity = async (
     req: Request,
@@ -9,12 +10,13 @@ export const logActivity = async (
     next: NextFunction
 ) => {
     try {
-        const { message, sessionId } = req.body;
+        const { message, sessionId, userId } = req.body;
 
         const newActivityLog = new ActivityLog({
             message: message,
             sessionId: sessionId,
-            timestamp: new Date()
+            userId: userId,
+            timestamp: new Date(),
         });
 
         await newActivityLog.save();
@@ -23,8 +25,9 @@ export const logActivity = async (
         if (!sessionLog) {
             sessionLog = new SessionLog({
                 sessionId: sessionId,
+                userId: userId,
                 startTime: newActivityLog.timestamp,
-                activityLogs: [newActivityLog]
+                activityLogs: [newActivityLog],
             });
             await sessionLog.save();
         } else {
@@ -32,7 +35,30 @@ export const logActivity = async (
             await sessionLog.save();
         }
 
-        res.status(200).json({ success: true, message: "Activity logged successfully" });
+        let userLogs = await UserLogs.findOne({ userId: userId });
+        if (!userLogs) {
+            userLogs = new UserLogs({
+                userId: userId,
+                sessionLogs: [sessionLog],
+            });
+            await userLogs.save();
+        } else {
+            const existingSessionLogs = await SessionLog.find({
+                _id: { $in: userLogs.sessionLogs },
+            });
+            const sessionExists = existingSessionLogs.some(
+                (log) => log.sessionId === sessionId
+            );
+            if (!sessionExists) {
+                userLogs.sessionLogs.push(sessionLog._id);
+                await userLogs.save();
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Activity logged successfully",
+        });
     } catch (error) {
         console.log(error);
         const finalError = new CustomError(
