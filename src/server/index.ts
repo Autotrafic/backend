@@ -8,6 +8,7 @@ import { generalError, notFoundError } from "../errors/generalError";
 import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
+import logRouter from "./routes/logRouter";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.get("/", (req, res) => res.send("Working!"));
 app.use("/vehicles", vehicleRouter);
 app.use("/payment", paymentRouter);
 app.use("/files", filesRouter);
+app.use("/log", logRouter);
 
 app.use(notFoundError);
 app.use(generalError);
