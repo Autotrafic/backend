@@ -10,7 +10,7 @@ const logRouter = express.Router();
 
 logRouter.get("/", getAllUserLogs);
 logRouter.get("/user/:userId", getSessionLogsFromUserId);
-logRouter.get("/session/:userId", getActivityLogsFromSessionId);
+logRouter.get("/session/:sessionId", getActivityLogsFromSessionId);
 logRouter.post("/register", logActivity);
 
 export default logRouter;
