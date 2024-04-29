@@ -4,14 +4,14 @@ import { IActivityLog } from "../ActivityLog/ActivityLog";
 export interface ISessionLog extends Document {
     sessionId: string;
     userId: string;
-    startTime: Date;
+    timestamp: Date;
     activityLogs: IActivityLog[];
 }
 
 const SessionLogSchema = new Schema({
     sessionId: { type: String, required: true },
     userId: { type: String, required: true },
-    startTime: { type: Date, required: true },
+    timestamp: { type: Date, required: true },
     activityLogs: [{ type: Schema.Types.ObjectId, ref: "ActivityLog" }],
 });
 
