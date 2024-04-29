@@ -35,11 +35,17 @@ export const logActivity = async (
             await sessionLog.save();
         }
 
-        let userLogs = await UserLogs.findOne({ userId: userId });
+        let userLogs = await UserLogs.findOneAndUpdate(
+            { userId: userId },
+            { $set: { lastActivity: new Date() } },
+            { new: true, upsert: true }
+        );
+        
         if (!userLogs) {
             userLogs = new UserLogs({
                 userId: userId,
                 sessionLogs: [sessionLog],
+                lastActivity: new Date(),
             });
             await userLogs.save();
         } else {
