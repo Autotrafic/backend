@@ -115,3 +115,24 @@ export const getSessionLogsFromUserId = async (
         next(finalError);
     }
 };
+
+export const getActivityLogsFromSessionId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { sessionId } = req.params;
+
+        const activityLogs = await SessionLog.find({ sessionId: sessionId });
+        res.status(200).json(activityLogs);
+    } catch (error) {
+        console.log(error);
+        const finalError = new CustomError(
+            400,
+            "Error loading logs.",
+            "Error loading logs."
+        );
+        next(finalError);
+    }
+};
