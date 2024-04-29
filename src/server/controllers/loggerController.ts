@@ -40,7 +40,7 @@ export const logActivity = async (
             { $set: { lastActivity: new Date() } },
             { new: true, upsert: true }
         );
-        
+
         if (!userLogs) {
             userLogs = new UserLogs({
                 userId: userId,
@@ -76,7 +76,7 @@ export const logActivity = async (
     }
 };
 
-export const getUserLogs = async (
+export const getAllUserLogs = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -88,8 +88,29 @@ export const getUserLogs = async (
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error loading brands.",
-            "Error loading brands."
+            "Error loading logs.",
+            "Error loading logs."
+        );
+        next(finalError);
+    }
+};
+
+export const getSessionLogsFromUserId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { userId } = req.params;
+
+        const sessionLogs = await SessionLog.find({ userId: userId });
+        res.status(200).json(sessionLogs);
+    } catch (error) {
+        console.log(error);
+        const finalError = new CustomError(
+            400,
+            "Error loading logs.",
+            "Error loading logs."
         );
         next(finalError);
     }

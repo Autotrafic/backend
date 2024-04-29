@@ -1,9 +1,14 @@
 import express from "express";
-import { getUserLogs, logActivity } from "../controllers/loggerController";
+import {
+    getAllUserLogs,
+    getSessionLogsFromUserId,
+    logActivity,
+} from "../controllers/loggerController";
 
 const logRouter = express.Router();
 
-logRouter.get("/", getUserLogs);
+logRouter.get("/", getAllUserLogs);
+logRouter.get("/user/:userId", getSessionLogsFromUserId);
 logRouter.post("/register", logActivity);
 
 export default logRouter;
