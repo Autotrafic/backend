@@ -48,7 +48,7 @@ app.get("/", (req, res) => res.send("Working!"));
 app.use("/vehicles", vehicleRouter);
 app.use("/payment", paymentRouter);
 app.use("/files", filesRouter);
-app.use("/log", logRouter);
+app.use("/logs", logRouter);
 
 app.use(notFoundError);
 app.use(generalError);

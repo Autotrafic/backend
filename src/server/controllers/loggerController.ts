@@ -69,3 +69,22 @@ export const logActivity = async (
         next(finalError);
     }
 };
+
+export const getAllLogs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const logs = await ActivityLog.find({});
+        res.status(200).json({ logs });
+    } catch (error) {
+        console.log(error);
+        const finalError = new CustomError(
+            400,
+            "Error loading brands.",
+            "Error loading brands."
+        );
+        next(finalError);
+    }
+}
