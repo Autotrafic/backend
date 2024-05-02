@@ -9,6 +9,8 @@ export const checkIPWhitelist = (
     const clientIP =
         (req.headers["x-forwarded-for"] as string) ||
         req.connection.remoteAddress;
+
+    console.log(clientIP);
     if (WHITELIST_IPS.includes(clientIP)) {
         res.status(200).send("Correctly received but not registered.");
     } else {
