@@ -12,9 +12,8 @@ export const checkIPWhitelist = (
 
     console.log(clientIP);
     if (WHITELIST_IPS.includes(clientIP)) {
-        res.status(200).send("Correctly received but not registered.");
+        res.status(200).send(`Received from whitelisted IP: ${clientIP}.`);
     } else {
-        res.status(200).send(`Received ip: ${clientIP}`);
-        // next();
+        next();
     }
 };
