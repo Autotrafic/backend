@@ -10,7 +10,6 @@ export const checkIPWhitelist = (
         (req.headers["x-forwarded-for"] as string) ||
         req.connection.remoteAddress;
 
-    console.log(clientIP);
     if (WHITELIST_IPS.includes(clientIP)) {
         res.status(200).send(`Received from whitelisted IP: ${clientIP}.`);
     } else {

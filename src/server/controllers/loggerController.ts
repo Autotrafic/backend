@@ -10,12 +10,16 @@ export const logActivity = async (
     next: NextFunction
 ) => {
     try {
-        const { message, sessionId, userId } = req.body;
+        const { message, sessionId } = req.body;
+
+        const userIP =
+            (req.headers["x-forwarded-for"] as string) ||
+            req.connection.remoteAddress;
 
         const newActivityLog = new ActivityLog({
             message: message,
             sessionId: sessionId,
-            userId: userId,
+            userId: userIP,
             timestamp: new Date(),
         });
 
@@ -25,7 +29,7 @@ export const logActivity = async (
         if (!sessionLog) {
             sessionLog = new SessionLog({
                 sessionId: sessionId,
-                userId: userId,
+                userId: userIP,
                 timestamp: newActivityLog.timestamp,
                 activityLogs: [newActivityLog],
             });
@@ -36,14 +40,14 @@ export const logActivity = async (
         }
 
         let userLogs = await UserLogs.findOneAndUpdate(
-            { userId: userId },
+            { userId: userIP },
             { $set: { lastActivity: new Date() } },
             { new: true, upsert: true }
         );
 
         if (!userLogs) {
             userLogs = new UserLogs({
-                userId: userId,
+                userId: userIP,
                 sessionLogs: [sessionLog],
                 lastActivity: new Date(),
             });
