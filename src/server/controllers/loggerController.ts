@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import IPData from "ipdata";
 import CustomError from "../../errors/CustomError";
 import { ActivityLog } from "../../database/models/ActivityLog/ActivityLog";
 import { SessionLog } from "../../database/models/SessionLog/SessionLog";
@@ -12,9 +13,13 @@ export const logActivity = async (
     try {
         const { message, sessionId } = req.body;
 
-        const userIP =
-            (req.headers["x-forwarded-for"] as string) ||
-            req.connection.remoteAddress;
+        const ipdata = new IPData(
+            "6769dbaf0ff97602e3a9b4b33d7fc901f1e4d192711ee9da36db8e18"
+        );
+
+        const ipDetails = await ipdata.lookup();
+
+        const { ip: userIP, region } = ipDetails;
 
         const newActivityLog = new ActivityLog({
             message: message,
@@ -41,7 +46,7 @@ export const logActivity = async (
 
         let userLogs = await UserLogs.findOneAndUpdate(
             { userId: userIP },
-            { $set: { lastActivity: new Date() } },
+            { $set: { lastActivity: new Date(), CCAA: region } },
             { new: true, upsert: true }
         );
 
@@ -50,6 +55,7 @@ export const logActivity = async (
                 userId: userIP,
                 sessionLogs: [sessionLog],
                 lastActivity: new Date(),
+                CCAA: region,
             });
             await userLogs.save();
         } else {
