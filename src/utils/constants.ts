@@ -5,7 +5,7 @@ export const CUSTOMER_FILES_DRIVE_FOLDER_ID =
 
 export const WHITELIST_IPS = [
     "::1",
-    "::ffff:127.0.0.1",
+    // "::ffff:127.0.0.1",
     // "93.176.145.122", // Wifi Cubelles
     // "79.116.112.200", // Mobil Aron
     // "79.116.120.191", // Mobil Aitor

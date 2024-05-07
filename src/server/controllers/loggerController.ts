@@ -1,6 +1,5 @@
 import "../../loadEnvironment";
 import { NextFunction, Request, Response } from "express";
-import IPData from "ipdata";
 import CustomError from "../../errors/CustomError";
 import { ActivityLog } from "../../database/models/ActivityLog/ActivityLog";
 import { SessionLog } from "../../database/models/SessionLog/SessionLog";
@@ -14,20 +13,11 @@ export const logActivity = async (
     next: NextFunction
 ) => {
     try {
-        const { message, sessionId } = req.body;
+        const { message, sessionId, region } = req.body;
 
         const userIP =
             (req.headers["x-forwarded-for"] as string) ||
             req.connection.remoteAddress;
-
-        const ipdata = new IPData(ipdataKey);
-
-        const ipDetails = await ipdata.lookup();
-
-        const { region } = ipDetails;
-
-        console.log("region", region);
-        console.log("details", ipDetails);
 
         const newActivityLog = new ActivityLog({
             message: message,
