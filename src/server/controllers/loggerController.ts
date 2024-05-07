@@ -26,7 +26,8 @@ export const logActivity = async (
 
         const { region } = ipDetails;
 
-        console.log('region', region);
+        console.log("region", region);
+        console.log("details", ipDetails);
 
         const newActivityLog = new ActivityLog({
             message: message,
