@@ -5,7 +5,7 @@
     "main": "dist/api/index.js",
     "scripts": {
         "predeploy": "node patchDependency.js",
-        "tsc": "node patchDependency.js && tsc",
+        "tsc": "npm run predeploy && tsc",
         "tsc:dev": "tsc -w",
         "start": "node .",
         "start:dev": "nodemon -q",
