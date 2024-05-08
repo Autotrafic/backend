@@ -69,7 +69,7 @@ export const logActivity = async (
             }
         }
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             message: "Activity logged successfully",
         });
