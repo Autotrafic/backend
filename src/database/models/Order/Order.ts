@@ -5,12 +5,12 @@ import { ElectricMotorbikeModel } from "../ElectricMotorbikeModel/ElectricMotorb
 
 export interface IOrder {
     orderId: string;
+    isTest: boolean;
     vehicleForm: GeneralData;
     itp: Itp;
     prices: Prices;
     crossSelling: CrossSelling;
     billData: BillData;
-    documentsLaterData: DocumentsLater;
 }
 
 interface GeneralData {
@@ -79,18 +79,14 @@ const ItpSchema = new Schema({
     valorDepreciacion: { type: Number, required: true },
 });
 
-const DocumentsLaterSchema = new Schema({
-    vehiclePlate: { type: String, required: true },
-});
-
 const OrderSchema = new Schema({
     orderId: { type: String, required: true, unique: true },
+    isTest: { type: Boolean, required: true, unique: true },
     generalData: { type: GeneralDataSchema, required: true },
     itp: { type: ItpSchema, required: true },
     prices: { type: PricesSchema, required: true },
     crossSelling: { type: CrossSellingSchema, required: true },
     billData: { type: BillDataSchema, required: true },
-    documentsLaterData: { type: DocumentsLaterSchema, required: true },
 });
 
 export const Order = model<IOrder>("Order", OrderSchema, "orders");
