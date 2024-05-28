@@ -80,8 +80,8 @@ const ItpSchema = new Schema({
 });
 
 const OrderSchema = new Schema({
-    orderId: { type: String, required: true, unique: true },
-    isTest: { type: Boolean, required: true, unique: true },
+    orderId: { type: String, required: true },
+    isTest: { type: Boolean, required: true },
     generalData: { type: GeneralDataSchema, required: true },
     itp: { type: ItpSchema, required: true },
     prices: { type: PricesSchema, required: true },
