@@ -9,6 +9,7 @@ import vehicleRouter from "./routes/vehicleRouter";
 import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
 import logRouter from "./routes/logRouter";
+import orderRouter from "./routes/orderRouter";
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use("/vehicles", vehicleRouter);
 app.use("/payment", paymentRouter);
 app.use("/files", filesRouter);
 app.use("/logs", logRouter);
+app.use("/order", orderRouter);
 
 app.use(notFoundError);
 app.use(generalError);
