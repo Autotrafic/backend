@@ -49,8 +49,8 @@ const GeneralDataSchema = new Schema({
     vehicleType: { type: Number, enum: [1, 2, 3], required: true },
     vehiclePlate: { type: String, required: false },
     registrationDate: { type: String, required: true },
-    brand: { type: String, required: true },
-    model: { type: Schema.Types.Mixed, required: true },
+    brand: { type: String, required: false },
+    model: { type: Schema.Types.Mixed, required: false },
     buyerCommunity: { type: String, required: true },
     phoneNumber: { type: String, required: true },
 });
@@ -71,10 +71,10 @@ const PricesSchema = new Schema({
 });
 
 const ItpSchema = new Schema({
-    ITP: { type: Number, required: true },
-    valorFiscal: { type: Number, required: true },
-    imputacionItp: { type: Number, required: true },
-    valorDepreciacion: { type: Number, required: true },
+    ITP: { type: Number, required: false },
+    valorFiscal: { type: Number, required: false },
+    imputacionItp: { type: Number, required: false },
+    valorDepreciacion: { type: Number, required: false },
 });
 
 const OrderSchema = new Schema({
