@@ -15,6 +15,7 @@ export interface IOrder {
 
 interface GeneralData {
     vehicleType: 1 | 2 | 3;
+    vehiclePlate: string;
     registrationDate: string;
     brand: string;
     model: CarModel | FuelMotorbikeModel | ElectricMotorbikeModel;
@@ -44,12 +45,9 @@ interface Itp {
     valorDepreciacion: number;
 }
 
-interface DocumentsLater {
-    vehiclePlate: string;
-}
-
 const GeneralDataSchema = new Schema({
     vehicleType: { type: Number, enum: [1, 2, 3], required: true },
+    vehiclePlate: { type: String, required: false },
     registrationDate: { type: String, required: true },
     brand: { type: String, required: true },
     model: { type: Schema.Types.Mixed, required: true },

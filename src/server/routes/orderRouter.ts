@@ -1,9 +1,16 @@
 import express from "express";
-import { getOrderById, registerOrder } from "../controllers/orderController";
+import {
+    getOrderById,
+    registerOrder,
+    updateNestedOrder,
+    updateOrder,
+} from "../controllers/orderController";
 
 const orderRouter = express.Router();
 
-orderRouter.get('/:orderId', getOrderById);
+orderRouter.get("/:orderId", getOrderById);
+orderRouter.put("/:orderId", updateOrder);
+orderRouter.put("/nested/:orderId", updateNestedOrder);
 orderRouter.post("/register", registerOrder);
 
 export default orderRouter;
