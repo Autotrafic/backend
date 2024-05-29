@@ -18,7 +18,8 @@ interface GeneralData {
     vehiclePlate: string;
     registrationDate: string;
     brand: string;
-    model: CarModel | FuelMotorbikeModel | ElectricMotorbikeModel;
+    model: CarModel;
+    cc: FuelMotorbikeModel;
     buyerCommunity: string;
     phoneNumber: string;
 }
@@ -51,6 +52,7 @@ const GeneralDataSchema = new Schema({
     registrationDate: { type: String, required: true },
     brand: { type: String, required: false },
     model: { type: Schema.Types.Mixed, required: false },
+    cc: { type: Schema.Types.Mixed, required: false },
     buyerCommunity: { type: String, required: true },
     phoneNumber: { type: String, required: true },
 });
