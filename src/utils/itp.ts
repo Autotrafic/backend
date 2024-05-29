@@ -91,6 +91,8 @@ export function calculateItp(orderData: OrderData) {
                 orderData.cilindrada <= 2000
             ) {
                 prevItpValue = 30;
+            } else {
+                prevItpValue = 0.04;
             }
         } else {
             prevItpValue = 0.04;
@@ -133,6 +135,8 @@ export function calculateItp(orderData: OrderData) {
                 orderData.cilindrada <= 2000
             ) {
                 prevItpValue = 115;
+            } else {
+                prevItpValue = 0.055;
             }
         } else {
             prevItpValue = 0.055;
@@ -156,6 +160,8 @@ export function calculateItp(orderData: OrderData) {
                 orderData.cilindrada < 2000
             ) {
                 prevItpValue = 115;
+            } else {
+                prevItpValue = 0.08;
             }
         } else {
             prevItpValue = 0.08;
@@ -207,6 +213,8 @@ export function calculateItp(orderData: OrderData) {
                 orderData.cilindrada <= 1599
             ) {
                 prevItpValue = 38;
+            } else if (orderData.cilindrada >= 1600) {
+                prevItpValue = 0.03;
             }
         } else {
             prevItpValue = 0.03;
@@ -371,5 +379,14 @@ export function calculateItp(orderData: OrderData) {
         `Valor fiscal: ${valorFiscal}. Deprecicacion: ${valorDepreciacion}. Años dif.: ${yearsDifference}. Prev ITP value: ${prevItpValue}`
     );
 
-    return { ITP, valorFiscal, prevItpValue, valorDepreciacion };
+    const comunidAutonoma = orderData.comunidadAutonoma;
+
+    return {
+        ITP,
+        valorFiscal,
+        prevItpValue,
+        valorDepreciacion,
+        comunidAutonoma,
+    };
 }
+
