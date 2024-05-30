@@ -21,6 +21,8 @@ export function calculateItp(orderData: OrderData) {
     console.log(orderData);
 
     let valorDepreciacion;
+    let valorVehiculoMoto;
+    let valorFiscal;
     let prevItpValue;
     let ITP;
 
@@ -64,7 +66,44 @@ export function calculateItp(orderData: OrderData) {
         valorDepreciacion = 0.1;
     }
 
-    const valorFiscal = orderData.valorVehiculo * valorDepreciacion;
+    if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) {
+        if (orderData.cilindrada <= 50) {
+            valorVehiculoMoto = 750;
+        } else if (orderData.cilindrada > 50 && orderData.cilindrada <= 75) {
+            valorVehiculoMoto = 950;
+        } else if (orderData.cilindrada > 75 && orderData.cilindrada <= 125) {
+            valorVehiculoMoto = 1400;
+        } else if (orderData.cilindrada > 125 && orderData.cilindrada <= 150) {
+            valorVehiculoMoto = 1500;
+        } else if (orderData.cilindrada > 150 && orderData.cilindrada <= 200) {
+            valorVehiculoMoto = 1650;
+        } else if (orderData.cilindrada > 200 && orderData.cilindrada <= 250) {
+            valorVehiculoMoto = 1900;
+        } else if (orderData.cilindrada > 250 && orderData.cilindrada <= 350) {
+            valorVehiculoMoto = 2750;
+        } else if (orderData.cilindrada > 350 && orderData.cilindrada <= 450) {
+            valorVehiculoMoto = 3400;
+        } else if (orderData.cilindrada > 450 && orderData.cilindrada <= 550) {
+            valorVehiculoMoto = 3750;
+        } else if (orderData.cilindrada > 550 && orderData.cilindrada <= 750) {
+            valorVehiculoMoto = 6200;
+        } else if (orderData.cilindrada > 750 && orderData.cilindrada <= 1000) {
+            valorVehiculoMoto = 9300;
+        } else if (
+            orderData.cilindrada > 1000 &&
+            orderData.cilindrada <= 1200
+        ) {
+            valorVehiculoMoto = 11800;
+        } else if (orderData.cilindrada > 1200) {
+            valorVehiculoMoto = 14900;
+        }
+    }
+
+    if (orderData.tipoVehiculo === VEHICLE_TYPE.CAR)
+        valorFiscal = orderData.valorVehiculo * valorDepreciacion;
+
+    if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
+        valorFiscal = valorVehiculoMoto * valorDepreciacion;
 
     if (orderData.comunidadAutonoma === "AND") {
         if (orderData.potenciaFiscal > 15) {
@@ -80,7 +119,7 @@ export function calculateItp(orderData: OrderData) {
             yearsDifference > 10
         ) {
             if (orderData.cilindrada <= 1000) {
-                prevItpValue = 0.04;
+                prevItpValue = 0;
             } else if (
                 orderData.cilindrada > 1000 &&
                 orderData.cilindrada <= 1500
