@@ -70,34 +70,34 @@ export function calculateItp(orderData: OrderData) {
 
     if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) {
         if (orderData.cilindrada <= 50) {
-            valorVehiculoMoto = 750;
+            valorVehiculoMoto = 800;
         } else if (orderData.cilindrada > 50 && orderData.cilindrada <= 75) {
-            valorVehiculoMoto = 950;
+            valorVehiculoMoto = 100;
         } else if (orderData.cilindrada > 75 && orderData.cilindrada <= 125) {
             valorVehiculoMoto = 1400;
         } else if (orderData.cilindrada > 125 && orderData.cilindrada <= 150) {
             valorVehiculoMoto = 1500;
         } else if (orderData.cilindrada > 150 && orderData.cilindrada <= 200) {
-            valorVehiculoMoto = 1650;
+            valorVehiculoMoto = 1700;
         } else if (orderData.cilindrada > 200 && orderData.cilindrada <= 250) {
-            valorVehiculoMoto = 1900;
+            valorVehiculoMoto = 2000;
         } else if (orderData.cilindrada > 250 && orderData.cilindrada <= 350) {
-            valorVehiculoMoto = 2750;
+            valorVehiculoMoto = 2800;
         } else if (orderData.cilindrada > 350 && orderData.cilindrada <= 450) {
-            valorVehiculoMoto = 3400;
+            valorVehiculoMoto = 3500;
         } else if (orderData.cilindrada > 450 && orderData.cilindrada <= 550) {
-            valorVehiculoMoto = 3750;
+            valorVehiculoMoto = 3900;
         } else if (orderData.cilindrada > 550 && orderData.cilindrada <= 750) {
-            valorVehiculoMoto = 6200;
+            valorVehiculoMoto = 6400;
         } else if (orderData.cilindrada > 750 && orderData.cilindrada <= 1000) {
-            valorVehiculoMoto = 9300;
+            valorVehiculoMoto = 9600;
         } else if (
             orderData.cilindrada > 1000 &&
             orderData.cilindrada <= 1200
         ) {
-            valorVehiculoMoto = 11800;
+            valorVehiculoMoto = 12100;
         } else if (orderData.cilindrada > 1200) {
-            valorVehiculoMoto = 14900;
+            valorVehiculoMoto = 15300;
         }
     }
 
