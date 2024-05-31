@@ -45,8 +45,6 @@ export function formatDataForTextFile(data: string): string {
 
     Tipo: ${vehicle.vehicleType}
 
-    Precio de venta: ${vehicle.salePrice} €
-
     Fecha de matriculacion: ${vehicle.registrationDate}
 `;
 
@@ -80,7 +78,7 @@ export function formatDataForTextFile(data: string): string {
 
     const orderInfo = `
 - Información adicional:
-    Dirección de envío: ${order.shippingAddress}
+    Dirección de envío: ${order.shippingAddress}, ${order.postalCode}
 
     Precio ITP: ${order?.itpPrice ? order.itpPrice.toFixed(2) : 0} €
 
