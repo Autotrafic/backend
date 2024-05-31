@@ -11,6 +11,8 @@ interface OrderData {
 }
 
 export function calculateItp(orderData: OrderData) {
+    orderData.precioVenta = 0;
+
     if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
         orderData.potenciaFiscal = 0;
     if (orderData.tipoVehiculo === VEHICLE_TYPE.CARAVAN) {
