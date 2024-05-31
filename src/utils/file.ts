@@ -78,7 +78,7 @@ export function formatDataForTextFile(data: string): string {
 
     const orderInfo = `
 - Información adicional:
-    Dirección de envío: ${order.shippingAddress} ${order.postalCode}
+    Dirección de envío: ${order.shippingAddress}, ${order.postalCode}
 
     Precio ITP: ${order?.itpPrice ? order.itpPrice.toFixed(2) : 0} €
 
