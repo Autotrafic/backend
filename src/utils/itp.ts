@@ -117,7 +117,6 @@ export function calculateItp(orderData: OrderData) {
 
     if (orderData.comunidadAutonoma === "ARA") {
         if (
-            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
             yearsDifference > 10
         ) {
             if (orderData.cilindrada <= 1000) {
@@ -186,7 +185,6 @@ export function calculateItp(orderData: OrderData) {
 
     if (orderData.comunidadAutonoma === "CANT") {
         if (
-            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
             yearsDifference > 10
         ) {
             if (orderData.cilindrada < 1000) {
