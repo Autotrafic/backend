@@ -64,7 +64,7 @@ export const logActivity = async (
                 (log) => log.sessionId === sessionId
             );
             if (!sessionExists) {
-                userLogs.sessionLogs.push(sessionLog._id);
+                userLogs.sessionLogs.push(sessionLog);
                 await userLogs.save();
             }
         }

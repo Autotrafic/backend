@@ -10,6 +10,7 @@ import paymentRouter from "./routes/paymentRouter";
 import filesRouter from "./routes/filesRouter";
 import logRouter from "./routes/logRouter";
 import orderRouter from "./routes/orderRouter";
+import messagesRouter from "./routes/messagesRouter";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use("/payment", paymentRouter);
 app.use("/files", filesRouter);
 app.use("/logs", logRouter);
 app.use("/order", orderRouter);
+app.use("/messages", messagesRouter);
 
 app.use(notFoundError);
 app.use(generalError);
