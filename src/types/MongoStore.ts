@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Db, MongoClient, GridFSBucket } from 'mongodb';
+import { GridFSBucket } from 'mongodb';
 import mongoose from 'mongoose';
 
 interface Store {
@@ -7,12 +7,6 @@ interface Store {
     save(options: { session: string }): Promise<void>;
     extract(options: { session: string, path: string }): Promise<void>;
     delete(options: { session: string }): Promise<void>;
-}
-
-interface MongoStoreOptions {
-    mongoose: MongoClient;
-    session: string;
-    path?: string;
 }
 
 class MongoStore implements Store {
