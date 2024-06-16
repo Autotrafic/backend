@@ -1,6 +1,6 @@
 import qrcode from 'qrcode-terminal';
 import { Client, ClientSession, RemoteAuth } from 'whatsapp-web.js';
-import { WhatsappSession, mongoose } from '../../database/models/WhatsappSession/WhatsappSession';
+import { WhatsappSession } from '../../database/models/WhatsappSession/WhatsappSession';
 import  MongoStore  from '../../types/MongoStore';
 
 async function getSession(): Promise<Record<string, unknown> | null> {
