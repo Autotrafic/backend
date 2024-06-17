@@ -9,9 +9,18 @@ export const sendMessage = async (
 ): Promise<void> => {
     const { phoneNumber, message } = req.body;
 
+    const chatId = phoneNumber + "@c.us";
+
     try {
-        await client.sendMessage(`${phoneNumber}@c.us`, message);
-        res.send("Message sent successfully.");
+        const chat = await client.getChatById(chatId);
+
+        const messages = await chat.fetchMessages({ limit: 1 });
+        if (messages.length > 0) {
+            res.send(`This chat contains previous messages.`);
+        } else {
+            await client.sendMessage(chatId, message);
+            res.send("Message sent successfully.");
+        }
     } catch (error) {
         console.log(error);
         const finalError = new CustomError(
