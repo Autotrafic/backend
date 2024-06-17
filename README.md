@@ -14,5 +14,10 @@ Node.js API for managing Autotrafic vehicles data.
 
 ### Upload JSON to database collection MongoDB
 `
-mongoimport --uri "mongodb+srv://autotrafic:theilie4@autotraficcluster.eqsc5uf.mongodb.net/" --db vehicles-db --collection cars-collection --drop --file fuel-motorcycles.json --jsonArray
+mongoimport --uri <MONGO_URL> --db <DATABASE_NAME> --collection <COLLECTION_NAME> --drop --file <GENERATED_FILES_NAME> --jsonArray
+`
+
+Example:
+`
+mongoimport --uri "mongodb+srv://autotrafic:autotrafic@autotraficcluster.eqsc5uf.mongodb.net/" --db vehicles --collection cars --drop --file fuel-motorcycles.json --jsonArray
 `
