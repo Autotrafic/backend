@@ -2,7 +2,6 @@ import qrcode from "qrcode-terminal";
 import { Client, ClientSession, RemoteAuth } from "whatsapp-web.js";
 import { WhatsappSession } from "../../database/models/WhatsappSession/WhatsappSession";
 import MongoStore from "../../types/MongoStore";
-import { startTwirlTimer, stopTwirlTimer } from "../../utils/widgets";
 
 async function getSession(): Promise<Record<string, unknown> | null> {
     const session = await WhatsappSession.findOne({ _id: "whatsapp-session" });
@@ -46,12 +45,11 @@ client.on("qr", (qr) => {
 });
 
 client.on("ready", () => {
-    console.log("Client is ready!");
+    console.info("[WhatsApp]: Client is ready");
 });
 
 client.on("authenticated", async (session) => {
-    console.log("Authenticated");
-    stopTwirlTimer();
+    console.info("[WhatsApp]: Authenticated");
     await saveSession(session);
 });
 
@@ -61,7 +59,7 @@ client.on("authenticated", async (session) => {
         (client as any).options.authStrategy.setup(client, { session });
     }
     client.initialize();
-    startTwirlTimer("Autenticando cliente WhatsApp");
+    console.info("[WhatsApp]: Authenticating client...\n");
 })();
 
 export default client;
