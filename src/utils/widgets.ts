@@ -6,7 +6,7 @@ export function startTwirlTimer(phrase: string) {
     const P = ["\\", "|", "/", "-"];
     let x = 0;
     twirlTimer = setInterval(function () {
-        process.stdout.write(`\r${P[x++]}  ${phrase}`);
+        console.log(`${P[x++]} ${phrase}`);
         x &= 3;
     }, 250);
 }
@@ -16,5 +16,5 @@ export function stopTwirlTimer() {
 
     clearInterval(twirlTimer);
     twirlTimer = null;
-    process.stdout.write("\r");
+    console.log("\n");
 }
