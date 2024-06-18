@@ -40,4 +40,3 @@ export const getAllElectricMotorbikeCCs = async (
         next(finalError);
     }
 };
-

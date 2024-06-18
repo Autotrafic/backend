@@ -102,7 +102,7 @@ export const updateNestedOrder = async (
         const updatedOrder = await Order.findOneAndUpdate(filter, update, {
             new: true,
             runValidators: true,
-            upsert: true
+            upsert: true,
         });
 
         if (!updatedOrder) {
