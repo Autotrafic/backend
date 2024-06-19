@@ -2,8 +2,9 @@ import qrcode from "qrcode-terminal";
 import { Client, ClientSession, RemoteAuth } from "whatsapp-web.js";
 import { WhatsappSession } from "../../database/models/WhatsappSession/WhatsappSession";
 import MongoStore from "../../types/MongoStore";
+import notifySlack from "../services/notifier";
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 async function getSession(): Promise<Record<string, unknown> | null> {
     const session = await WhatsappSession.findOne({ _id: "whatsapp-session" });
@@ -60,13 +61,17 @@ client.on("authenticated", async (session) => {
 });
 
 client.on("auth_failure", (message) => {
-    console.info(
-        `[WhatsApp]: Error while trying to restore an existing session. ${message}`
-    );
+    const error = `[WhatsApp]: Error while trying to restore an existing session. ${message}`;
+    
+    console.info(error);
+    notifySlack(error);
 });
 
 client.on("disconnected", (reason) => {
-    console.info(`[WhatsApp]: Client has been disconnected. ${reason}`);
+    const error = `[WhatsApp]: Client has been disconnected. ${reason}`;
+
+    console.info(error);
+    notifySlack(error);
 });
 
 (async () => {
