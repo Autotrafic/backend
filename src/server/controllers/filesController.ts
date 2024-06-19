@@ -44,8 +44,8 @@ export const uploadFiles = async (
         console.error("Error uploading files to Google Drive:", error);
         const finalError = new CustomError(
             500,
-            "Failed to upload file to Google Drive.",
-            "Failed to upload file to Google Drive."
+            "Failed to upload files to Google Drive.",
+            `Failed to upload files to Google Drive. \n ${error}`
         );
         next(finalError);
     }

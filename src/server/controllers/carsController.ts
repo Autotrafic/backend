@@ -17,7 +17,7 @@ export const getAllCars = async (
         const finalError = new CustomError(
             400,
             "Error loading brands.",
-            "Error loading brands."
+            `Error loading all car brands. \n ${error}`
         );
         next(finalError);
     }
@@ -36,7 +36,7 @@ export const getAllBrandNames = async (
         const finalError = new CustomError(
             400,
             "Error loading brands.",
-            "Error loading brands."
+            `Error loading all car brand names. \n ${error}`
         );
         next(finalError);
     }
@@ -65,7 +65,7 @@ export const getModelNamesWithFilters = async (
         const finalError = new CustomError(
             400,
             "Error loading models.",
-            "Error loading models."
+            `Error loading car model names with filters. \n ${error}`
         );
         next(finalError);
     }
@@ -93,7 +93,7 @@ export const getFuelsByModels = async (
         const finalError = new CustomError(
             400,
             "Error loading models.",
-            "Error loading models."
+            `Error loading car fuels by models. \n ${error}`
         );
         next(finalError);
     }
@@ -113,7 +113,7 @@ export const getModelById = async (
         const finalError = new CustomError(
             400,
             "Error finding model.",
-            "Error finding model."
+            `Error loading car model by id. \n ${error}`
         );
         next(finalError);
     }
@@ -138,7 +138,7 @@ export const getItp = async (
         const finalError = new CustomError(
             400,
             "Error calculating ITP value.",
-            "Error calculating ITP value."
+            `Error calculating ITP value. \n ${error}`
         );
         next(finalError);
     }

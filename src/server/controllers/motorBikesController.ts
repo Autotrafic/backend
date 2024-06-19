@@ -15,8 +15,8 @@ export const getAllFuelMotorbikeCCs = async (
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error loading ccs.",
-            "Error loading ccs."
+            "Error loading fuel motorbike ccs.",
+            `Error loading fuel motorbike ccs. \n ${error}`
         );
         next(finalError);
     }
@@ -34,8 +34,8 @@ export const getAllElectricMotorbikeCCs = async (
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error loading ccs.",
-            "Error loading ccs."
+            "Error loading electric motorbike ccs.",
+            `Error loading electric motorbike ccs. \n ${error}`
         );
         next(finalError);
     }

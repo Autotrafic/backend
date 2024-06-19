@@ -18,7 +18,7 @@ export const getOrderById = async (
         const finalError = new CustomError(
             400,
             "Error loading order.",
-            "Error loading order."
+            `Error loading order. \n ${error}`
         );
         next(finalError);
     }
@@ -46,7 +46,7 @@ export const registerOrder = async (
         const finalError = new CustomError(
             400,
             "Error creating order.",
-            "Error creating order."
+            `Error creating order. \n ${error}`
         );
         next(finalError);
     }
@@ -75,7 +75,7 @@ export const updateOrder = async (
         const finalError = new CustomError(
             400,
             "Error updating order.",
-            "Error updating order."
+            `Error updating order. \n ${error}`
         );
         next(finalError);
     }
@@ -110,7 +110,7 @@ export const updateNestedOrder = async (
             const finalError = new CustomError(
                 404,
                 "Order not found.",
-                "Order not found."
+                `Order not found in database.`
             );
             return next(finalError);
         }
@@ -124,7 +124,7 @@ export const updateNestedOrder = async (
         const finalError = new CustomError(
             400,
             "Error updating order.",
-            "Error updating order."
+            `Error updating nested order. \n ${error}`
         );
         next(finalError);
     }

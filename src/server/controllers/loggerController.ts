@@ -78,7 +78,7 @@ export const logActivity = async (
         const finalError = new CustomError(
             400,
             "Error logging activity.",
-            "Error logging activity."
+            `Error logging activity. \n ${error}`
         );
         next(finalError);
     }
@@ -97,7 +97,7 @@ export const getAllUserLogs = async (
         const finalError = new CustomError(
             400,
             "Error loading logs.",
-            "Error loading logs."
+            `Error loading logs. \n ${error}`
         );
         next(finalError);
     }
@@ -118,7 +118,7 @@ export const getSessionLogsFromUserId = async (
         const finalError = new CustomError(
             400,
             "Error loading logs.",
-            "Error loading logs."
+            `Error loading session log from user id. \n ${error}`
         );
         next(finalError);
     }
@@ -139,7 +139,7 @@ export const getActivityLogsFromSessionId = async (
         const finalError = new CustomError(
             400,
             "Error loading logs.",
-            "Error loading logs."
+            `Error loading activity logs from session id. \n ${error}`
         );
         next(finalError);
     }
