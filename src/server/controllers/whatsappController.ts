@@ -22,11 +22,10 @@ export const sendMessage = async (
             res.send("Message sent successfully.");
         }
     } catch (error) {
-        console.log(error);
         const finalError = new CustomError(
             500,
-            "Error loading order.",
-            "Error loading order."
+            "Error sending WhatsApp message.",
+            `Error sending WhatsApp message. \n ${error}`
         );
         next(finalError);
     }

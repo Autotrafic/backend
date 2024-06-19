@@ -32,6 +32,7 @@ export const registerOrder = async (
     try {
         const order = req.body;
         order.generalData = order.vehicleForm;
+        order.orderDate = new Date();
 
         const newOrder = new Order(order);
         await newOrder.save();

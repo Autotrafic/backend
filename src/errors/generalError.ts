@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
 import CustomError from "./CustomError";
+import notifySlack from "../server/services/notifier";
 
 export const notFoundError = (req: Request, res: Response) => {
     res.statusCode = 404;
@@ -33,6 +34,9 @@ export const generalError = (
 
         console.log(chalk.bgRed.white(error.message));
     }
+
+    notifySlack(error.privateMessage);
+
     res.statusCode = errorCode;
     res.json({ error: errorMessage });
 };

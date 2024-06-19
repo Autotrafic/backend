@@ -3,6 +3,8 @@ import { Client, ClientSession, RemoteAuth } from "whatsapp-web.js";
 import { WhatsappSession } from "../../database/models/WhatsappSession/WhatsappSession";
 import MongoStore from "../../types/MongoStore";
 
+const isProduction = false;
+
 async function getSession(): Promise<Record<string, unknown> | null> {
     const session = await WhatsappSession.findOne({ _id: "whatsapp-session" });
     return session ? session.data : null;
@@ -44,22 +46,38 @@ client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
+client.on("remote_session_saved", () => {
+    console.info("[WhatsApp]: Session stored successfully on database");
+});
+
 client.on("ready", () => {
     console.info("[WhatsApp]: Client is ready");
 });
 
 client.on("authenticated", async (session) => {
-    console.info("[WhatsApp]: Authenticated");
+    console.info(`[WhatsApp]: Authenticated. Session -> ${session}`);
     await saveSession(session);
 });
 
+client.on("auth_failure", (message) => {
+    console.info(
+        `[WhatsApp]: Error while trying to restore an existing session. ${message}`
+    );
+});
+
+client.on("disconnected", (reason) => {
+    console.info(`[WhatsApp]: Client has been disconnected. ${reason}`);
+});
+
 (async () => {
-    const session = await getSession();
-    if (session) {
-        (client as any).options.authStrategy.setup(client, { session });
+    if (isProduction) {
+        const session = await getSession();
+        if (session) {
+            (client as any).options.authStrategy.setup(client, { session });
+        }
+        client.initialize();
+        console.info("[WhatsApp]: Authenticating client...\n");
     }
-    client.initialize();
-    console.info("[WhatsApp]: Authenticating client...\n");
 })();
 
 export default client;

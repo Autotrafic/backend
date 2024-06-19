@@ -5,7 +5,7 @@ import { ElectricMotorbikeModel } from "../ElectricMotorbikeModel/ElectricMotorb
 
 export interface IOrder {
     orderId: string;
-    isTest: boolean;
+    isProduction: boolean;
     vehicleForm: GeneralData;
     itp: Itp;
     prices: Prices;
@@ -81,7 +81,8 @@ const ItpSchema = new Schema({
 
 const OrderSchema = new Schema({
     orderId: { type: String, required: true },
-    isTest: { type: Boolean, required: true },
+    orderDate: { type: Date, required: true },
+    isProduction: { type: Boolean, required: true },
     generalData: { type: GeneralDataSchema, required: true },
     itp: { type: ItpSchema, required: true },
     prices: { type: PricesSchema, required: true },

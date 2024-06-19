@@ -27,7 +27,7 @@ export const createPaymentIntent = async (
         const finalError = new CustomError(
             400,
             "Error making payment.",
-            "Error making payment."
+            `Error making stripe payment. \n ${error}`
         );
         next(finalError);
     }
