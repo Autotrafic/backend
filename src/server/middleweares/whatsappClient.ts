@@ -3,7 +3,7 @@ import { Client, ClientSession, RemoteAuth } from "whatsapp-web.js";
 import { WhatsappSession } from "../../database/models/WhatsappSession/WhatsappSession";
 import MongoStore from "../../types/MongoStore";
 
-const isProduction = false;
+const isProduction = process.env.NODE_ENV === 'production';
 
 async function getSession(): Promise<Record<string, unknown> | null> {
     const session = await WhatsappSession.findOne({ _id: "whatsapp-session" });

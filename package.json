@@ -6,8 +6,9 @@
     "scripts": {
         "tsc": "tsc",
         "tsc:dev": "tsc -w",
-        "start": "node .",
-        "start:dev": "nodemon -q",
+        "start": "cross-env NODE_ENV=production node .",
+        "dev": "cross-env NODE_ENV=development node .",
+        "dev:watch": "nodemon -q",
         "build": "npm run tsc",
         "vercel-build": "echo hello"
     },
@@ -19,6 +20,7 @@
         "body-parser": "^1.20.2",
         "chalk": "4.1.2",
         "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
         "express-rate-limit": "^7.2.0",
