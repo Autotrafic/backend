@@ -19,7 +19,7 @@ export const sendMessage = async (
             res.send(`This chat contains previous messages.`);
         } else {
             await client.sendMessage(chatId, message);
-            res.send("Message sent successfully.");
+            res.send(`Message sent successfully. Previous message: ${messages[0]}`);
         }
     } catch (error) {
         const finalError = new CustomError(
