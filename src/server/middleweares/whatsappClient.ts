@@ -38,7 +38,7 @@ const client = new Client({
             "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
     },
     authStrategy: new RemoteAuth({
-        store: store,
+        store,
         backupSyncIntervalMs: 300000,
     }),
 });
@@ -76,12 +76,12 @@ client.on("disconnected", (reason) => {
 
 (async () => {
     if (isProduction) {
-        const session = await getSession();
-        if (session) {
-            (client as any).options.authStrategy.setup(client, { session });
-        }
-        client.initialize();
-        console.info("[WhatsApp]: Authenticating client...\n");
+        // const session = await getSession();
+        // if (session) {
+        //     (client as any).options.authStrategy.setup(client, { session });
+        // }
+        // client.initialize();
+        // console.info("[WhatsApp]: Authenticating client...\n");
     }
 })();
 
