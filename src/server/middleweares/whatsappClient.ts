@@ -62,7 +62,7 @@ client.on("authenticated", async (session) => {
 
 client.on("auth_failure", (message) => {
     const error = `[WhatsApp]: Error while trying to restore an existing session. ${message}`;
-    
+
     console.info(error);
     notifySlack(error);
 });
@@ -76,12 +76,17 @@ client.on("disconnected", (reason) => {
 
 (async () => {
     if (isProduction) {
-        // const session = await getSession();
-        // if (session) {
-        //     (client as any).options.authStrategy.setup(client, { session });
-        // }
-        // client.initialize();
-        // console.info("[WhatsApp]: Authenticating client...\n");
+        try {
+            const session = await getSession();
+            if (session) {
+                (client as any).options.authStrategy.setup(client, { session });
+            }
+            client.initialize();
+            console.info("[WhatsApp]: Authenticating client...\n");
+        } catch (error) {
+            console.info(error);
+            notifySlack(error);
+        }
     }
 })();
 

@@ -8,9 +8,17 @@
         "noEmitOnError": true /* Disable emitting files if any type checking errors are reported. */,
         "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
         "noImplicitAny": true /* Enable error reporting for expressions and declarations with an implied `any` type.. */,
-        "types": ["node", "node-fetch"]
+        "types": ["node", "node-fetch"],
+        "skipLibCheck": true
     },
-    "include": ["src/**/*.ts", "./**/*.ts", "src/types/*.js" ,".eslintrc.js", "jest.config.js", "api/*.ts", "vercel.json"],
+    "include": [
+        "src/**/*.ts",
+        "./**/*.ts",
+        "src/types/*.js",
+        ".eslintrc.js",
+        "jest.config.js",
+        "api/*.ts",
+        "vercel.json"
+    ],
     "exclude": ["node_modules", "dist"]
 }
-
