@@ -17,8 +17,7 @@ const mongoURL = process.env.MONGODB_URL;
         process.exit(1);
     }
 
-    setTimeout(() => {
+    setInterval(() => {
         logMemoryUsage();
-    }, 5000);
+    }, 15000);
 })();
-

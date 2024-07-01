@@ -76,17 +76,17 @@ client.on("disconnected", (reason) => {
 
 (async () => {
     if (isProduction) {
-        // try {
-        //     const session = await getSession();
-        //     if (session) {
-        //         (client as any).options.authStrategy.setup(client, { session });
-        //     }
-        //     client.initialize();
-        //     console.info("[WhatsApp]: Authenticating client...\n");
-        // } catch (error) {
-        //     console.info(error);
-        //     notifySlack(error);
-        // }
+        try {
+            const session = await getSession();
+            if (session) {
+                (client as any).options.authStrategy.setup(client, { session });
+            }
+            client.initialize();
+            console.info("[WhatsApp]: Authenticating client...\n");
+        } catch (error) {
+            console.info(error);
+            notifySlack(error);
+        }
     }
 })();
 

@@ -18,7 +18,8 @@
         ".eslintrc.js",
         "jest.config.js",
         "api/*.ts",
-        "vercel.json"
+        "vercel.json",
+        "src/utils/metrics.ts"
     ],
     "exclude": ["node_modules", "dist"]
 }
