@@ -1,6 +1,7 @@
 import "../src/loadEnvironment";
 import connectDB from "../src/database";
 import startServer from "../src/server/startServer";
+import logMemoryUsage from "../src/utils/metrics";
 
 const http = require("http");
 
@@ -15,5 +16,9 @@ const mongoURL = process.env.MONGODB_URL;
     } catch (error) {
         process.exit(1);
     }
+
+    setTimeout(() => {
+        logMemoryUsage();
+    }, 5000);
 })();
 
