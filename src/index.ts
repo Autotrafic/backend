@@ -1,8 +1,7 @@
-import "../src/loadEnvironment";
-import connectDB from "../src/database";
-import startServer from "../src/server/startServer";
-
-const http = require("http");
+import "./loadEnvironment";
+import connectDB from "./database";
+import startServer from "./server/startServer";
+import logMemoryUsage from "./utils/metrics";
 
 const port = +process.env.PORT || 3100;
 
@@ -15,5 +14,8 @@ const mongoURL = process.env.MONGODB_URL;
     } catch (error) {
         process.exit(1);
     }
-})();
 
+    setTimeout(() => {
+        logMemoryUsage();
+    }, 5000);
+})();
