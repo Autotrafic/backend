@@ -1,9 +1,6 @@
 import "../src/loadEnvironment";
 import connectDB from "../src/database";
 import startServer from "../src/server/startServer";
-import logMemoryUsage from "../src/utils/metrics";
-
-const http = require("http");
 
 const port = +process.env.PORT || 3100;
 

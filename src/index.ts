@@ -1,7 +1,6 @@
 import "./loadEnvironment";
 import connectDB from "./database";
 import startServer from "./server/startServer";
-import logMemoryUsage from "./utils/metrics";
 
 const port = +process.env.PORT || 3100;
 
