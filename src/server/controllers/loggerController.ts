@@ -1,11 +1,9 @@
 import "../../loadEnvironment";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
-import { ActivityLog } from "../../database/models/ActivityLog/ActivityLog";
-import { SessionLog } from "../../database/models/SessionLog/SessionLog";
-import { UserLogs } from "../../database/models/UserLog/UserLog";
-
-const ipdataKey = process.env.IPDATA_API_KEY;
+import { ActivityLog } from "../../database/models/ActivityLog";
+import { SessionLog } from "../../database/models/SessionLog";
+import { UserLogs } from "../../database/models/UserLog";
 
 export const logActivity = async (
     req: Request,

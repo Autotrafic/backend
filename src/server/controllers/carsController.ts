@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { CarModel } from "../../database/models/CarModel/CarModel";
+import { CarModel } from "../../database/models/CarModel";
 import CustomError from "../../errors/CustomError";
-import { BrandModel } from "../../database/models/Brand/Brand";
+import { BrandModel } from "../../database/models/Brand";
 import { calculateItp } from "../../utils/itp";
 
 export const getAllCars = async (
@@ -143,4 +143,3 @@ export const getItp = async (
         next(finalError);
     }
 };
-

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
-import { FuelMotorbikeModel } from "../../database/models/FuelMotorbikeModel/FuelMotorbikeModel";
-import { ElectricMotorbikeModel } from "../../database/models/ElectricMotorbikeModel/ElectricMotorbikeModel";
+import { FuelMotorbikeModel } from "../../database/models/FuelMotorbikeModel";
+import { ElectricMotorbikeModel } from "../../database/models/ElectricMotorbikeModel";
 
 export const getAllFuelMotorbikeCCs = async (
     req: Request,

@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { CarModel } from "../CarModel/CarModel";
+import { CarModel } from "./CarModel";
 
 export interface Brand {
     brandName: string;

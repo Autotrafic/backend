@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Order } from "../../database/models/Order/Order";
+import { Order } from "../../database/models/Order";
 import CustomError from "../../errors/CustomError";
 
 export const getOrderById = async (
@@ -59,7 +59,7 @@ export const updateOrder = async (
 ) => {
     try {
         const { orderId } = req.params;
-        const {body} = req;
+        const { body } = req;
 
         const filter = { orderId };
         const update = { ...body };
@@ -88,7 +88,7 @@ export const updateNestedOrder = async (
 ) => {
     try {
         const { orderId } = req.params;
-        const {body} = req;
+        const { body } = req;
 
         const filter = { orderId };
 
@@ -129,7 +129,6 @@ export const updateNestedOrder = async (
         next(finalError);
     }
 };
-
 
 export const updateInvoiceData = async (
     req: Request,

@@ -1,5 +1,5 @@
 import { Schema, Document, model } from "mongoose";
-import { ISessionLog } from "../SessionLog/SessionLog";
+import { ISessionLog } from "./SessionLog";
 
 export interface IUserLogs extends Document {
     userId: string;

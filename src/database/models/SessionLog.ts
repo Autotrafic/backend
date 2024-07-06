@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IActivityLog } from "../ActivityLog/ActivityLog";
+import { IActivityLog } from "./ActivityLog";
 
 export interface ISessionLog extends Document {
     sessionId: string;

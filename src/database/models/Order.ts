@@ -1,7 +1,6 @@
-import mongoose, { ObjectId, Schema, model } from "mongoose";
-import { CarModel } from "../CarModel/CarModel";
-import { FuelMotorbikeModel } from "../FuelMotorbikeModel/FuelMotorbikeModel";
-import { ElectricMotorbikeModel } from "../ElectricMotorbikeModel/ElectricMotorbikeModel";
+import { Schema, model } from "mongoose";
+import { CarModel } from "./CarModel";
+import { FuelMotorbikeModel } from "./FuelMotorbikeModel";
 
 export interface IOrder {
     orderId: string;

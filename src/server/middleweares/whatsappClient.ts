@@ -1,6 +1,6 @@
 import qrcode from "qrcode-terminal";
 import { Client, ClientSession, RemoteAuth } from "whatsapp-web.js";
-import { WhatsappSession } from "../../database/models/WhatsappSession/WhatsappSession";
+import { WhatsappSession } from "../../database/models/WhatsappSession";
 import MongoStore from "../../types/MongoStore";
 import notifySlack from "../services/notifier";
 
