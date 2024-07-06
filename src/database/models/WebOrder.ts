@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { CarModel } from "./CarModel";
 import { FuelMotorbikeModel } from "./FuelMotorbikeModel";
 
-export interface IOrder {
+export interface IWebOrder {
     orderId: string;
     isProduction: boolean;
     vehicleForm: GeneralData;
@@ -89,4 +89,4 @@ const OrderSchema = new Schema({
     billData: { type: BillDataSchema, required: true },
 });
 
-export const Order = model<IOrder>("Order", OrderSchema, "orders");
+export const WebOrder = model<IWebOrder>("Order", OrderSchema, "orders");

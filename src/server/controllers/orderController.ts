@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Order } from "../../database/models/Order";
+import { WebOrder } from "../../database/models/WebOrder";
 import CustomError from "../../errors/CustomError";
 
 export const getOrderById = async (
@@ -10,7 +10,7 @@ export const getOrderById = async (
     try {
         const { orderId } = req.params;
 
-        const order = await Order.findOne({ orderId });
+        const order = await WebOrder.findOne({ orderId });
 
         res.status(200).json(order);
     } catch (error) {
@@ -34,7 +34,7 @@ export const registerOrder = async (
         order.generalData = order.vehicleForm;
         order.orderDate = new Date();
 
-        const newOrder = new Order(order);
+        const newOrder = new WebOrder(order);
         await newOrder.save();
 
         res.status(200).json({
@@ -64,7 +64,7 @@ export const updateOrder = async (
         const filter = { orderId };
         const update = { ...body };
 
-        await Order.findOneAndUpdate(filter, update);
+        await WebOrder.findOneAndUpdate(filter, update);
 
         res.status(200).json({
             success: true,
@@ -100,7 +100,7 @@ export const updateNestedOrder = async (
                 body[propertyOfUpdates][key];
         }
 
-        const updatedOrder = await Order.findOneAndUpdate(filter, update, {
+        const updatedOrder = await WebOrder.findOneAndUpdate(filter, update, {
             new: true,
             runValidators: true,
             upsert: true,
@@ -138,7 +138,7 @@ export const updateInvoiceData = async (
     try {
         const { orderData, clientData } = req.body;
 
-        const order = await Order.findOne({ orderId: orderData });
+        const order = await WebOrder.findOne({ orderId: orderData });
 
         res.status(200).json(order);
     } catch (error) {
