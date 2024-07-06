@@ -59,7 +59,7 @@ export const updateOrder = async (
 ) => {
     try {
         const { orderId } = req.params;
-        const body = req.body;
+        const {body} = req;
 
         const filter = { orderId };
         const update = { ...body };
@@ -88,7 +88,7 @@ export const updateNestedOrder = async (
 ) => {
     try {
         const { orderId } = req.params;
-        const body = req.body;
+        const {body} = req;
 
         const filter = { orderId };
 
@@ -125,6 +125,29 @@ export const updateNestedOrder = async (
             400,
             "Error updating order.",
             `Error updating nested order. \n ${error}`
+        );
+        next(finalError);
+    }
+};
+
+
+export const updateInvoiceData = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { orderData, clientData } = req.body;
+
+        const order = await Order.findOne({ orderId: orderData });
+
+        res.status(200).json(order);
+    } catch (error) {
+        console.log(error);
+        const finalError = new CustomError(
+            400,
+            "Error loading order.",
+            `Error loading order. \n ${error}`
         );
         next(finalError);
     }

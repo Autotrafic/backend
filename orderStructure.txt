@@ -1,0 +1,65 @@
+PEDIDO:
+{
+  "comunidad_autonoma": "La Rioja",
+  "prioridad": "Normal",
+  "estado": "Pendiente Pago ITP",
+  "tipo": "Transferencia",
+  "fecha_inicio": "2024-07-04T00:00:00.000Z",
+  "factura": {},
+  "matricula": "O0505CG",
+  "documentos": "https://drive.google.com/drive/folders/1R25WG8q8WeTV48VJFsRPF5vaTLhiMhNY",
+  "direccion_envio": null,
+  "codigo_envio": null,
+  "cet": null,
+  "nuevo_contrato": null,
+  "notas": null,
+  "itp_pagado": 50,
+  "total_facturado": 110,
+  "cliente": "66877d241ef0d5f1ff85c743",
+  "createdAt": "2024-07-05T04:57:12.960Z",
+  "updatedAt": "2024-07-05T04:57:12.960Z",
+  "metadata": {
+    "typeId": "6673ee9c18af6fe586f6dfc3",
+    "lastUsersActions": {}
+  },
+  "_id": "66877d281ef0d5f1ff85c745"
+}
+
+CLIENTE:
+{
+    "_id": "66877d241ef0d5f1ff85c743",
+    "tipo": "Particular",
+    "nombre_o_razon_social": "Sergio",
+    "primer_apellido": "Do Santos",
+    "segundo_apellido": "Santos",
+    "nif": "72818165G",
+    "telefono": "643495882",
+    "createdAt": "2024-07-05T04:57:08.869Z",
+    "updatedAt": "2024-07-05T04:57:08.869Z",
+    "id": "66877d241ef0d5f1ff85c743"
+  }
+
+invoiceNumber
+invoiceDate
+
+client.fullName
+client.nif
+client.email
+client.phoneNumber
+
+services 
+[
+	{
+	description
+	quantity
+	priceWithoutIVA
+	priceWithIVA
+	totalPrice
+	}
+]
+
+discount
+subtotal
+
+totalIVA
+grandTotal
