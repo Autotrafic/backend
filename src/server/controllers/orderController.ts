@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { WebOrder } from "../../database/models/WebOrder";
 import CustomError from "../../errors/CustomError";
+import parseOrderFromPrimitive from "../parsers/order";
+import parseClientFromPrimitive from "../parsers/client";
+import parseInvoiceData from "../parsers/invoice";
 
 export const getOrderById = async (
     req: Request,
@@ -130,7 +133,7 @@ export const updateNestedOrder = async (
     }
 };
 
-export const updateInvoiceData = async (
+export const createInvoiceData = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -138,15 +141,18 @@ export const updateInvoiceData = async (
     try {
         const { orderData, clientData } = req.body;
 
-        const order = await WebOrder.findOne({ orderId: orderData });
+        const order = parseOrderFromPrimitive(orderData);
+        const client = parseClientFromPrimitive(clientData);
 
-        res.status(200).json(order);
+        const invoiceData = parseInvoiceData(order, client);
+
+        res.status(200).json({...invoiceData});
     } catch (error) {
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error loading order.",
-            `Error loading order. \n ${error}`
+            "Error creating invoice data.",
+            `Error creating invoice data. \n ${error}`
         );
         next(finalError);
     }
