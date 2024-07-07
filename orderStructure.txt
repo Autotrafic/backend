@@ -42,7 +42,9 @@ CLIENTE:
 invoiceNumber
 invoiceDate
 
-client.fullName
+client.name
+client.firstSurname
+client.secondSurname
 client.nif
 client.email
 client.phoneNumber

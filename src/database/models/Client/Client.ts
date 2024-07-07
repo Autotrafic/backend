@@ -6,6 +6,7 @@ export default interface Client {
     secondSurname: string;
     nif: string;
     phoneNumber: string;
+    email: string;
     createdAt: string;
     updatedAt: string;
     id: string;

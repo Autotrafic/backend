@@ -1,7 +1,9 @@
 import Client from "../../database/models/Client/Client";
 import ClientPrimitive from "../../database/models/Client/ClientPrimitive";
 
-export default function parseClientFromPrimitive(client: ClientPrimitive): Client {
+export default function parseClientFromPrimitive(
+    client: ClientPrimitive
+): Client {
     return {
         // eslint-disable-next-line no-underscore-dangle
         _id: client._id,
@@ -12,6 +14,7 @@ export default function parseClientFromPrimitive(client: ClientPrimitive): Clien
         secondSurname: client.segundo_apellido,
         nif: client.nif,
         phoneNumber: client.telefono,
+        email: client.email,
         createdAt: client.createdAt,
         updatedAt: client.updatedAt,
     };

@@ -18,18 +18,18 @@ export const logActivity = async (
             req.connection.remoteAddress;
 
         const newActivityLog = new ActivityLog({
-            message: message,
-            sessionId: sessionId,
+            message,
+            sessionId,
             userId: userIP,
             timestamp: new Date(),
         });
 
         await newActivityLog.save();
 
-        let sessionLog = await SessionLog.findOne({ sessionId: sessionId });
+        let sessionLog = await SessionLog.findOne({ sessionId });
         if (!sessionLog) {
             sessionLog = new SessionLog({
-                sessionId: sessionId,
+                sessionId,
                 userId: userIP,
                 timestamp: newActivityLog.timestamp,
                 activityLogs: [newActivityLog],
@@ -109,7 +109,7 @@ export const getSessionLogsFromUserId = async (
     try {
         const { userId } = req.params;
 
-        const sessionLogs = await SessionLog.find({ userId: userId });
+        const sessionLogs = await SessionLog.find({ userId });
         res.status(200).json(sessionLogs);
     } catch (error) {
         console.log(error);
@@ -130,7 +130,7 @@ export const getActivityLogsFromSessionId = async (
     try {
         const { sessionId } = req.params;
 
-        const activityLogs = await ActivityLog.find({ sessionId: sessionId });
+        const activityLogs = await ActivityLog.find({ sessionId });
         res.status(200).json(activityLogs);
     } catch (error) {
         console.log(error);

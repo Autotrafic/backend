@@ -6,6 +6,7 @@ export default interface ClientPrimitive {
     segundo_apellido: string;
     nif: string;
     telefono: string;
+    email: string;
     createdAt: string;
     updatedAt: string;
     id: string;

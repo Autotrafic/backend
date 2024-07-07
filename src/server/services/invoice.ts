@@ -1,57 +1,49 @@
+import { InvoiceService } from "../../database/models/Invoice";
+import { IOrder } from "../../database/models/Order/Order";
 import { SHIPMENT_COST, TAXES } from "../../utils/constants";
 
-interface CurrentInvoiceData {
-    tipo: string;
-    itp_pagado: number;
-    total_facturado: number;
-}
-
 export function createInvoiceServicesList(
-    currentInvoiceData: CurrentInvoiceData
-) {
-    const {
-        tipo,
-        itp_pagado: itpValue,
-        total_facturado: totalInvoiced,
-    } = currentInvoiceData;
+    currentInvoiceData: IOrder
+): InvoiceService[] {
+    const { type, itpPaid, totalInvoiced } = currentInvoiceData;
 
     const shipmentCost = SHIPMENT_COST;
     let taxValue: number;
 
-    if (tipo === "Transferencia") {
+    if (type === "Transferencia") {
         taxValue = TAXES.TRANSFERENCE;
-    } else if (tipo === "Transferencia ciclomotor") {
+    } else if (type === "Transferencia ciclomotor") {
         taxValue = TAXES.TRANSFERENCE_CICL;
-    } else if (tipo === "Duplicado permiso") {
+    } else if (type === "Duplicado permiso") {
         taxValue = TAXES.PERMIT_DUPLICATE;
-    } else if (tipo === "Distintivo") {
+    } else if (type === "Distintivo") {
         taxValue = 0;
-    } else if (tipo === "Notificacion") {
+    } else if (type === "Notificacion") {
         taxValue = TAXES.NOTIFICATION;
     }
 
     const taxDGT = {
         description: "Tasa DGT",
-        quantity: "1",
-        priceWithoutIVA: "-",
-        priceWithIVA: "-",
-        totalPrice: `${taxValue}`,
+        quantity: 1,
+        priceWithoutIVA: "-" as "-",
+        priceWithIVA: "-" as "-",
+        totalPrice: taxValue,
     };
 
-    const taxITP = itpValue && {
+    const taxITP = itpPaid && {
         description: "Tasa ITP",
-        quantity: "1",
-        priceWithoutIVA: "-",
-        priceWithIVA: "-",
-        totalPrice: `${itpValue}`,
+        quantity: 1,
+        priceWithoutIVA: "-" as "-",
+        priceWithIVA: "-" as "-",
+        totalPrice: itpPaid,
     };
 
     const shipment = {
         description: "Envío",
-        quantity: "1",
-        priceWithoutIVA: "-",
-        priceWithIVA: "-",
-        totalPrice: `${shipmentCost}`,
+        quantity: 1,
+        priceWithoutIVA: "-" as "-",
+        priceWithIVA: "-" as "-",
+        totalPrice: shipmentCost,
     };
 
     const totalProfits =
@@ -62,12 +54,31 @@ export function createInvoiceServicesList(
 
     const profits = {
         description: "Honorarios",
-        quantity: "1",
-        priceWithoutIVA: `${profitsWithoutIVA}`,
-        priceWithIVA: `${totalProfits}`,
+        quantity: 1,
+        priceWithoutIVA: profitsWithoutIVA,
+        priceWithIVA: totalProfits,
+        totalPrice: totalProfits,
     };
 
     return [taxDGT, taxITP, shipment, profits];
 }
 
-// export function parseInvoiceData(orderData, clientData) {}
+export function calculateInvoiceTotals(services: InvoiceService[]) {
+    const totalIVA = services.reduce(
+        (total, service) =>
+            typeof service.priceWithIVA === "number"
+                ? total + service.priceWithIVA
+                : total,
+        0
+    );
+
+    const grandTotal = services.reduce(
+        (total, service) =>
+            typeof service.totalPrice === "number"
+                ? total + service.totalPrice
+                : total,
+        0
+    );
+
+    return { totalIVA, grandTotal };
+}
