@@ -1,6 +1,6 @@
 export default interface Invoice {
-    invoiceNumber?: number;
-    invoiceDate?: string;
+    invoiceNumber: string;
+    invoiceDate: string;
     client: InvoiceClient;
     services: InvoiceService[];
     summary: InvoiceSummary;

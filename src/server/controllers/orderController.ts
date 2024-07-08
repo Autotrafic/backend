@@ -139,12 +139,12 @@ export const createInvoiceData = async (
     next: NextFunction
 ) => {
     try {
-        const { orderData, clientData } = req.body;
+        const { orderData, clientData, currentInvoiceNumber } = req.body;
 
         const order = parseOrderFromPrimitive(orderData);
         const client = parseClientFromPrimitive(clientData);
 
-        const invoiceData = parseInvoiceData(order, client);
+        const invoiceData = parseInvoiceData(order, client, currentInvoiceNumber);
 
         res.status(200).json({...invoiceData});
     } catch (error) {

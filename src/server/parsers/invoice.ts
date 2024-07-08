@@ -1,15 +1,18 @@
 import Client from "../../database/models/Client/Client";
 import Invoice from "../../database/models/Invoice";
 import { IOrder } from "../../database/models/Order/Order";
+import { createRedeableDate } from "../../utils/funcs";
 import {
     createInvoiceServicesList,
     calculateInvoiceTotals,
     roundInvoiceServicesPrices,
+    updateInvoiceNumber,
 } from "../services/invoice";
 
 export default function parseInvoiceData(
     order: IOrder,
-    client: Client
+    client: Client,
+    currentInvoiceNumber: string
 ): Invoice {
     const internServicesList = createInvoiceServicesList(order);
 
@@ -25,6 +28,9 @@ export default function parseInvoiceData(
         phoneNumber: client.phoneNumber,
     };
 
+    const invoiceNumber: string = updateInvoiceNumber(+currentInvoiceNumber).toString();
+    const invoiceDate = createRedeableDate(order.startDate);
+
     return {
         client: invoiceClient,
         services: servicesList,
@@ -32,5 +38,7 @@ export default function parseInvoiceData(
             totalIVA: totals.totalIVA.toFixed(2),
             grandTotal: totals.grandTotal.toFixed(2),
         },
+        invoiceNumber,
+        invoiceDate
     };
 }

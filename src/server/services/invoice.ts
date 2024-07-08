@@ -48,11 +48,9 @@ export function createInvoiceServicesList(
 
     const totalProfits =
         totalInvoiced -
-        +(
-            +taxDGT.totalPrice +
-            (taxITP ? +taxITP.totalPrice : 0) +
-            shipment.totalPrice
-        );
+        (taxDGT.totalPrice +
+            (taxITP ? taxITP.totalPrice : 0) +
+            shipment.totalPrice);
 
     const profitsWithoutIVA = +totalProfits / 1.21;
 
@@ -112,4 +110,8 @@ export function calculateInvoiceTotals(services: InternInvoiceService[]) {
     );
 
     return { totalIVA, grandTotal };
+}
+
+export function updateInvoiceNumber(currentInvoiceNumber: number): number {
+    return currentInvoiceNumber + 1;
 }
