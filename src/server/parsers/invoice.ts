@@ -4,14 +4,17 @@ import { IOrder } from "../../database/models/Order/Order";
 import {
     createInvoiceServicesList,
     calculateInvoiceTotals,
+    roundInvoiceServicesPrices,
 } from "../services/invoice";
 
 export default function parseInvoiceData(
     order: IOrder,
     client: Client
 ): Invoice {
-    const servicesList = createInvoiceServicesList(order);
-    const totals = calculateInvoiceTotals(servicesList);
+    const internServicesList = createInvoiceServicesList(order);
+
+    const servicesList = roundInvoiceServicesPrices(internServicesList);
+    const totals = calculateInvoiceTotals(internServicesList);
 
     const invoiceClient = {
         name: client.name,
@@ -26,8 +29,8 @@ export default function parseInvoiceData(
         client: invoiceClient,
         services: servicesList,
         summary: {
-            totalIVA: totals.totalIVA,
-            grandTotal: totals.grandTotal,
+            totalIVA: totals.totalIVA.toFixed(2),
+            grandTotal: totals.grandTotal.toFixed(2),
         },
     };
 }

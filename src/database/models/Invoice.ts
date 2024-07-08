@@ -18,14 +18,22 @@ interface InvoiceClient {
 export interface InvoiceService {
     description: string;
     quantity: number;
+    priceWithoutIVA: string;
+    priceWithIVA: string;
+    totalPrice: string;
+}
+
+export interface InternInvoiceService {
+    description: string;
+    quantity: number;
     priceWithoutIVA: number | "-";
     priceWithIVA: number | "-";
     totalPrice: number;
 }
 
 interface InvoiceSummary {
-    discount?: number;
-    subtotal?: number;
-    totalIVA: number;
-    grandTotal: number;
+    discount?: string;
+    subtotal?: string;
+    totalIVA: string;
+    grandTotal: string;
 }

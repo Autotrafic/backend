@@ -1,10 +1,10 @@
-import { InvoiceService } from "../../database/models/Invoice";
+import { InternInvoiceService } from "../../database/models/Invoice";
 import { IOrder } from "../../database/models/Order/Order";
 import { SHIPMENT_COST, TAXES } from "../../utils/constants";
 
 export function createInvoiceServicesList(
     currentInvoiceData: IOrder
-): InvoiceService[] {
+): InternInvoiceService[] {
     const { type, itpPaid, totalInvoiced } = currentInvoiceData;
 
     const shipmentCost = SHIPMENT_COST;
@@ -48,7 +48,11 @@ export function createInvoiceServicesList(
 
     const totalProfits =
         totalInvoiced -
-        +(+taxDGT.totalPrice + (taxITP ? +taxITP.totalPrice : 0) + shipment.totalPrice);
+        +(
+            +taxDGT.totalPrice +
+            (taxITP ? +taxITP.totalPrice : 0) +
+            shipment.totalPrice
+        );
 
     const profitsWithoutIVA = +totalProfits / 1.21;
 
@@ -60,17 +64,44 @@ export function createInvoiceServicesList(
         totalPrice: totalProfits,
     };
 
-    return [taxDGT, taxITP, shipment, profits].filter(item => item !== null);
+    return [taxDGT, taxITP, shipment, profits].filter((item) => item !== null);
 }
 
-export function calculateInvoiceTotals(services: InvoiceService[]) {
-    const totalIVA = services.reduce(
+export function roundInvoiceServicesPrices(services: InternInvoiceService[]) {
+    const roundedServices = services.map((service) => ({
+        ...service,
+        priceWithoutIVA:
+            typeof service.priceWithoutIVA === "number"
+                ? service.priceWithoutIVA.toFixed(2)
+                : service.priceWithoutIVA,
+        priceWithIVA:
+            typeof service.priceWithIVA === "number"
+                ? service.priceWithIVA.toFixed(2)
+                : service.priceWithIVA,
+        totalPrice: service.totalPrice.toFixed(2),
+    }));
+
+    return roundedServices;
+}
+
+export function calculateInvoiceTotals(services: InternInvoiceService[]) {
+    const totalPriceWithIVA = services.reduce(
         (total, service) =>
             typeof service.priceWithIVA === "number"
                 ? total + service.priceWithIVA
                 : total,
         0
     );
+
+    const totalPriceWithoutIVA = services.reduce(
+        (total, service) =>
+            typeof service.priceWithoutIVA === "number"
+                ? total + service.priceWithoutIVA
+                : total,
+        0
+    );
+
+    const totalIVA = totalPriceWithIVA - totalPriceWithoutIVA;
 
     const grandTotal = services.reduce(
         (total, service) =>
