@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import client from "../middleweares/whatsappClient";
 import CustomError from "../../errors/CustomError";
 
-export const sendMessage = async (
+export default async function sendMessage(
     req: Request,
     res: Response,
     next: NextFunction
-): Promise<void> => {
+): Promise<void> {
     const { phoneNumber, message } = req.body;
 
-    const chatId = phoneNumber + "@c.us";
+    const chatId = `${phoneNumber}@c.us`;
 
     try {
         const chat = await client.getChatById(chatId);

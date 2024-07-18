@@ -5,11 +5,11 @@ import { createStripePaymentIntent } from "../services/stripe";
 const CURRENCY = "eur";
 const AMOUNT = 11900;
 
-export const createPaymentIntent = async (
+export default async function createPaymentIntent(
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+) {
     const { amount = AMOUNT } = req.body;
 
     try {

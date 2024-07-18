@@ -46,20 +46,22 @@ export function createInvoiceServicesList(
         totalPrice: shipmentCost,
     };
 
-    const totalProfits =
+    const totalProfitsWithIVA =
         totalInvoiced -
-        (taxDGT.totalPrice +
-            (taxITP ? taxITP.totalPrice : 0) +
-            shipment.totalPrice);
+        taxDGT.totalPrice -
+        (taxITP ? taxITP.totalPrice : 0) -
+        shipment.totalPrice;
 
-    const profitsWithoutIVA = +totalProfits / 1.21;
+    const IVAPrice = totalProfitsWithIVA * 0.21;
+
+    const profitsWithoutIVA = totalProfitsWithIVA - IVAPrice;
 
     const profits = {
         description: "Honorarios",
         quantity: 1,
         priceWithoutIVA: profitsWithoutIVA,
-        priceWithIVA: totalProfits,
-        totalPrice: totalProfits,
+        priceWithIVA: totalProfitsWithIVA,
+        totalPrice: totalProfitsWithIVA,
     };
 
     return [taxDGT, taxITP, shipment, profits].filter((item) => item !== null);
