@@ -26,8 +26,9 @@ export default function parseInvoiceData(
         firstSurname: client.firstSurname,
         secondSurname: client.secondSurname,
         nif: client.nif,
-        email: client.email,
+        address: order.shipmentAddress,
         phoneNumber: client.phoneNumber,
+        email: client.email,
     };
 
     return {
