@@ -2,7 +2,9 @@ import { InternInvoiceService } from "../../database/models/Invoice";
 import { IOrder } from "../../database/models/Order/Order";
 import { SHIPMENT_COST, TAXES } from "../../utils/constants";
 
-export function createInvoiceServicesList(
+const ORDER_PROFITS = 15;
+
+export function createInvoiceServicesListFromTotalInvoiced(
     currentInvoiceData: IOrder
 ): InternInvoiceService[] {
     const { type, itpPaid, totalInvoiced } = currentInvoiceData;
@@ -55,6 +57,65 @@ export function createInvoiceServicesList(
     const IVAPrice = totalProfitsWithIVA * 0.21;
 
     const profitsWithoutIVA = totalProfitsWithIVA - IVAPrice;
+
+    const profits = {
+        description: "Honorarios",
+        quantity: 1,
+        priceWithoutIVA: profitsWithoutIVA,
+        priceWithIVA: totalProfitsWithIVA,
+        totalPrice: totalProfitsWithIVA,
+    };
+
+    return [taxDGT, taxITP, shipment, profits].filter((item) => item !== null);
+}
+
+export function createInvoiceServicesListFromProfits(
+    currentInvoiceData: IOrder
+): InternInvoiceService[] {
+    const { type, itpPaid } = currentInvoiceData;
+
+    const shipmentCost = SHIPMENT_COST;
+    let taxValue: number;
+
+    if (type === "Transferencia") {
+        taxValue = TAXES.TRANSFERENCE;
+    } else if (type === "Transferencia ciclomotor") {
+        taxValue = TAXES.TRANSFERENCE_CICL;
+    } else if (type === "Duplicado permiso") {
+        taxValue = TAXES.PERMIT_DUPLICATE;
+    } else if (type === "Distintivo") {
+        taxValue = 0;
+    } else if (type === "Notificacion") {
+        taxValue = TAXES.NOTIFICATION;
+    }
+
+    const taxDGT = {
+        description: "Tasa DGT",
+        quantity: 1,
+        priceWithoutIVA: "-" as "-",
+        priceWithIVA: "-" as "-",
+        totalPrice: taxValue,
+    };
+
+    const taxITP = itpPaid && {
+        description: "Tasa ITP",
+        quantity: 1,
+        priceWithoutIVA: "-" as "-",
+        priceWithIVA: "-" as "-",
+        totalPrice: itpPaid,
+    };
+
+    const shipment = {
+        description: "Envío",
+        quantity: 1,
+        priceWithoutIVA: "-" as "-",
+        priceWithIVA: "-" as "-",
+        totalPrice: shipmentCost,
+    };
+
+    const totalProfitsWithIVA = ORDER_PROFITS;
+
+    const profitsWithoutIVA = (totalProfitsWithIVA * 100) / 121;
 
     const profits = {
         description: "Honorarios",

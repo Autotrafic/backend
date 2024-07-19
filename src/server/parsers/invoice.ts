@@ -2,9 +2,10 @@ import Client from "../../database/models/Client/Client";
 import Invoice from "../../database/models/Invoice";
 import { IOrder } from "../../database/models/Order/Order";
 import {
-    createInvoiceServicesList,
+    createInvoiceServicesListFromTotalInvoiced,
     calculateInvoiceTotals,
     roundInvoiceServicesPrices,
+    createInvoiceServicesListFromProfits,
 } from "../services/invoice";
 import parseDatetimeToSpanish from "./dates";
 
@@ -13,10 +14,11 @@ export default function parseInvoiceData(
     client: Client,
     upcomingInvoiceNumber: number
 ): Invoice {
-    const internServicesList = createInvoiceServicesList(order);
+    const servicesList = createInvoiceServicesListFromProfits(order);
 
-    const servicesList = roundInvoiceServicesPrices(internServicesList);
-    const totals = calculateInvoiceTotals(internServicesList);
+    const servicesListWithRoundedPrices =
+        roundInvoiceServicesPrices(servicesList);
+    const totals = calculateInvoiceTotals(servicesList);
 
     const invoiceDate = parseDatetimeToSpanish(order.startDate);
     const invoiceNumber = `${upcomingInvoiceNumber}`;
@@ -33,7 +35,7 @@ export default function parseInvoiceData(
 
     return {
         client: invoiceClient,
-        services: servicesList,
+        services: servicesListWithRoundedPrices,
         summary: {
             totalIVA: totals.totalIVA.toFixed(2),
             grandTotal: totals.grandTotal.toFixed(2),
