@@ -22,7 +22,7 @@ export default async function sendMessage(
     } catch (error) {
         const finalError = new CustomError(
             500,
-            "Error sending WhatsApp message.",
+            `Error sending WhatsApp message. \n ${error}`,
             `Error sending WhatsApp message. \n ${error}`
         );
         next(finalError);
