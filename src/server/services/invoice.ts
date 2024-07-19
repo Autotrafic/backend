@@ -81,6 +81,8 @@ export function createInvoiceServicesListFromProfits(
         taxValue = TAXES.TRANSFERENCE;
     } else if (type === "Transferencia ciclomotor") {
         taxValue = TAXES.TRANSFERENCE_CICL;
+    } else if (type === "Batecom") {
+        taxValue = TAXES.BATECOM;
     } else if (type === "Duplicado permiso") {
         taxValue = TAXES.PERMIT_DUPLICATE;
     } else if (type === "Distintivo") {
@@ -88,6 +90,8 @@ export function createInvoiceServicesListFromProfits(
     } else if (type === "Notificacion") {
         taxValue = TAXES.NOTIFICATION;
     }
+
+    if (!taxValue) throw new Error("The order type is not valid");
 
     const taxDGT = {
         description: "Tasa DGT",

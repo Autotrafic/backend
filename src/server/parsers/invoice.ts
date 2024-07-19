@@ -2,7 +2,6 @@ import Client from "../../database/models/Client/Client";
 import Invoice from "../../database/models/Invoice";
 import { IOrder } from "../../database/models/Order/Order";
 import {
-    createInvoiceServicesListFromTotalInvoiced,
     calculateInvoiceTotals,
     roundInvoiceServicesPrices,
     createInvoiceServicesListFromProfits,
