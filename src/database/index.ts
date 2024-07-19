@@ -37,7 +37,6 @@ const connectDB = (mongoUrl: string) =>
                     )
                 );
                 reject(error);
-                return;
             }
         }
     });

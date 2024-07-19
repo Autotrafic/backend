@@ -13,7 +13,7 @@
         "vercel-build": "echo hello"
     },
     "keywords": [],
-    "author": "",
+    "author": "AutoTrafic Gestoria",
     "license": "ISC",
     "dependencies": {
         "axios": "^1.7.2",
