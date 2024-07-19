@@ -1,6 +1,9 @@
+import "../../loadEnvironment";
 import { Request, Response, NextFunction } from "express";
-import client from "../middleweares/whatsappClient";
+import axios from "axios";
 import CustomError from "../../errors/CustomError";
+
+const whatsAppEndpoint = `${process.env.AUTOTRAFIC_WHATSAPP}/messages/first-touch-whtspp`;
 
 export default async function sendMessage(
     req: Request,
@@ -9,18 +12,13 @@ export default async function sendMessage(
 ): Promise<void> {
     const { phoneNumber, message } = req.body;
 
-    const chatId = `${phoneNumber}@c.us`;
-
     try {
-        const chat = await client.getChatById(chatId);
+        const response = await axios.post(whatsAppEndpoint, {
+            phoneNumber,
+            message,
+        });
 
-        const messages = await chat.fetchMessages({ limit: 1 });
-        if (messages.length > 0) {
-            res.send(`This chat contains previous messages.`);
-        } else {
-            await client.sendMessage(chatId, message);
-            res.send(`Message sent successfully. Previous message: ${messages[0]}`);
-        }
+        res.send(response.data);
     } catch (error) {
         const finalError = new CustomError(
             500,
@@ -29,4 +27,4 @@ export default async function sendMessage(
         );
         next(finalError);
     }
-};
+}

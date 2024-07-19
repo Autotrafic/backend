@@ -6,7 +6,7 @@
     "scripts": {
         "tsc": "tsc",
         "tsc:dev": "tsc -w",
-        "start:prod": "cross-env NODE_ENV=production node .",
+        "start": "cross-env NODE_ENV=production node .",
         "dev": "cross-env NODE_ENV=development node .",
         "dev:watch": "nodemon -q",
         "build": "npm run tsc",
