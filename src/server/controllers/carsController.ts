@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CarModel } from "../../database/models/CarModel";
 import CustomError from "../../errors/CustomError";
 import { BrandModel } from "../../database/models/Brand";
-import { calculateItp } from "../../utils/itp";
+import calculateItp from "../../utils/itp";
 
 export const getAllCars = async (
     req: Request,

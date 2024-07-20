@@ -10,7 +10,7 @@ interface OrderData {
     precioVenta: number;
 }
 
-export function calculateItp(orderData: OrderData) {
+export default function calculateItp(orderData: OrderData) {
     orderData.precioVenta = 0;
 
     if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
@@ -410,13 +410,7 @@ export function calculateItp(orderData: OrderData) {
         ITP = prevItpValue;
     } else if (prevItpValue < 1 && orderData.precioVenta < valorFiscal) {
         ITP = valorFiscal * prevItpValue;
-        console.log("Calculated with Valor Fiscal");
     } else ITP = orderData.precioVenta * prevItpValue;
-    console.log("Calculated with Precio Venta");
-
-    console.log(
-        `Valor fiscal: ${valorFiscal}. Deprecicacion: ${valorDepreciacion}. Años dif.: ${yearsDifference}. Prev ITP value: ${prevItpValue}`
-    );
 
     const comunidAutonoma = orderData.comunidadAutonoma;
 

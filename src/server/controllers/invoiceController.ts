@@ -11,13 +11,19 @@ export async function createInvoiceData(
     next: NextFunction
 ) {
     try {
-        const { orderData, clientData, currentInvoiceNumber } = req.body;
+        const { orderData, clientData, currentInvoiceNumber, isForClient } =
+            req.body;
 
         const order = parseOrderFromPrimitive(orderData);
         const client = parseClientFromPrimitive(clientData);
 
         const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
-        const invoiceData = parseInvoiceData(order, client, invoiceNumber);
+        const invoiceData = parseInvoiceData(
+            order,
+            client,
+            invoiceNumber,
+            isForClient
+        );
 
         res.status(200).json(invoiceData);
     } catch (error) {
@@ -29,7 +35,7 @@ export async function createInvoiceData(
         );
         next(finalError);
     }
-};
+}
 
 export async function updateInvoiceData(
     req: Request,
@@ -37,12 +43,18 @@ export async function updateInvoiceData(
     next: NextFunction
 ) {
     try {
-        const { orderData, clientData, currentInvoiceNumber } = req.body;
+        const { orderData, clientData, currentInvoiceNumber, isForClient } =
+            req.body;
 
         const order = parseOrderFromPrimitive(orderData);
         const client = parseClientFromPrimitive(clientData);
 
-        const invoiceData = parseInvoiceData(order, client, currentInvoiceNumber);
+        const invoiceData = parseInvoiceData(
+            order,
+            client,
+            currentInvoiceNumber,
+            isForClient
+        );
 
         res.status(200).json(invoiceData);
     } catch (error) {
@@ -54,4 +66,4 @@ export async function updateInvoiceData(
         );
         next(finalError);
     }
-};
+}

@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import "../../loadEnvironment";
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 const stripeKey = isProduction
     ? process.env.STRIPE_SECRET_KEY
@@ -15,14 +15,14 @@ interface PaymentIntentProps {
     currency: string;
 }
 
-export const createStripePaymentIntent = async ({
+export default async function createStripePaymentIntent({
     paymentMethods,
     amount,
     currency = "eur",
-}: PaymentIntentProps) => {
+}: PaymentIntentProps) {
     return stripe.paymentIntents.create({
         payment_method_types: paymentMethods,
         amount,
         currency,
     });
-};
+}

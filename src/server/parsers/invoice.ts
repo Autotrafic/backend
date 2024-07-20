@@ -5,15 +5,21 @@ import {
     calculateInvoiceTotals,
     roundInvoiceServicesPrices,
     createInvoiceServicesListFromProfits,
+    createInvoiceServicesListFromTotalInvoiced,
 } from "../services/invoice";
 import parseDatetimeToSpanish from "./dates";
 
 export default function parseInvoiceData(
     order: IOrder,
     client: Client,
-    upcomingInvoiceNumber: number
+    upcomingInvoiceNumber: number,
+    isForClient: boolean
 ): Invoice {
-    const servicesList = createInvoiceServicesListFromProfits(order);
+    const servicesListCreator = isForClient
+        ? createInvoiceServicesListFromProfits
+        : createInvoiceServicesListFromTotalInvoiced;
+
+    const servicesList = servicesListCreator(order);
 
     const servicesListWithRoundedPrices =
         roundInvoiceServicesPrices(servicesList);
