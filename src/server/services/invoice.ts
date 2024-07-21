@@ -18,7 +18,7 @@ function getOrderTypeDetails(orderType: string) {
     } else if (orderType === "Entrega compraventa") {
         taxValue = ORDER_TYPES.NOTIFICATION.taxValue;
         hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
-    } else if (orderType === "Transferencia por finalización entrega") {
+    } else if (orderType === "Transferencia por finalizacion entrega") {
         taxValue = ORDER_TYPES.TRANSFERENCE.taxValue;
         hasShipmentCost = ORDER_TYPES.TRANSFERENCE.hasShipment;
     } else if (orderType === "Duplicado permiso") {
