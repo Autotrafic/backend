@@ -23,6 +23,10 @@ export default function parseInvoiceData(
     const invoiceDate = parseDatetimeToSpanish(order.startDate);
     const invoiceNumber = `${upcomingInvoiceNumber}`;
 
+    const invoiceOrder = {
+        type: order.type
+    }
+
     const invoiceClient = {
         name: client.name,
         firstSurname: client.firstSurname,
@@ -34,6 +38,7 @@ export default function parseInvoiceData(
     };
 
     return {
+        order: invoiceOrder,
         client: invoiceClient,
         services: servicesListWithRoundedPrices,
         summary: {

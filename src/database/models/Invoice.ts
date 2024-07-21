@@ -1,9 +1,5 @@
-export default interface Invoice {
-    invoiceNumber: string;
-    invoiceDate: string;
-    client: InvoiceClient;
-    services: InvoiceService[];
-    summary: InvoiceSummary;
+interface InvoiceOrder {
+    type: string;
 }
 
 interface InvoiceClient {
@@ -13,6 +9,15 @@ interface InvoiceClient {
     nif: string;
     email: string;
     phoneNumber: string;
+}
+
+export default interface Invoice {
+    invoiceNumber: string;
+    invoiceDate: string;
+    order: InvoiceOrder;
+    client: InvoiceClient;
+    services: InvoiceService[];
+    summary: InvoiceSummary;
 }
 
 export interface InvoiceService {
