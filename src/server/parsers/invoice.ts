@@ -4,8 +4,7 @@ import { IOrder } from "../../database/models/Order/Order";
 import {
     calculateInvoiceTotals,
     roundInvoiceServicesPrices,
-    createInvoiceServicesListFromProfits,
-    createInvoiceServicesListFromTotalInvoiced,
+    createInvoiceServicesList,
 } from "../services/invoice";
 import parseDatetimeToSpanish from "./dates";
 
@@ -15,11 +14,7 @@ export default function parseInvoiceData(
     upcomingInvoiceNumber: number,
     isForClient: boolean
 ): Invoice {
-    const servicesListCreator = isForClient
-        ? createInvoiceServicesListFromTotalInvoiced
-        : createInvoiceServicesListFromProfits;
-
-    const servicesList = servicesListCreator(order);
+    const servicesList = createInvoiceServicesList(order, isForClient);
 
     const servicesListWithRoundedPrices =
         roundInvoiceServicesPrices(servicesList);

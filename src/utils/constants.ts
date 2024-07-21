@@ -14,13 +14,13 @@ export const WHITELIST_IPS = [
     "46.222.28.101", // Mobil Meri
 ];
 
-export const TAXES = {
-    TRANSFERENCE: 55.7,
-    TRANSFERENCE_CICL: 27.85,
-    BATECOM: 64.37,
-    PERMIT_DUPLICATE: 20.81,
-    NOTIFICATION: 8.67,
-    REGISTRATION: 99.77,
-};
+export const ORDER_TYPES = {
+    TRANSFERENCE: {taxValue: 55.7, hasShipment: true},
+    TRANSFERENCE_CICL: {taxValue: 27.85, hasShipment: true},
+    PERMIT_DUPLICATE: {taxValue: 20.81, hasShipment: true},
+    NOTIFICATION: {taxValue: 8.67, hasShipment: false},
+    DISTINCTIVE: {taxValue: 0, hasShipment: true},
+    REGISTRATION: {taxValue: 99.77, hasShipment: true},
+}
 
 export const SHIPMENT_COST = 5.5;

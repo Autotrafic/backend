@@ -1,40 +1,51 @@
+/* eslint-disable no-else-return */
 import { InternInvoiceService } from "../../database/models/Invoice";
 import { IOrder } from "../../database/models/Order/Order";
-import { SHIPMENT_COST, TAXES } from "../../utils/constants";
+import { SHIPMENT_COST, ORDER_TYPES } from "../../utils/constants";
 
 const ORDER_PROFITS = 15;
 
-function getTaxValueFromOrderType(orderType: string) {
-    let taxValue = 0;
+function getOrderTypeDetails(orderType: string) {
+    let taxValue = null;
+    let hasShipmentCost = null;
 
     if (orderType === "Transferencia") {
-        taxValue = TAXES.TRANSFERENCE;
+        taxValue = ORDER_TYPES.TRANSFERENCE.taxValue;
+        hasShipmentCost = ORDER_TYPES.TRANSFERENCE.hasShipment;
     } else if (orderType === "Transferencia ciclomotor") {
-        taxValue = TAXES.TRANSFERENCE_CICL;
-    } else if (orderType === "Batecom") {
-        taxValue = TAXES.BATECOM;
+        taxValue = ORDER_TYPES.TRANSFERENCE_CICL.taxValue;
+        hasShipmentCost = ORDER_TYPES.TRANSFERENCE_CICL.hasShipment;
     } else if (orderType === "Entrega compraventa") {
-        taxValue = TAXES.NOTIFICATION;
+        taxValue = ORDER_TYPES.NOTIFICATION.taxValue;
+        hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
     } else if (orderType === "Transferencia por finalización entrega") {
-        taxValue = TAXES.TRANSFERENCE;
+        taxValue = ORDER_TYPES.TRANSFERENCE.taxValue;
+        hasShipmentCost = ORDER_TYPES.TRANSFERENCE.hasShipment;
     } else if (orderType === "Duplicado permiso") {
-        taxValue = TAXES.PERMIT_DUPLICATE;
+        taxValue = ORDER_TYPES.PERMIT_DUPLICATE.taxValue;
+        hasShipmentCost = ORDER_TYPES.PERMIT_DUPLICATE.hasShipment;
     } else if (orderType === "Distintivo") {
-        taxValue = 0;
+        taxValue = ORDER_TYPES.DISTINCTIVE.taxValue;
+        hasShipmentCost = ORDER_TYPES.DISTINCTIVE.hasShipment;
     } else if (orderType === "Notificacion") {
-        taxValue = TAXES.NOTIFICATION;
+        taxValue = ORDER_TYPES.NOTIFICATION.taxValue;
+        hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
     }
 
-    return taxValue;
+    if (taxValue === null || hasShipmentCost === null)
+        throw new Error("The order type is not valid");
+
+    return { taxValue, hasShipmentCost };
 }
 
-export function createInvoiceServicesListFromTotalInvoiced(
-    currentInvoiceData: IOrder
+export function createInvoiceServicesList(
+    currentInvoiceData: IOrder,
+    isForClient: boolean
 ): InternInvoiceService[] {
     const { type, itpPaid, totalInvoiced } = currentInvoiceData;
 
+    const { taxValue, hasShipmentCost } = getOrderTypeDetails(type);
     const shipmentCost = SHIPMENT_COST;
-    const taxValue = getTaxValueFromOrderType(type);
 
     const taxDGT = {
         description: "Tasa DGT",
@@ -52,72 +63,32 @@ export function createInvoiceServicesListFromTotalInvoiced(
         totalPrice: itpPaid,
     };
 
-    const shipment = {
-        description: "Envío",
-        quantity: 1,
-        priceWithoutIVA: "-" as "-",
-        priceWithIVA: "-" as "-",
-        totalPrice: shipmentCost,
-    };
+    const shipment = hasShipmentCost
+        ? {
+              description: "Envío",
+              quantity: 1,
+              priceWithoutIVA: "-" as "-",
+              priceWithIVA: "-" as "-",
+              totalPrice: shipmentCost,
+          }
+        : null;
 
-    const totalProfitsWithIVA =
-        totalInvoiced -
-        taxDGT.totalPrice -
-        (taxITP ? taxITP.totalPrice : 0) -
-        shipment.totalPrice;
+    let totalProfitsWithIVA: number;
+
+    if (isForClient) {
+        totalProfitsWithIVA =
+            totalInvoiced -
+            taxDGT.totalPrice -
+            (taxITP ? taxITP.totalPrice : 0) -
+            (shipment ? shipment.totalPrice : 0);
+    } else {
+        totalProfitsWithIVA = ORDER_PROFITS;
+    }
 
     const IVAPrice = totalProfitsWithIVA * 0.21;
-
-    const profitsWithoutIVA = totalProfitsWithIVA - IVAPrice;
-
-    const profits = {
-        description: "Honorarios",
-        quantity: 1,
-        priceWithoutIVA: profitsWithoutIVA,
-        priceWithIVA: totalProfitsWithIVA,
-        totalPrice: totalProfitsWithIVA,
-    };
-
-    return [taxDGT, taxITP, shipment, profits].filter((item) => item !== null);
-}
-
-export function createInvoiceServicesListFromProfits(
-    currentInvoiceData: IOrder
-): InternInvoiceService[] {
-    const { type, itpPaid } = currentInvoiceData;
-
-    const shipmentCost = SHIPMENT_COST;
-    const taxValue = getTaxValueFromOrderType(type);
-
-    if (!taxValue) throw new Error("The order type is not valid");
-
-    const taxDGT = {
-        description: "Tasa DGT",
-        quantity: 1,
-        priceWithoutIVA: "-" as "-",
-        priceWithIVA: "-" as "-",
-        totalPrice: taxValue,
-    };
-
-    const taxITP = itpPaid && {
-        description: "Tasa ITP",
-        quantity: 1,
-        priceWithoutIVA: "-" as "-",
-        priceWithIVA: "-" as "-",
-        totalPrice: itpPaid,
-    };
-
-    const shipment = {
-        description: "Envío",
-        quantity: 1,
-        priceWithoutIVA: "-" as "-",
-        priceWithIVA: "-" as "-",
-        totalPrice: shipmentCost,
-    };
-
-    const totalProfitsWithIVA = ORDER_PROFITS;
-
-    const profitsWithoutIVA = (totalProfitsWithIVA * 100) / 121;
+    const profitsWithoutIVA = isForClient
+        ? totalProfitsWithIVA - IVAPrice
+        : (totalProfitsWithIVA * 100) / 121;
 
     const profits = {
         description: "Honorarios",
