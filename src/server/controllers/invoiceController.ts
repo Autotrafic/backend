@@ -11,11 +11,11 @@ export async function createInvoiceData(
     next: NextFunction
 ) {
     try {
-        const { orderData, clientData, currentInvoiceNumber, isForClient } =
+        const { orderData, clientData, partnerData, currentInvoiceNumber, isForClient } =
             req.body;
 
         const order = parseOrderFromPrimitive(orderData);
-        const client = parseClientFromPrimitive(clientData);
+        const client = parseClientFromPrimitive(partnerData ?? clientData);
 
         const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
         const invoiceData = parseInvoiceData(
