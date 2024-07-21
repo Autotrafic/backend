@@ -4,25 +4,37 @@ import { SHIPMENT_COST, TAXES } from "../../utils/constants";
 
 const ORDER_PROFITS = 15;
 
+function getTaxValueFromOrderType(orderType: string) {
+    let taxValue = 0;
+
+    if (orderType === "Transferencia") {
+        taxValue = TAXES.TRANSFERENCE;
+    } else if (orderType === "Transferencia ciclomotor") {
+        taxValue = TAXES.TRANSFERENCE_CICL;
+    } else if (orderType === "Batecom") {
+        taxValue = TAXES.BATECOM;
+    } else if (orderType === "Entrega compraventa") {
+        taxValue = TAXES.NOTIFICATION;
+    } else if (orderType === "Transferencia por finalización entrega") {
+        taxValue = TAXES.TRANSFERENCE;
+    } else if (orderType === "Duplicado permiso") {
+        taxValue = TAXES.PERMIT_DUPLICATE;
+    } else if (orderType === "Distintivo") {
+        taxValue = 0;
+    } else if (orderType === "Notificacion") {
+        taxValue = TAXES.NOTIFICATION;
+    }
+
+    return taxValue;
+}
+
 export function createInvoiceServicesListFromTotalInvoiced(
     currentInvoiceData: IOrder
 ): InternInvoiceService[] {
     const { type, itpPaid, totalInvoiced } = currentInvoiceData;
 
     const shipmentCost = SHIPMENT_COST;
-    let taxValue: number;
-
-    if (type === "Transferencia") {
-        taxValue = TAXES.TRANSFERENCE;
-    } else if (type === "Transferencia ciclomotor") {
-        taxValue = TAXES.TRANSFERENCE_CICL;
-    } else if (type === "Duplicado permiso") {
-        taxValue = TAXES.PERMIT_DUPLICATE;
-    } else if (type === "Distintivo") {
-        taxValue = 0;
-    } else if (type === "Notificacion") {
-        taxValue = TAXES.NOTIFICATION;
-    }
+    const taxValue = getTaxValueFromOrderType(type);
 
     const taxDGT = {
         description: "Tasa DGT",
@@ -75,21 +87,7 @@ export function createInvoiceServicesListFromProfits(
     const { type, itpPaid } = currentInvoiceData;
 
     const shipmentCost = SHIPMENT_COST;
-    let taxValue: number;
-
-    if (type === "Transferencia") {
-        taxValue = TAXES.TRANSFERENCE;
-    } else if (type === "Transferencia ciclomotor") {
-        taxValue = TAXES.TRANSFERENCE_CICL;
-    } else if (type === "Batecom") {
-        taxValue = TAXES.BATECOM;
-    } else if (type === "Duplicado permiso") {
-        taxValue = TAXES.PERMIT_DUPLICATE;
-    } else if (type === "Distintivo") {
-        taxValue = 0;
-    } else if (type === "Notificacion") {
-        taxValue = TAXES.NOTIFICATION;
-    }
+    const taxValue = getTaxValueFromOrderType(type);
 
     if (!taxValue) throw new Error("The order type is not valid");
 

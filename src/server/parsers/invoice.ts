@@ -16,8 +16,8 @@ export default function parseInvoiceData(
     isForClient: boolean
 ): Invoice {
     const servicesListCreator = isForClient
-        ? createInvoiceServicesListFromProfits
-        : createInvoiceServicesListFromTotalInvoiced;
+        ? createInvoiceServicesListFromTotalInvoiced
+        : createInvoiceServicesListFromProfits;
 
     const servicesList = servicesListCreator(order);
 
