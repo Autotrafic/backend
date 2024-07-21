@@ -7,6 +7,7 @@ export default interface Client {
     nif: string;
     phoneNumber: string;
     email: string;
+    address: string;
     createdAt: string;
     updatedAt: string;
     id: string;

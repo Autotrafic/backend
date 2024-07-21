@@ -13,6 +13,7 @@ export default function parseClientFromPrimitive(
         firstSurname: client.primer_apellido,
         secondSurname: client.segundo_apellido,
         nif: client.nif,
+        address: client.direccion,
         phoneNumber: client.telefono,
         email: client.email,
         createdAt: client.createdAt,

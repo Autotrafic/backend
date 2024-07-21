@@ -7,6 +7,7 @@ export default interface ClientPrimitive {
     nif: string;
     telefono: string;
     email: string;
+    direccion: string;
     createdAt: string;
     updatedAt: string;
     id: string;
