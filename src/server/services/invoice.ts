@@ -84,11 +84,8 @@ export function createInvoiceServicesList(
     } else {
         totalProfitsWithIVA = ORDER_PROFITS;
     }
-
-    const IVAPrice = totalProfitsWithIVA * 0.21;
-    const profitsWithoutIVA = isForClient
-        ? totalProfitsWithIVA - IVAPrice
-        : (totalProfitsWithIVA * 100) / 121;
+    
+    const profitsWithoutIVA = (totalProfitsWithIVA * 100) / 121;
 
     const profits = {
         description: "Honorarios",
