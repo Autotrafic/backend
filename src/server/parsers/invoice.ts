@@ -24,7 +24,8 @@ export default function parseInvoiceData(
     const invoiceNumber = `${upcomingInvoiceNumber}`;
 
     const invoiceOrder = {
-        type: order.type
+        type: order.type,
+        vehiclePlate: order.vehiclePlate
     }
 
     const invoiceClient = {

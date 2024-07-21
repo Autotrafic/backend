@@ -1,5 +1,6 @@
 interface InvoiceOrder {
     type: string;
+    vehiclePlate: string;
 }
 
 interface InvoiceClient {
