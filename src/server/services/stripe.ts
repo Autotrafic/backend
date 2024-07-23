@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import "../../loadEnvironment";
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === "productionn";
 
 const stripeKey = isProduction
     ? process.env.STRIPE_SECRET_KEY
