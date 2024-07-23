@@ -95,7 +95,9 @@ export function createInvoiceServicesList(
         totalPrice: totalProfitsWithIVA,
     };
 
-    return [taxDGT, taxITP, shipment, profits].filter((item) => item !== null);
+    const servicesList = [taxDGT, taxITP, shipment, profits].filter((item) => item !== null && item !== undefined);
+
+    return servicesList;
 }
 
 export function roundInvoiceServicesPrices(services: InternInvoiceService[]) {
