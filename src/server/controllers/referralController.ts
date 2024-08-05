@@ -11,7 +11,7 @@ export async function generateReferralId(
     next: NextFunction
 ) {
     try {
-        const { source } = req.body;
+        const { source } = req.query;
 
         const id = nanoid();
         const expiresAt = new Date(
@@ -23,14 +23,14 @@ export async function generateReferralId(
         await referral.save();
         res.status(201).json({
             id: referral.id,
-            expiresAt: referral.expiresAt
+            expiresAt: referral.expiresAt,
         });
     } catch (error) {
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error loading order.",
-            `Error loading order. \n ${error}`
+            "Error generating referral id.",
+            `Error generating referral id. \n ${error}`
         );
         next(finalError);
     }
@@ -42,7 +42,7 @@ export async function validateReferralId(
     next: NextFunction
 ) {
     try {
-        const referralId = req.params.id;
+        const referralId = req.query.id;
         const referral = await Referral.findOne({ id: referralId });
 
         if (referral) {
@@ -67,8 +67,8 @@ export async function validateReferralId(
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error loading order.",
-            `Error loading order. \n ${error}`
+            "Error validating referral id.",
+            `Error validating referral id. \n ${error}`
         );
         next(finalError);
     }
