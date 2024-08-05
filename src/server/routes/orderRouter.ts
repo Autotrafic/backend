@@ -5,8 +5,15 @@ import {
     updateNestedOrder,
     updateOrder,
 } from "../controllers/orderController";
+import {
+    generateReferralId,
+    validateReferralId,
+} from "../controllers/referralController";
 
 const orderRouter = express.Router();
+
+orderRouter.post("/generate-referral-id", generateReferralId);
+orderRouter.post("/validate-referral-id", validateReferralId);
 
 orderRouter.get("/:orderId", getOrderById);
 orderRouter.put("/:orderId", updateOrder);
