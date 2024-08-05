@@ -23,8 +23,7 @@ export async function generateReferralId(
         await referral.save();
         res.status(201).json({
             id: referral.id,
-            expiresAt: referral.expiresAt,
-            source
+            expiresAt: referral.expiresAt
         });
     } catch (error) {
         console.log(error);
