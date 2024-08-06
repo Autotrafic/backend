@@ -12,6 +12,7 @@ import logRouter from "./routes/logRouter";
 import orderRouter from "./routes/orderRouter";
 import messagesRouter from "./routes/messagesRouter";
 import invoiceRouter from "./routes/invoiceRouter";
+import referralRouter from "./routes/referralRouter";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/logs", logRouter);
 app.use("/order", orderRouter);
 app.use("/messages", messagesRouter);
 app.use("/invoice", invoiceRouter);
+app.use("/referral", referralRouter);
 
 app.use(notFoundError);
 app.use(generalError);
