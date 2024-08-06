@@ -48,18 +48,18 @@ export async function validateReferralId(
         if (referral) {
             if (new Date() < referral.expiresAt) {
                 res.status(200).json({
-                    valid: true,
+                    isValid: true,
                     message: "Referral ID is valid",
                 });
             } else {
                 res.status(400).json({
-                    valid: false,
+                    isValid: false,
                     message: "Referral ID has expired",
                 });
             }
         } else {
             res.status(400).json({
-                valid: false,
+                isValid: false,
                 message: "Referral ID is invalid",
             });
         }
