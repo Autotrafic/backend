@@ -116,9 +116,7 @@ export default function calculateItp(orderData: OrderData) {
     }
 
     if (orderData.comunidadAutonoma === "ARA") {
-        if (
-            yearsDifference > 10
-        ) {
+        if (yearsDifference > 10) {
             if (orderData.cilindrada <= 1000) {
                 prevItpValue = 0;
             } else if (
@@ -184,9 +182,7 @@ export default function calculateItp(orderData: OrderData) {
     }
 
     if (orderData.comunidadAutonoma === "CANT") {
-        if (
-            yearsDifference > 10
-        ) {
+        if (yearsDifference > 10) {
             if (orderData.cilindrada < 1000) {
                 prevItpValue = 55;
             } else if (
@@ -387,7 +383,7 @@ export default function calculateItp(orderData: OrderData) {
     if (orderData.comunidadAutonoma === "MUR") {
         if (yearsDifference >= 12) {
             if (orderData.cilindrada <= 1000) {
-                prevItpValue = 0;
+                prevItpValue = 0.04;
             } else if (
                 orderData.cilindrada > 1000 &&
                 orderData.cilindrada <= 1500
