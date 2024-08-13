@@ -1,22 +1,44 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
-import createStripePaymentIntent from "../services/stripe";
+import { createStripePaymentIntent } from "../services/stripe";
+import {
+    createUser,
+    getUserByPhoneNumber,
+    updateUserByPhoneNumber,
+} from "../../database/repository/user";
 
 const CURRENCY = "eur";
-const AMOUNT = 11900;
+const AMOUNT = 12995;
 
 export default async function createPaymentIntent(
     req: Request,
     res: Response,
     next: NextFunction
 ) {
-    const { amount = AMOUNT } = req.body;
+    const { amount = AMOUNT, userData } = req.body;
+    const { fullName, phoneNumber, email } = userData;
 
     try {
+        let user = await getUserByPhoneNumber(phoneNumber);
+
+        if (!user) {
+            user = await createUser(fullName, phoneNumber, email);
+        } else {
+            const updatedUser = {
+                fullName,
+                phoneNumber,
+                email: user.email,
+                stripeId: user.stripeId,
+            };
+            await updateUserByPhoneNumber(updatedUser);
+        }
+
         const paymentIntent = await createStripePaymentIntent({
-            paymentMethods: ["card"],
+            paymentMethods: ["card", "link"],
+            automaticPaymentMethods: { enabled: true },
             amount,
             currency: CURRENCY,
+            customer: user.stripeId,
         });
 
         res.status(200).json({
@@ -31,4 +53,4 @@ export default async function createPaymentIntent(
         );
         next(finalError);
     }
-};
+}

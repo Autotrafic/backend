@@ -9,20 +9,62 @@ const stripeKey = isProduction
 
 const stripe = new Stripe(stripeKey, {});
 
-interface PaymentIntentProps {
-    paymentMethods: string[];
-    amount: number;
-    currency: string;
+interface StripeUser {
+    name: string;
+    email: string;
+    phone: string;
+    preferred_locales?: string[];
 }
 
-export default async function createStripePaymentIntent({
-    paymentMethods,
+interface StripeCustomer {
+    fullName: string;
+    phoneNumber: string;
+    email: string;
+    stripeId: string;
+}
+
+interface PaymentIntent {
+    paymentMethods: string[];
+    automaticPaymentMethods: { enabled: boolean };
+    amount: number;
+    currency: string;
+    customer: string;
+}
+
+export async function createStripePaymentIntent({
+    automaticPaymentMethods,
     amount,
     currency = "eur",
-}: PaymentIntentProps) {
+    customer,
+}: PaymentIntent) {
     return stripe.paymentIntents.create({
-        payment_method_types: paymentMethods,
+        // payment_method_types: paymentMethods,
+        automatic_payment_methods: automaticPaymentMethods,
         amount,
         currency,
+        customer,
+    });
+}
+
+export async function createStripeCustomer(user: StripeUser) {
+    return stripe.customers.create({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        preferred_locales: ["es"],
+    });
+}
+
+export async function updateStripeCustomer({
+    fullName,
+    phoneNumber,
+    email,
+    stripeId,
+}: StripeCustomer) {
+    return stripe.customers.update(stripeId, {
+        name: fullName,
+        email,
+        phone: phoneNumber,
+        preferred_locales: ["es"],
     });
 }
