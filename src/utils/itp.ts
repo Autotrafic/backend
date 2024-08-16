@@ -7,20 +7,20 @@ interface OrderData {
     potenciaFiscal: number;
     cilindrada: number;
     tipoVehiculo: number;
-    precioVenta: number;
+    precioVenta?: number;
 }
 
 export default function calculateItp(orderData: OrderData) {
-    orderData.precioVenta = 0;
+    const { fechaMatriculacion, comunidadAutonoma, tipoVehiculo } = orderData;
+    let { valorVehiculo, potenciaFiscal, cilindrada, precioVenta } = orderData;
 
-    if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
-        orderData.potenciaFiscal = 0;
-    if (orderData.tipoVehiculo === VEHICLE_TYPE.CARAVAN) {
-        orderData.valorVehiculo = 0;
-        orderData.cilindrada = 0;
+    precioVenta = 0;
+
+    if (tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) potenciaFiscal = 0;
+    if (tipoVehiculo === VEHICLE_TYPE.CARAVAN) {
+        valorVehiculo = 0;
+        cilindrada = 0;
     }
-
-    console.log(orderData);
 
     let valorDepreciacion;
     let valorVehiculoMoto;
@@ -28,12 +28,12 @@ export default function calculateItp(orderData: OrderData) {
     let prevItpValue;
     let ITP;
 
-    // Función para convertir una cadena de fecha en un objeto Date
     function parseDate(dateStr: any) {
         const [day, month, year] = dateStr.split("/");
         return new Date(year, month - 1, day);
     }
-    const matriculationDate = parseDate(orderData.fechaMatriculacion) as any;
+
+    const matriculationDate = parseDate(fechaMatriculacion) as any;
     const actualDate = new Date();
     const differenceMs = (actualDate as any) - matriculationDate;
     const differenceDays = differenceMs / (1000 * 60 * 60 * 24);
@@ -68,66 +68,57 @@ export default function calculateItp(orderData: OrderData) {
         valorDepreciacion = 0.1;
     }
 
-    if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) {
-        if (orderData.cilindrada <= 50) {
+    if (tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) {
+        if (cilindrada <= 50) {
             valorVehiculoMoto = 800;
-        } else if (orderData.cilindrada > 50 && orderData.cilindrada <= 75) {
+        } else if (cilindrada > 50 && cilindrada <= 75) {
             valorVehiculoMoto = 100;
-        } else if (orderData.cilindrada > 75 && orderData.cilindrada <= 125) {
+        } else if (cilindrada > 75 && cilindrada <= 125) {
             valorVehiculoMoto = 1400;
-        } else if (orderData.cilindrada > 125 && orderData.cilindrada <= 150) {
+        } else if (cilindrada > 125 && cilindrada <= 150) {
             valorVehiculoMoto = 1500;
-        } else if (orderData.cilindrada > 150 && orderData.cilindrada <= 200) {
+        } else if (cilindrada > 150 && cilindrada <= 200) {
             valorVehiculoMoto = 1700;
-        } else if (orderData.cilindrada > 200 && orderData.cilindrada <= 250) {
+        } else if (cilindrada > 200 && cilindrada <= 250) {
             valorVehiculoMoto = 2000;
-        } else if (orderData.cilindrada > 250 && orderData.cilindrada <= 350) {
+        } else if (cilindrada > 250 && cilindrada <= 350) {
             valorVehiculoMoto = 2800;
-        } else if (orderData.cilindrada > 350 && orderData.cilindrada <= 450) {
+        } else if (cilindrada > 350 && cilindrada <= 450) {
             valorVehiculoMoto = 3500;
-        } else if (orderData.cilindrada > 450 && orderData.cilindrada <= 550) {
+        } else if (cilindrada > 450 && cilindrada <= 550) {
             valorVehiculoMoto = 3900;
-        } else if (orderData.cilindrada > 550 && orderData.cilindrada <= 750) {
+        } else if (cilindrada > 550 && cilindrada <= 750) {
             valorVehiculoMoto = 6400;
-        } else if (orderData.cilindrada > 750 && orderData.cilindrada <= 1000) {
+        } else if (cilindrada > 750 && cilindrada <= 1000) {
             valorVehiculoMoto = 9600;
-        } else if (
-            orderData.cilindrada > 1000 &&
-            orderData.cilindrada <= 1200
-        ) {
+        } else if (cilindrada > 1000 && cilindrada <= 1200) {
             valorVehiculoMoto = 12100;
-        } else if (orderData.cilindrada > 1200) {
+        } else if (cilindrada > 1200) {
             valorVehiculoMoto = 15300;
         }
     }
 
-    if (orderData.tipoVehiculo === VEHICLE_TYPE.CAR)
-        valorFiscal = orderData.valorVehiculo * valorDepreciacion;
+    if (tipoVehiculo === VEHICLE_TYPE.CAR)
+        valorFiscal = valorVehiculo * valorDepreciacion;
 
-    if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
+    if (tipoVehiculo === VEHICLE_TYPE.MOTORBIKE)
         valorFiscal = valorVehiculoMoto * valorDepreciacion;
 
-    if (orderData.comunidadAutonoma === "AND") {
-        if (orderData.potenciaFiscal > 15) {
+    if (comunidadAutonoma === "AND") {
+        if (potenciaFiscal > 15) {
             prevItpValue = 0.08;
         } else {
             prevItpValue = 0.04;
         }
     }
 
-    if (orderData.comunidadAutonoma === "ARA") {
+    if (comunidadAutonoma === "ARA") {
         if (yearsDifference > 10) {
-            if (orderData.cilindrada <= 1000) {
+            if (cilindrada <= 1000) {
                 prevItpValue = 0;
-            } else if (
-                orderData.cilindrada > 1000 &&
-                orderData.cilindrada <= 1500
-            ) {
+            } else if (cilindrada > 1000 && cilindrada <= 1500) {
                 prevItpValue = 20;
-            } else if (
-                orderData.cilindrada > 1500 &&
-                orderData.cilindrada <= 2000
-            ) {
+            } else if (cilindrada > 1500 && cilindrada <= 2000) {
                 prevItpValue = 30;
             } else {
                 prevItpValue = 0.04;
@@ -137,41 +128,29 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "AST") {
-        if (
-            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-            orderData.potenciaFiscal > 15
-        ) {
+    if (comunidadAutonoma === "AST") {
+        if (tipoVehiculo === VEHICLE_TYPE.CAR && potenciaFiscal > 15) {
             prevItpValue = 0.08;
         } else {
             prevItpValue = 0.04;
         }
     }
 
-    if (orderData.comunidadAutonoma === "BAL") {
-        if (
-            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-            orderData.potenciaFiscal > 15
-        ) {
+    if (comunidadAutonoma === "BAL") {
+        if (tipoVehiculo === VEHICLE_TYPE.CAR && potenciaFiscal > 15) {
             prevItpValue = 0.08;
         } else {
             prevItpValue = 0.04;
         }
     }
 
-    if (orderData.comunidadAutonoma === "CANA") {
+    if (comunidadAutonoma === "CANA") {
         if (yearsDifference > 10) {
-            if (orderData.cilindrada <= 1000) {
+            if (cilindrada <= 1000) {
                 prevItpValue = 40;
-            } else if (
-                orderData.cilindrada > 1000 &&
-                orderData.cilindrada <= 1500
-            ) {
+            } else if (cilindrada > 1000 && cilindrada <= 1500) {
                 prevItpValue = 70;
-            } else if (
-                orderData.cilindrada > 1500 &&
-                orderData.cilindrada <= 2000
-            ) {
+            } else if (cilindrada > 1500 && cilindrada <= 2000) {
                 prevItpValue = 115;
             } else {
                 prevItpValue = 0.055;
@@ -181,19 +160,13 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "CANT") {
+    if (comunidadAutonoma === "CANT") {
         if (yearsDifference > 10) {
-            if (orderData.cilindrada < 1000) {
+            if (cilindrada < 1000) {
                 prevItpValue = 55;
-            } else if (
-                orderData.cilindrada >= 1000 &&
-                orderData.cilindrada < 1500
-            ) {
+            } else if (cilindrada >= 1000 && cilindrada < 1500) {
                 prevItpValue = 75;
-            } else if (
-                orderData.cilindrada >= 1500 &&
-                orderData.cilindrada < 2000
-            ) {
+            } else if (cilindrada >= 1500 && cilindrada < 2000) {
                 prevItpValue = 115;
             } else {
                 prevItpValue = 0.08;
@@ -203,23 +176,20 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "CASM") {
+    if (comunidadAutonoma === "CASM") {
         prevItpValue = 0.06;
     }
 
-    if (orderData.comunidadAutonoma === "CASL") {
-        if (
-            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-            orderData.potenciaFiscal > 15
-        ) {
+    if (comunidadAutonoma === "CASL") {
+        if (tipoVehiculo === VEHICLE_TYPE.CAR && potenciaFiscal > 15) {
             prevItpValue = 0.08;
         } else {
             prevItpValue = 0.05;
         }
     }
 
-    if (orderData.comunidadAutonoma === "CAT") {
-        if (orderData.cilindrada <= 50) {
+    if (comunidadAutonoma === "CAT") {
+        if (cilindrada <= 50) {
             prevItpValue = 0;
         } else if (
             yearsDifference >= 10 &&
@@ -232,23 +202,17 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "EXT") {
+    if (comunidadAutonoma === "EXT") {
         prevItpValue = 0.06;
     }
 
-    if (orderData.comunidadAutonoma === "GAL") {
-        if (
-            orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-            yearsDifference >= 15
-        ) {
-            if (orderData.cilindrada < 1200) {
+    if (comunidadAutonoma === "GAL") {
+        if (tipoVehiculo === VEHICLE_TYPE.CAR && yearsDifference >= 15) {
+            if (cilindrada < 1200) {
                 prevItpValue = 22;
-            } else if (
-                orderData.cilindrada >= 1200 &&
-                orderData.cilindrada <= 1599
-            ) {
+            } else if (cilindrada >= 1200 && cilindrada <= 1599) {
                 prevItpValue = 38;
-            } else if (orderData.cilindrada >= 1600) {
+            } else if (cilindrada >= 1600) {
                 prevItpValue = 0.03;
             }
         } else {
@@ -256,16 +220,16 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "MAD") {
+    if (comunidadAutonoma === "MAD") {
         prevItpValue = 0.04;
     }
 
-    if (orderData.comunidadAutonoma === "RIO") {
+    if (comunidadAutonoma === "RIO") {
         prevItpValue = 0.04;
     }
 
-    if (orderData.comunidadAutonoma === "NAV") {
-        if (orderData.cilindrada <= 50) {
+    if (comunidadAutonoma === "NAV") {
+        if (cilindrada <= 50) {
             prevItpValue = 0;
         } else if (
             yearsDifference >= 10 &&
@@ -278,49 +242,42 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (orderData.comunidadAutonoma === "PVA") {
+    if (comunidadAutonoma === "PVA") {
         prevItpValue = 0.04;
     }
 
-    if (orderData.comunidadAutonoma === "VAL") {
+    if (comunidadAutonoma === "VAL") {
         if (valorFiscal < 20000 && yearsDifference > 12) {
-            if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-                orderData.cilindrada <= 1500
-            ) {
+            if (tipoVehiculo === VEHICLE_TYPE.CAR && cilindrada <= 1500) {
                 prevItpValue = 40;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-                orderData.cilindrada > 1500 &&
-                orderData.cilindrada <= 2000
+                tipoVehiculo === VEHICLE_TYPE.CAR &&
+                cilindrada > 1500 &&
+                cilindrada <= 2000
             ) {
                 prevItpValue = 60;
-            } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-                orderData.cilindrada > 2000
-            ) {
+            } else if (tipoVehiculo === VEHICLE_TYPE.CAR && cilindrada > 2000) {
                 prevItpValue = 140;
             } else if (
-                (orderData.cilindrada <= 50 ||
-                    orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) &&
-                orderData.cilindrada <= 250
+                (cilindrada <= 50 || tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) &&
+                cilindrada <= 250
             ) {
                 prevItpValue = 10;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
-                orderData.cilindrada > 250 &&
-                orderData.cilindrada <= 550
+                tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
+                cilindrada > 250 &&
+                cilindrada <= 550
             ) {
                 prevItpValue = 20;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
-                orderData.cilindrada > 550 &&
-                orderData.cilindrada <= 750
+                tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
+                cilindrada > 550 &&
+                cilindrada <= 750
             ) {
                 prevItpValue = 35;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
-                orderData.cilindrada > 750
+                tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
+                cilindrada > 750
             ) {
                 prevItpValue = 55;
             }
@@ -329,70 +286,56 @@ export default function calculateItp(orderData: OrderData) {
             yearsDifference > 5 &&
             yearsDifference <= 12
         ) {
-            if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-                orderData.cilindrada <= 1500
-            ) {
+            if (tipoVehiculo === VEHICLE_TYPE.CAR && cilindrada <= 1500) {
                 prevItpValue = 120;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-                orderData.cilindrada > 1500 &&
-                orderData.cilindrada <= 2000
+                tipoVehiculo === VEHICLE_TYPE.CAR &&
+                cilindrada > 1500 &&
+                cilindrada <= 2000
             ) {
                 prevItpValue = 180;
-            } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.CAR &&
-                orderData.cilindrada > 2000
-            ) {
+            } else if (tipoVehiculo === VEHICLE_TYPE.CAR && cilindrada > 2000) {
                 prevItpValue = 280;
             } else if (
-                (orderData.cilindrada <= 50 ||
-                    orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) &&
-                orderData.cilindrada <= 250
+                (cilindrada <= 50 || tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) &&
+                cilindrada <= 250
             ) {
                 prevItpValue = 30;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
-                orderData.cilindrada > 250 &&
-                orderData.cilindrada <= 550
+                tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
+                cilindrada > 250 &&
+                cilindrada <= 550
             ) {
                 prevItpValue = 60;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
-                orderData.cilindrada > 550 &&
-                orderData.cilindrada <= 750
+                tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
+                cilindrada > 550 &&
+                cilindrada <= 750
             ) {
                 prevItpValue = 90;
             } else if (
-                orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
-                orderData.cilindrada > 750
+                tipoVehiculo === VEHICLE_TYPE.MOTORBIKE &&
+                cilindrada > 750
             ) {
                 prevItpValue = 140;
             }
         } else if (
             yearsDifference <= 5 &&
-            (orderData.cilindrada > 2000 || valorFiscal >= 20000)
+            (cilindrada > 2000 || valorFiscal >= 20000)
         ) {
             prevItpValue = 0.08;
         } else {
             prevItpValue = 0.06;
         }
-        //Vehículos adquiridos al final de su vida útil para su valorización y eliminación: 2%
     }
 
-    if (orderData.comunidadAutonoma === "MUR") {
+    if (comunidadAutonoma === "MUR") {
         if (yearsDifference >= 12) {
-            if (orderData.cilindrada <= 1000) {
+            if (cilindrada <= 1000) {
                 prevItpValue = 0.04;
-            } else if (
-                orderData.cilindrada > 1000 &&
-                orderData.cilindrada <= 1500
-            ) {
+            } else if (cilindrada > 1000 && cilindrada <= 1500) {
                 prevItpValue = 30;
-            } else if (
-                orderData.cilindrada > 1500 &&
-                orderData.cilindrada <= 2000
-            ) {
+            } else if (cilindrada > 1500 && cilindrada <= 2000) {
                 prevItpValue = 50;
             } else {
                 prevItpValue = 0.04;
@@ -404,11 +347,11 @@ export default function calculateItp(orderData: OrderData) {
 
     if (prevItpValue > 1) {
         ITP = prevItpValue;
-    } else if (prevItpValue < 1 && orderData.precioVenta < valorFiscal) {
+    } else if (prevItpValue < 1 && precioVenta < valorFiscal) {
         ITP = valorFiscal * prevItpValue;
-    } else ITP = orderData.precioVenta * prevItpValue;
+    } else ITP = precioVenta * prevItpValue;
 
-    const comunidAutonoma = orderData.comunidadAutonoma;
+    const comunidAutonoma = comunidadAutonoma;
 
     return {
         ITP,
@@ -418,4 +361,3 @@ export default function calculateItp(orderData: OrderData) {
         comunidAutonoma,
     };
 }
-

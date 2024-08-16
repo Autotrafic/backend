@@ -6,6 +6,11 @@ export interface Brand {
     models: CarModel[];
 }
 
+export interface ExportBrand {
+    brandName: string;
+    id: string;
+}
+
 const brandSchema = new Schema({
     brandName: String,
     models: [{ type: Schema.Types.ObjectId, ref: "CarModel" }],
