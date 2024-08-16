@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
-import { FuelMotorbikeModel } from "../../database/models/FuelMotorbikeModel";
+import { MotorbikeModel } from "../../database/models/FuelMotorbikeModel";
 import { ElectricMotorbikeModel } from "../../database/models/ElectricMotorbikeModel";
 
 export const getAllFuelMotorbikeCCs = async (
@@ -9,7 +9,7 @@ export const getAllFuelMotorbikeCCs = async (
     next: NextFunction
 ) => {
     try {
-        const ccs = await FuelMotorbikeModel.find({});
+        const ccs = await MotorbikeModel.find({});
         res.status(200).json(ccs);
     } catch (error) {
         console.log(error);

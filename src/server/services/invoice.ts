@@ -84,7 +84,7 @@ export function createInvoiceServicesList(
     } else {
         totalProfitsWithIVA = ORDER_PROFITS;
     }
-    
+
     const profitsWithoutIVA = (totalProfitsWithIVA * 100) / 121;
 
     const profits = {
@@ -95,7 +95,9 @@ export function createInvoiceServicesList(
         totalPrice: totalProfitsWithIVA,
     };
 
-    const servicesList = [taxDGT, taxITP, shipment, profits].filter((item) => item !== null && item !== undefined);
+    const servicesList = [taxDGT, taxITP, shipment, profits].filter(
+        (item) => item !== null && item !== undefined
+    );
 
     return servicesList;
 }

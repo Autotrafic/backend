@@ -1,9 +1,9 @@
 import { model, Schema } from "mongoose";
-import { CarModel } from "./CarModel";
+import { ICar } from "./CarModel";
 
 export interface Brand {
     brandName: string;
-    models: CarModel[];
+    models: ICar[];
 }
 
 export interface ExportBrand {

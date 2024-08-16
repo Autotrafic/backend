@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { WebOrder } from "../../database/models/WebOrder";
 import CustomError from "../../errors/CustomError";
+import WebOrderModel from "../../database/models/Order/WebOrderSchema";
+import { IWebOrder } from "../../database/models/Order/WebOrder";
 
 export const getOrderById = async (
     req: Request,
@@ -10,7 +11,7 @@ export const getOrderById = async (
     try {
         const { orderId } = req.params;
 
-        const order = await WebOrder.findOne({ orderId });
+        const order = await WebOrderModel.findOne({ orderId });
 
         res.status(200).json(order);
     } catch (error) {
@@ -30,11 +31,14 @@ export const registerOrder = async (
     next: NextFunction
 ) => {
     try {
-        const order = req.body;
-        order.generalData = order.vehicleForm;
-        order.orderDate = new Date();
+        const order: IWebOrder = req.body;
 
-        const newOrder = new WebOrder(order);
+        const actualOrder: IWebOrderToStore = {
+            ...order,
+            orderDate: new Date(),
+        };
+
+        const newOrder = new WebOrderModel(actualOrder);
         await newOrder.save();
 
         res.status(200).json({
@@ -64,7 +68,7 @@ export const updateOrder = async (
         const filter = { orderId };
         const update = { ...body };
 
-        await WebOrder.findOneAndUpdate(filter, update);
+        await WebOrderModel.findOneAndUpdate(filter, update);
 
         res.status(200).json({
             success: true,
@@ -100,11 +104,15 @@ export const updateNestedOrder = async (
                 body[propertyOfUpdates][key];
         }
 
-        const updatedOrder = await WebOrder.findOneAndUpdate(filter, update, {
-            new: true,
-            runValidators: true,
-            upsert: true,
-        });
+        const updatedOrder = await WebOrderModel.findOneAndUpdate(
+            filter,
+            update,
+            {
+                new: true,
+                runValidators: true,
+                upsert: true,
+            }
+        );
 
         if (!updatedOrder) {
             const finalError = new CustomError(
@@ -129,3 +137,7 @@ export const updateNestedOrder = async (
         next(finalError);
     }
 };
+
+interface IWebOrderToStore extends IWebOrder {
+    orderDate: Date;
+}
