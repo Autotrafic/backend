@@ -1,3 +1,6 @@
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable consistent-return */
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
 import WebOrderModel from "../../database/models/Order/WebOrderSchema";
@@ -63,10 +66,9 @@ export const updateOrder = async (
 ) => {
     try {
         const { orderId } = req.params;
-        const { body } = req;
+        const { body: update } = req;
 
         const filter = { orderId };
-        const update = { ...body };
 
         await WebOrderModel.findOneAndUpdate(filter, update);
 
@@ -85,8 +87,16 @@ export const updateOrder = async (
     }
 };
 
-export const updateNestedOrder = async (
-    req: Request,
+interface IUpdateOrderRequest extends Request {
+    body: {
+        vehicle: { vehiclePlate: string };
+        buyer?: { phoneNumber: string; shipmentAddress: string };
+        seller?: { phoneNumber: string };
+    };
+}
+
+export const updateOrderNestedProperties = async (
+    req: IUpdateOrderRequest,
     res: Response,
     next: NextFunction
 ) => {
@@ -95,13 +105,18 @@ export const updateNestedOrder = async (
         const { body } = req;
 
         const filter = { orderId };
-
-        const propertyOfUpdates = Object.keys(body)[0];
         const update: { [key: string]: any } = {};
 
-        for (const key in body[propertyOfUpdates]) {
-            update[`${propertyOfUpdates}.${key}`] =
-                body[propertyOfUpdates][key];
+        for (const propertyOfUpdates in body) {
+            const nestedObject = body[
+                propertyOfUpdates as keyof typeof body
+            ] as {
+                [key: string]: any;
+            };
+
+            for (const key in nestedObject) {
+                update[`${propertyOfUpdates}.${key}`] = nestedObject[key];
+            }
         }
 
         const updatedOrder = await WebOrderModel.findOneAndUpdate(

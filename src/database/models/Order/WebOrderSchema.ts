@@ -21,6 +21,15 @@ const orderITPSchema = new Schema({
     valorDepreciacion: Number,
 });
 
+const orderBuyerSchema = new Schema({
+    phoneNumber: String,
+    shipmentAddress: String,
+});
+
+const orderSellerSchema = new Schema({
+    phoneNumber: String,
+});
+
 const orderUserSchema = new Schema({
     fullName: String,
     phoneNumber: String,
@@ -37,6 +46,8 @@ const webOrderSchema = new Schema({
     prices: orderPricesSchema,
     corssSelling: orderCrossSellingSchema,
     user: orderUserSchema,
+    buyer: orderBuyerSchema,
+    seller: orderSellerSchema,
     vehicle: { type: Schema.Types.Mixed },
 });
 

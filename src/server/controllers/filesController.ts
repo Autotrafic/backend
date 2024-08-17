@@ -7,11 +7,11 @@ import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
 import CustomError from "../../errors/CustomError";
 import { createTextFile, formatDataForTextFile } from "../../utils/file";
 
-export const uploadFiles = async (
+export default async function uploadFiles(
     req: Request,
     res: Response,
     next: NextFunction
-): Promise<void> => {
+): Promise<void> {
     const files = req.files as Express.Multer.File[];
     const { orderData, folderName } = req.body;
 
@@ -35,7 +35,9 @@ export const uploadFiles = async (
             createdFolderId
         );
 
+        // eslint-disable-next-line no-restricted-syntax
         for (const file of files) {
+            // eslint-disable-next-line no-await-in-loop
             await uploadToGoogleDrive(file, createdFolderId);
         }
 
