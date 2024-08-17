@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {
     uploadStreamFileToDrive as uploadToGoogleDrive,
-    createFolder,
+    createNewOrderFolder,
 } from "../services/googleDrive";
 import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
 import CustomError from "../../errors/CustomError";
@@ -21,7 +21,7 @@ export default async function uploadFiles(
     }
 
     try {
-        const createdFolderId = await createFolder(
+        const documentsFolderId = await createNewOrderFolder(
             folderName,
             CUSTOMER_FILES_DRIVE_FOLDER_ID
         );
@@ -32,13 +32,13 @@ export default async function uploadFiles(
 
         await uploadToGoogleDrive(
             orderDataFile as Express.Multer.File,
-            createdFolderId
+            documentsFolderId
         );
 
         // eslint-disable-next-line no-restricted-syntax
         for (const file of files) {
             // eslint-disable-next-line no-await-in-loop
-            await uploadToGoogleDrive(file, createdFolderId);
+            await uploadToGoogleDrive(file, documentsFolderId);
         }
 
         res.status(200).send({ message: "Files uploaded successfully" });
@@ -51,4 +51,4 @@ export default async function uploadFiles(
         );
         next(finalError);
     }
-};
+}

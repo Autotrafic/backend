@@ -90,8 +90,9 @@ export const updateOrder = async (
 interface IUpdateOrderRequest extends Request {
     body: {
         vehicle: { vehiclePlate: string };
-        buyer?: { phoneNumber: string; shipmentAddress: string };
+        buyer?: { phoneNumber: string };
         seller?: { phoneNumber: string };
+        user?: { shipmentAddress: string };
     };
 }
 
