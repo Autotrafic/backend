@@ -23,7 +23,6 @@ const orderITPSchema = new Schema({
 
 const orderBuyerSchema = new Schema({
     phoneNumber: String,
-    shipmentAddress: String,
 });
 
 const orderSellerSchema = new Schema({
@@ -35,6 +34,7 @@ const orderUserSchema = new Schema({
     phoneNumber: String,
     email: String,
     buyerCommunity: { type: String, enum: AutonomousCommunityValue },
+    shipmentAddress: String,
 });
 
 const webOrderSchema = new Schema({
