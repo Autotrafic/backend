@@ -262,6 +262,28 @@ export default function calculateItp(orderData: OrderData) {
         prevItpValue = 0.04;
     }
 
+    if (orderData.comunidadAutonoma === "MUR") {
+        if (yearsDifference >= 12) {
+            if (orderData.cilindrada <= 1000) {
+                prevItpValue = 0.04;
+            } else if (
+                orderData.cilindrada > 1000 &&
+                orderData.cilindrada <= 1500
+            ) {
+                prevItpValue = 30;
+            } else if (
+                orderData.cilindrada > 1500 &&
+                orderData.cilindrada <= 2000
+            ) {
+                prevItpValue = 50;
+            } else {
+                prevItpValue = 0.04;
+            }
+        } else {
+            prevItpValue = 0.04;
+        }
+    }
+
     if (orderData.comunidadAutonoma === "RIO") {
         prevItpValue = 0.04;
     }
@@ -380,28 +402,6 @@ export default function calculateItp(orderData: OrderData) {
             prevItpValue = 0.06;
         }
         //Vehículos adquiridos al final de su vida útil para su valorización y eliminación: 2%
-    }
-
-    if (orderData.comunidadAutonoma === "MUR") {
-        if (yearsDifference >= 12) {
-            if (orderData.cilindrada <= 1000) {
-                prevItpValue = 0.04;
-            } else if (
-                orderData.cilindrada > 1000 &&
-                orderData.cilindrada <= 1500
-            ) {
-                prevItpValue = 30;
-            } else if (
-                orderData.cilindrada > 1500 &&
-                orderData.cilindrada <= 2000
-            ) {
-                prevItpValue = 50;
-            } else {
-                prevItpValue = 0.04;
-            }
-        } else {
-            prevItpValue = 0.04;
-        }
     }
 
     if (prevItpValue > 1) {
