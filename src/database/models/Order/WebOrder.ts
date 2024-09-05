@@ -1,6 +1,6 @@
 import { ICar, VehicleType } from "../CarModel";
 import { IMotorbike } from "../FuelMotorbikeModel";
-import { AutonomousCommunityValue } from "../../enums";
+import { AutonomousCommunityValue } from "../../../interfaces/enums";
 
 export interface IWebOrder {
     orderId: string;
@@ -11,6 +11,13 @@ export interface IWebOrder {
     crossSelling: IOrderCrossSelling;
     vehicle: ICarSpecifications | IMotorbikeSpecifications;
     user: IRegisterOrderUser;
+}
+
+export interface WebOrderDetails {
+    vehicle: { plate: string };
+    user: { shipmentAddress: string };
+    buyer: { phoneNumber: string };
+    seller: { phoneNumber: string };
 }
 
 export interface IRegisterOrderUser {

@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { Fuel } from "../enums";
+import { Fuel } from "../../interfaces/enums";
 
 export interface ICar {
     id: Schema.Types.ObjectId;

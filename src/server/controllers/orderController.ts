@@ -4,7 +4,11 @@
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
 import WebOrderModel from "../../database/models/Order/WebOrderSchema";
-import { IWebOrder } from "../../database/models/Order/WebOrder";
+import {
+    IWebOrder,
+    WebOrderDetails,
+} from "../../database/models/Order/WebOrder";
+import { UpdateOrderByDocumentsDetailsBody } from "../../interfaces/import/order";
 
 export const getOrderById = async (
     req: Request,
@@ -87,50 +91,21 @@ export const updateOrder = async (
     }
 };
 
-interface IUpdateOrderRequest extends Request {
-    body: {
-        vehicle: { vehiclePlate: string };
-        buyer?: { phoneNumber: string };
-        seller?: { phoneNumber: string };
-        user?: { shipmentAddress: string };
-    };
-}
-
-export const updateOrderNestedProperties = async (
-    req: IUpdateOrderRequest,
+export const updateOrderWithDocumentsDetails = async (
+    req: UpdateOrderByDocumentsDetailsBody,
     res: Response,
     next: NextFunction
 ) => {
     try {
         const { orderId } = req.params;
         const { body } = req;
+        const { vehiclePlate, shipmentAddress, buyerPhone, sellerPhone } = body;
 
         const filter = { orderId };
-        const update: { [key: string]: any } = {};
 
-        for (const propertyOfUpdates in body) {
-            const nestedObject = body[
-                propertyOfUpdates as keyof typeof body
-            ] as {
-                [key: string]: any;
-            };
+        const orderDocument = await WebOrderModel.findOne(filter);
 
-            for (const key in nestedObject) {
-                update[`${propertyOfUpdates}.${key}`] = nestedObject[key];
-            }
-        }
-
-        const updatedOrder = await WebOrderModel.findOneAndUpdate(
-            filter,
-            update,
-            {
-                new: true,
-                runValidators: true,
-                upsert: true,
-            }
-        );
-
-        if (!updatedOrder) {
+        if (!orderDocument) {
             const finalError = new CustomError(
                 404,
                 "Order not found.",
@@ -138,6 +113,27 @@ export const updateOrderNestedProperties = async (
             );
             return next(finalError);
         }
+
+        const updatedVehicleData = {
+            ...orderDocument.vehicle,
+            plate: vehiclePlate,
+        };
+
+        const updatedUserData = {
+            ...orderDocument.user,
+            shipmentAddress: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
+        };
+
+        const update: Partial<IWebOrder & WebOrderDetails> = {
+            vehicle: updatedVehicleData,
+            user: updatedUserData,
+            buyer: { phoneNumber: buyerPhone },
+            seller: { phoneNumber: sellerPhone },
+        };
+
+        await WebOrderModel.updateOne(filter, {
+            $set: update,
+        });
 
         res.status(200).json({
             success: true,
