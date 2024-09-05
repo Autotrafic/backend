@@ -32,8 +32,10 @@ function getOrderTypeDetails(orderType: string) {
         hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
     }
 
-    if (taxValue === null || hasShipmentCost === null)
-        throw new Error("The order type is not valid");
+    if (taxValue === null || hasShipmentCost === null) {
+        taxValue = 0;
+        hasShipmentCost = 0;
+    }
 
     return { taxValue, hasShipmentCost };
 }
@@ -84,7 +86,7 @@ export function createInvoiceServicesList(
     } else {
         totalProfitsWithIVA = ORDER_PROFITS;
     }
-    
+
     const profitsWithoutIVA = (totalProfitsWithIVA * 100) / 121;
 
     const profits = {
@@ -95,7 +97,9 @@ export function createInvoiceServicesList(
         totalPrice: totalProfitsWithIVA,
     };
 
-    const servicesList = [taxDGT, taxITP, shipment, profits].filter((item) => item !== null && item !== undefined);
+    const servicesList = [taxDGT, taxITP, shipment, profits].filter(
+        (item) => item !== null && item !== undefined
+    );
 
     return servicesList;
 }

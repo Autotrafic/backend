@@ -30,7 +30,7 @@ export async function createInvoiceData(
         console.log(error);
         const finalError = new CustomError(
             400,
-            "Error creating invoice data.",
+            `Error creating invoice data. \n ${error}`,
             `Error creating invoice data. \n ${error}`
         );
         next(finalError);
