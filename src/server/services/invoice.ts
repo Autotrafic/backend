@@ -32,8 +32,10 @@ function getOrderTypeDetails(orderType: string) {
         hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
     }
 
-    if (taxValue === null || hasShipmentCost === null)
-        throw new Error("The order type is not valid");
+    if (taxValue === null || hasShipmentCost === null) {
+        taxValue = 0;
+        hasShipmentCost = 0;
+    }
 
     return { taxValue, hasShipmentCost };
 }
