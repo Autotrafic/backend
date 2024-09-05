@@ -160,7 +160,9 @@ export default function calculateItp(orderData: OrderData) {
     }
 
     if (orderData.comunidadAutonoma === "CANA") {
-        if (yearsDifference > 10) {
+        if (orderData.tipoVehiculo === VEHICLE_TYPE.MOTORBIKE) {
+            prevItpValue = 0.055;
+        } else if (yearsDifference > 10) {
             if (orderData.cilindrada <= 1000) {
                 prevItpValue = 40;
             } else if (
