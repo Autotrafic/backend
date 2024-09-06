@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFile } from "fs";
 import path from "path";
 import { MulterFile } from "./models";
+import { DatabaseOrder } from "../database/models/Order/WebOrder";
 
 export function createTextFile(content: string): Promise<MulterFile> {
     return new Promise((resolve, reject) => {
@@ -30,20 +31,17 @@ export function createTextFile(content: string): Promise<MulterFile> {
     });
 }
 
-export function formatDataForTextFile(data: string): string {
-    if (!data) return "";
+export function formatDataForTextFile(order: string): string {
+    if (!order) return "";
 
-    const { vehicle, buyer, seller, customer, plusServices, order } =
-        JSON.parse(data);
-
-    if (!vehicle && !buyer && !seller && !customer && !plusServices && !order)
-        return "";
+    const { vehicle, buyer, seller, user, crossSelling, itp, prices } =
+        JSON.parse(order) as DatabaseOrder;
 
     const vehicleInfo = `
 - Vehículo (Datos no fiables):
     Matrícula: ${vehicle.plate}
 
-    Tipo: ${vehicle.vehicleType}
+    Tipo: ${vehicle.type}
 
     Fecha de matriculacion: ${vehicle.registrationDate}
 `;
@@ -60,34 +58,34 @@ export function formatDataForTextFile(data: string): string {
 
     const customerInfo = `
 - Cliente:
-    Comunidad autónoma: ${customer.community}
+    Comunidad autónoma: ${user.buyerCommunity}
 
-    Teléfono: ${customer.phoneNumber}
+    Teléfono: ${user.phoneNumber}
 
-    Nombre completo: ${customer.fullName}
+    Nombre completo: ${user.fullName}
 
-    Correo electrónico: ${customer.email}
+    Correo electrónico: ${user.email}
 `;
 
     const plusServicesInfo = `
 - PRODUCTOS AÑADIDOS:
-    Etiqueta medioambiental: ${plusServices.etiquetaMedioambiental}
+    Etiqueta medioambiental: ${crossSelling.etiquetaMedioambiental}
 
-    Informe DGT: ${plusServices.informeDgt}
+    Informe DGT: ${crossSelling.informeDgt}
 `;
 
     const orderInfo = `
 - Información adicional:
-    Dirección de envío: ${order.shippingAddress}, ${order.postalCode}
+    Dirección de envío: ${user.shipmentAddress}
 
-    Precio ITP: ${order?.itpPrice ? order.itpPrice.toFixed(2) : 0} €
+    Precio ITP: ${itp.ITP.toFixed(2)} €
 
-    Precio total venta: ${order?.totalPrice ? order.totalPrice.toFixed(2) : 0} €
+    Precio total venta: ${Number(prices.totalPrice).toFixed(2)} €
 `;
 
     return `
     ${
-        plusServices &&
+        crossSelling &&
         `!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     ${plusServicesInfo}

@@ -2,7 +2,9 @@ import { ICar, VehicleType } from "../CarModel";
 import { IMotorbike } from "../FuelMotorbikeModel";
 import { AutonomousCommunityValue } from "../../../interfaces/enums";
 
-export interface IWebOrder {
+export type DatabaseOrder = WebOrder & WebOrderDetails;
+
+export interface WebOrder {
     orderId: string;
     isProduction: boolean;
     isReferralValid: boolean;

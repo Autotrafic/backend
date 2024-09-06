@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
 import WebOrderModel from "../../database/models/Order/WebOrderSchema";
 import {
-    IWebOrder,
+    WebOrder,
     WebOrderDetails,
 } from "../../database/models/Order/WebOrder";
 import { UpdateOrderByDocumentsDetailsBody } from "../../interfaces/import/order";
@@ -38,7 +38,7 @@ export const registerOrder = async (
     next: NextFunction
 ) => {
     try {
-        const order: IWebOrder = req.body;
+        const order: WebOrder = req.body;
 
         const actualOrder: IWebOrderToStore = {
             ...order,
@@ -124,7 +124,7 @@ export const updateOrderWithDocumentsDetails = async (
             shipmentAddress: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
         };
 
-        const update: Partial<IWebOrder & WebOrderDetails> = {
+        const update: Partial<WebOrder & WebOrderDetails> = {
             vehicle: updatedVehicleData,
             user: updatedUserData,
             buyer: { phoneNumber: buyerPhone },
@@ -150,6 +150,6 @@ export const updateOrderWithDocumentsDetails = async (
     }
 };
 
-interface IWebOrderToStore extends IWebOrder {
+interface IWebOrderToStore extends WebOrder {
     orderDate: Date;
 }

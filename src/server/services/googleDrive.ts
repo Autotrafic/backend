@@ -19,7 +19,7 @@ export async function uploadStreamFileToDrive(
 ) {
     const fileMetadata: drive_v3.Params$Resource$Files$Create = {
         requestBody: {
-            name: `📋 ${file.originalname}`,
+            name: `${file.originalname}`,
             mimeType: file.mimetype,
             parents: [parentFolderId],
         },
@@ -86,18 +86,18 @@ async function ensureFolderExists(
     }
 }
 
-export async function createNewOrderFolder(
+export async function getOrderFolder(
     folderName: string,
     parentFolderId: string
 ): Promise<string> {
     try {
         const actualMonthName = getMonthNameInSpanish().toUpperCase();
-        const newFolderId = await ensureFolderExists(
+        const monthFolderId = await ensureFolderExists(
             actualMonthName,
             parentFolderId
         );
 
-        return await createFolder(folderName, newFolderId!);
+        return await ensureFolderExists(folderName, monthFolderId);
     } catch (error) {
         console.error("Failed to create folder inside the month name:", error);
         throw error;

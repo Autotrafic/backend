@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { AutonomousCommunityValue } from "../../../interfaces/enums";
-import { IWebOrder, WebOrderDetails } from "./WebOrder";
+import { WebOrder, WebOrderDetails } from "./WebOrder";
 
 const orderCrossSellingSchema = new Schema({
     etiquetaMedioambiental: Boolean,
@@ -51,5 +51,9 @@ const webOrderSchema = new Schema({
     seller: orderSellerSchema,
 });
 
-const WebOrderModel = model<IWebOrder | (IWebOrder & WebOrderDetails)>("Order", webOrderSchema, "orders");
+const WebOrderModel = model<WebOrder | (WebOrder & WebOrderDetails)>(
+    "Order",
+    webOrderSchema,
+    "orders"
+);
 export default WebOrderModel;
