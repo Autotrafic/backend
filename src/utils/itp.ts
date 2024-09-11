@@ -144,9 +144,9 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (comunidadAutonoma === "CANA") {
+    if (orderData.comunidadAutonoma === "CANA") {
         if (yearsDifference > 10) {
-            if (cilindrada <= 1000) {
+            if (orderData.cilindrada <= 1000) {
                 prevItpValue = 40;
             } else if (cilindrada > 1000 && cilindrada <= 1500) {
                 prevItpValue = 70;
@@ -222,6 +222,28 @@ export default function calculateItp(orderData: OrderData) {
 
     if (comunidadAutonoma === "MAD") {
         prevItpValue = 0.04;
+    }
+
+    if (orderData.comunidadAutonoma === "MUR") {
+        if (yearsDifference >= 12) {
+            if (orderData.cilindrada <= 1000) {
+                prevItpValue = 0.04;
+            } else if (
+                orderData.cilindrada > 1000 &&
+                orderData.cilindrada <= 1500
+            ) {
+                prevItpValue = 30;
+            } else if (
+                orderData.cilindrada > 1500 &&
+                orderData.cilindrada <= 2000
+            ) {
+                prevItpValue = 50;
+            } else {
+                prevItpValue = 0.04;
+            }
+        } else {
+            prevItpValue = 0.04;
+        }
     }
 
     if (comunidadAutonoma === "RIO") {
@@ -329,13 +351,19 @@ export default function calculateItp(orderData: OrderData) {
         }
     }
 
-    if (comunidadAutonoma === "MUR") {
+    if (orderData.comunidadAutonoma === "MUR") {
         if (yearsDifference >= 12) {
-            if (cilindrada <= 1000) {
+            if (orderData.cilindrada <= 1000) {
                 prevItpValue = 0.04;
-            } else if (cilindrada > 1000 && cilindrada <= 1500) {
+            } else if (
+                orderData.cilindrada > 1000 &&
+                orderData.cilindrada <= 1500
+            ) {
                 prevItpValue = 30;
-            } else if (cilindrada > 1500 && cilindrada <= 2000) {
+            } else if (
+                orderData.cilindrada > 1500 &&
+                orderData.cilindrada <= 2000
+            ) {
                 prevItpValue = 50;
             } else {
                 prevItpValue = 0.04;
