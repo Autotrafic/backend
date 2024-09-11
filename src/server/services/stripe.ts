@@ -3,9 +3,11 @@ import "../../loadEnvironment";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const stripeKey = isProduction
-    ? process.env.STRIPE_SECRET_KEY
-    : process.env.STRIPE_TEST_SECRET_KEY;
+// const stripeKey = isProduction
+//     ? process.env.STRIPE_SECRET_KEY
+//     : process.env.STRIPE_TEST_SECRET_KEY;
+
+const stripeKey = process.env.STRIPE_TEST_SECRET_KEY;
 
 const stripe = new Stripe(stripeKey, {});
 
