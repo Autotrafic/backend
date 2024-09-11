@@ -6,12 +6,17 @@ import {
     getUserByPhoneNumber,
     updateUserByPhoneNumber,
 } from "../../database/repository/user";
+import { CreateIntentRequestBody } from "../../interfaces/stripe";
 
 const CURRENCY = "eur";
 const AMOUNT = 12995;
 
+interface RequestWithBody extends Request {
+    body: CreateIntentRequestBody;
+}
+
 export default async function createPaymentIntent(
-    req: Request,
+    req: RequestWithBody,
     res: Response,
     next: NextFunction
 ) {

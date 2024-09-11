@@ -1,7 +1,8 @@
+/* eslint-disable no-underscore-dangle */
 import { NextFunction, Request, Response } from "express";
 import { CarModel } from "../../database/models/CarModel";
 import CustomError from "../../errors/CustomError";
-import { BrandModel } from "../../database/models/Brand";
+import { BrandModel, ExportBrand } from "../../database/models/Brand";
 import calculateItp from "../../utils/itp";
 
 export const getAllCars = async (
@@ -29,7 +30,10 @@ export const getAllBrandNames = async (
     next: NextFunction
 ) => {
     try {
-        const brands = await BrandModel.find({}, { brandName: 1 });
+        const brands: ExportBrand[] = await BrandModel.find(
+            {},
+            { brandName: 1 }
+        );
         res.status(200).json(brands);
     } catch (error) {
         console.log(error);
@@ -50,7 +54,7 @@ export const getModelNamesWithFilters = async (
     const { brandName, carYear, fuel } = req.body;
 
     try {
-        const brand = await BrandModel.find({ brandName: brandName });
+        const brand = await BrandModel.find({ brandName });
 
         const modelNames = await CarModel.find({
             modelOf: brand[0]._id,
@@ -79,7 +83,7 @@ export const getFuelsByModels = async (
     const { brandName, carYear } = req.body;
 
     try {
-        const brand = await BrandModel.find({ brandName: brandName });
+        const brand = await BrandModel.find({ brandName });
 
         const modelNames = await CarModel.find({
             modelOf: brand[0]._id,
@@ -124,7 +128,7 @@ export const getItp = async (
     res: Response,
     next: NextFunction
 ) => {
-    const { orderData } = req.body;
+    const orderData = req.body;
 
     try {
         const itpResponse = calculateItp(orderData);

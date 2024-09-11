@@ -1,11 +1,14 @@
 import { model, Schema } from "mongoose";
+import { Fuel } from "../../interfaces/enums";
 
-export interface CarModel {
+export interface ICar {
+    id: Schema.Types.ObjectId;
+    modelOf: string;
     modelName: string;
     value: number;
     startYear: number;
     endYear: number;
-    fuel: string;
+    fuel: Fuel;
     cc: number;
     cv: number;
     cvf: string;
@@ -14,6 +17,7 @@ export interface CarModel {
 }
 
 const carModelSchema = new Schema({
+    id: Schema.Types.ObjectId,
     modelOf: { type: Schema.Types.ObjectId, ref: "Brand" },
     modelName: String,
     value: Number,
@@ -27,5 +31,9 @@ const carModelSchema = new Schema({
     cylindersNumber: Number,
 });
 
-export const CarModel = model("CarModel", carModelSchema, "car-models");
+export enum VehicleType {
+    CAR = 1,
+    MOTORBIKE = 2,
+}
 
+export const CarModel = model("CarModel", carModelSchema, "car-models");

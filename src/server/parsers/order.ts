@@ -1,7 +1,7 @@
 import { IOrder } from "../../database/models/Order/Order";
-import { IPrimitiveOrder } from "../../database/models/Order/PrimitiveOrder";
+import { ITotalumOrder } from "../../database/models/Order/TotalumOrder";
 
-export default function parseOrderFromPrimitive(order: IPrimitiveOrder): IOrder {
+export default function parseOrderFromPrimitive(order: ITotalumOrder): IOrder {
     return {
         autonomousCommunity: order.comunidad_autonoma,
         priority: order.prioridad,

@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-export interface IPrimitiveOrder {
+export interface ITotalumOrder {
     comunidad_autonoma: string;
     prioridad: string;
     estado: string;
@@ -46,4 +46,8 @@ const primitiveOrderSchema = new Schema({
     _id: String,
 });
 
-export const PrimitiveOrder = model("PrimitiveOrder", primitiveOrderSchema, "primitive-orders");
+export const TotalumOrder = model(
+    "TotalumOrder",
+    primitiveOrderSchema,
+    "totalum-orders"
+);
