@@ -3,6 +3,7 @@ import { google, drive_v3 } from "googleapis";
 import "../../loadEnvironment";
 import { getMonthNameInSpanish } from "../../utils/funcs";
 import { createTextFile, formatDataForTextFile } from "../../utils/file";
+import { DatabaseOrder } from "../../database/models/Order/WebOrder";
 
 const key = {
   client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -129,7 +130,7 @@ export async function checkFileExists(
 }
 
 export async function uploadAdditionalInformationFile(
-  stringifiedOrderData: string,
+  orderData: DatabaseOrder,
   orderFolderId: string
 ) {
   const isAlreadyUploaded = await checkFileExists(
@@ -139,7 +140,7 @@ export async function uploadAdditionalInformationFile(
   if (isAlreadyUploaded) return;
 
   const orderDataFile = await createTextFile(
-    formatDataForTextFile(stringifiedOrderData)
+    formatDataForTextFile(orderData)
   );
 
   await uploadStreamFileToDrive(

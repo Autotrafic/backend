@@ -50,7 +50,7 @@ export const registerOrder = async (
 
         res.status(200).json({
             success: true,
-            message: "Order registered successfully",
+            order: order.orderId,
         });
     } catch (error) {
         console.log(error);

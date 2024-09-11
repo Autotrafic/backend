@@ -6,14 +6,15 @@ import {
 } from "../services/googleDrive";
 import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
 import CustomError from "../../errors/CustomError";
+import { CreateInformationFileBody } from "../../interfaces/import/file";
 
-export default async function uploadFiles(
+export async function uploadFiles(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   const files = req.files as Express.Multer.File[];
-  const { orderData, folderName } = req.body;
+  const { folderName } = req.body;
 
   if (!files || files.length === 0) {
     res.status(400).send(`No file uploaded. Files: ${files}`);
@@ -26,8 +27,6 @@ export default async function uploadFiles(
       CUSTOMER_FILES_DRIVE_FOLDER_ID
     );
 
-    await uploadAdditionalInformationFile(orderData, orderFolderId);
-
     // eslint-disable-next-line no-restricted-syntax
     for (const file of files) {
       // eslint-disable-next-line no-await-in-loop
@@ -39,8 +38,35 @@ export default async function uploadFiles(
     console.error("Error uploading files to Google Drive:", error);
     const finalError = new CustomError(
       500,
-      "Failed to upload files to Google Drive.",
+      `Failed to upload files to Google Drive. \n ${error}`,
       `Failed to upload files to Google Drive. \n ${error}`
+    );
+    next(finalError);
+  }
+}
+
+export async function createAdditionalInformationFile(
+  req: CreateInformationFileBody,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const { orderData, folderName } = req.body;
+
+  try {
+    const orderFolderId = await getOrderFolder(
+      folderName,
+      CUSTOMER_FILES_DRIVE_FOLDER_ID
+    );
+
+    await uploadAdditionalInformationFile(orderData, orderFolderId);
+
+    res.status(200).send({ message: "File uploaded successfully" });
+  } catch (error) {
+    console.error("Error uploading files to Google Drive:", error);
+    const finalError = new CustomError(
+      500,
+      `Failed to upload additional information file to Google Drive. \n ${error}`,
+      `Failed to upload additional information file to Google Drive. \n ${error}`
     );
     next(finalError);
   }

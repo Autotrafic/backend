@@ -44,7 +44,7 @@ const webOrderSchema = new Schema({
     isReferralValid: Boolean,
     itp: orderITPSchema,
     prices: orderPricesSchema,
-    corssSelling: orderCrossSellingSchema,
+    crossSelling: orderCrossSellingSchema,
     vehicle: { type: Schema.Types.Mixed },
     user: orderUserSchema,
     buyer: orderBuyerSchema,

@@ -8,9 +8,9 @@ import {
 
 const orderRouter = express.Router();
 
-orderRouter.get("/:orderId", getOrderById);
-orderRouter.post("/:orderId", updateOrder);
-orderRouter.post("/documentsDetails/:orderId", updateOrderWithDocumentsDetails);
 orderRouter.post("/register", registerOrder);
+orderRouter.post("/documentsDetails/:orderId", updateOrderWithDocumentsDetails);
+orderRouter.post("/:orderId", updateOrder);
+orderRouter.get("/:orderId", getOrderById);
 
 export default orderRouter;
