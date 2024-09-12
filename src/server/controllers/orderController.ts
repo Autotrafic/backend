@@ -1,7 +1,6 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable consistent-return */
-import "../../interfaces/totalum/pedido";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../../errors/CustomError";
 import WebOrderModel from "../../database/models/Order/WebOrderSchema";
