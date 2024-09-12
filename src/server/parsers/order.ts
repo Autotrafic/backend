@@ -1,4 +1,4 @@
-import { Order } from "../../database/models/Order/Order";
+import { TotalumParsedOrder } from "../../database/models/Order/Order";
 import { WebOrder } from "../../database/models/Order/WebOrder";
 import {
   autonomousCommunityMap,
@@ -14,11 +14,35 @@ function parseAutonomousCommunityToTotalum(
 
 function parseAutonomousCommunityToEnum(
   value: TAutonomousCommunity
-): AutonomousCommunityValue | undefined {
+): AutonomousCommunityValue {
   return reverseAutonomousCommunityMap[value];
 }
 
-export function parseOrderFromTotalum(order: TotalumOrder): Order {
+export function parseOrderFromWebToTotalum(
+  webOrder: WebOrder
+): Partial<TotalumOrder> {
+  return {
+    comunidad_autonoma: parseAutonomousCommunityToTotalum(
+      webOrder.user.buyerCommunity
+    ),
+    prioridad: null,
+    estado: "Nuevo pedido web",
+    tipo: "Transferencia",
+    fecha_inicio: new Date(),
+    matricula: null,
+    documentos: null,
+    direccion_envio: null,
+    codigo_envio: null,
+    notas: `Esperando documentación del cliente. ${webOrder.user.phoneNumber}`,
+    fecha_de_contacto: null,
+    total_facturado: Number(webOrder.prices.totalPrice),
+    mandatos: "No enviados",
+  };
+}
+
+export function parseOrderFromTotalumToWeb(
+  order: TotalumOrder
+): TotalumParsedOrder {
   return {
     autonomousCommunity: parseAutonomousCommunityToEnum(
       order.comunidad_autonoma

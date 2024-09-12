@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { parseOrderFromTotalum } from "../parsers/order";
+import { parseOrderFromTotalumToWeb } from "../parsers/order";
 import parseClientFromPrimitive from "../parsers/client";
 import { updateInvoiceNumber } from "../services/invoice";
 import parseInvoiceData from "../parsers/invoice";
@@ -19,7 +19,7 @@ export async function createInvoiceData(
       isForClient,
     } = req.body;
 
-    const order = parseOrderFromTotalum(orderData);
+    const order = parseOrderFromTotalumToWeb(orderData);
     const client = parseClientFromPrimitive(partnerData ?? clientData);
 
     const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
@@ -51,7 +51,7 @@ export async function updateInvoiceData(
     const { orderData, clientData, currentInvoiceNumber, isForClient } =
       req.body;
 
-    const order = parseOrderFromTotalum(orderData);
+    const order = parseOrderFromTotalumToWeb(orderData);
     const client = parseClientFromPrimitive(clientData);
 
     const invoiceData = parseInvoiceData(

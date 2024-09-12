@@ -1,7 +1,6 @@
-import { model, Schema } from "mongoose";
 import { AutonomousCommunityValue } from "../../../interfaces/enums";
 
-export interface Order {
+export interface TotalumParsedOrder {
   autonomousCommunity: AutonomousCommunityValue;
   priority: string;
   state: string;
@@ -21,28 +20,3 @@ export interface Order {
   metadata: object;
   _id: string;
 }
-
-const orderSchema = new Schema({
-  autonomousCommunity: String,
-  priority: String,
-  state: String,
-  type: String,
-  startDate: String,
-  invoice: Object,
-  vehiclePlate: String,
-  documentsLink: String,
-  shipmentAddress: String,
-  shipmentCode: String,
-  cetCode: String,
-  newContractValue: Number,
-  notes: String,
-  itpPaid: Number,
-  totalInvoiced: Number,
-  clientId: String,
-  createdAt: String,
-  updatedAt: String,
-  metadata: Object,
-  _id: String,
-});
-
-export const Order = model("Order", orderSchema, "orders");

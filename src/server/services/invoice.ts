@@ -1,6 +1,6 @@
 /* eslint-disable no-else-return */
 import { InternInvoiceService } from "../../database/models/Invoice";
-import { Order } from "../../database/models/Order/Order";
+import { TotalumParsedOrder } from "../../database/models/Order/Order";
 import { SHIPMENT_COST, ORDER_TYPES } from "../../utils/constants";
 
 const ORDER_PROFITS = 15;
@@ -41,7 +41,7 @@ function getOrderTypeDetails(orderType: string) {
 }
 
 export function createInvoiceServicesList(
-  currentInvoiceData: Order,
+  currentInvoiceData: TotalumParsedOrder,
   isForClient: boolean
 ): InternInvoiceService[] {
   const { type, itpPaid, totalInvoiced } = currentInvoiceData;

@@ -20,6 +20,26 @@ interface TotalumOrder {
   metadata: object;
   _id: string;
 }
+interface TotalumParsedOrder {
+  autonomousCommunity: AutonomousCommunityValue;
+  priority: string;
+  state: string;
+  type: string;
+  startDate: Date;
+  invoice: object;
+  vehiclePlate: string;
+  documentsLink: string;
+  shipmentAddress: string;
+  shipmentCode: string;
+  notes: string;
+  itpPaid: number;
+  totalInvoiced: number;
+  clientId: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata: object;
+  _id: string;
+}
 
 type TAutonomousCommunity =
   | "Cataluña"
@@ -38,9 +58,7 @@ type TAutonomousCommunity =
   | "Navarra"
   | "País Vasco"
   | "La Rioja"
-  | "Valencia"
-  | "Ceuta"
-  | "Melilla";
+  | "Valencia";
 
 type TPriority = "Normal" | "Alta";
 
@@ -57,7 +75,8 @@ type TState =
   | "Pendiente enviar 3º gestoría"
   | "Enviado 3º gestoría"
   | "Pendiente recibir info cliente"
-  | "Pendiente recoger Correos";
+  | "Pendiente recoger Correos"
+  | "Nuevo pedido web";
 
 type TType =
   | "Transferencia"

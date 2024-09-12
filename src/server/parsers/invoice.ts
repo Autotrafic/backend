@@ -1,6 +1,6 @@
 import Client from "../../database/models/Client/Client";
 import Invoice from "../../database/models/Invoice";
-import { Order } from "../../database/models/Order/Order";
+import { TotalumParsedOrder } from "../../database/models/Order/Order";
 import {
   calculateInvoiceTotals,
   roundInvoiceServicesPrices,
@@ -9,7 +9,7 @@ import {
 import parseDatetimeToSpanish from "./dates";
 
 export default function parseInvoiceData(
-  order: Order,
+  order: TotalumParsedOrder,
   client: Client,
   upcomingInvoiceNumber: number,
   isForClient: boolean

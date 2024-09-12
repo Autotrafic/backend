@@ -106,6 +106,4 @@ export const reverseAutonomousCommunityMap: Record<
   Navarra: AutonomousCommunityValue.NAVARRA,
   "País Vasco": AutonomousCommunityValue.PAIS_VASCO,
   Valencia: AutonomousCommunityValue.VALENCIA,
-  Ceuta: undefined as any,
-  Melilla: undefined as any,
 };
