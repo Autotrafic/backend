@@ -8,7 +8,12 @@ import {
   WebOrder,
   WebOrderDetails,
 } from "../../database/models/Order/WebOrder";
-import { UpdateOrderByDocumentsDetailsBody } from "../../interfaces/import/order";
+import {
+  CreateTotalumOrderBody,
+  UpdateOrderByDocumentsDetailsBody,
+} from "../../interfaces/import/order";
+import { TotalumApiSdk } from "totalum-api-sdk";
+import { totalumOptions } from "../../utils/constants";
 
 export const getOrderById = async (
   req: Request,
@@ -63,6 +68,61 @@ export const registerOrder = async (
   }
 };
 
+export async function createTotalumOrder(
+  req: CreateTotalumOrderBody,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { orderId } = req.body;
+
+    const order = await WebOrderModel.findOne({ orderId });
+
+    // const totalumSdk = new TotalumApiSdk(totalumOptions);
+
+    // async function createItem() {
+    //   try {
+    //     const response = await totalumSdk.crud.createItem("pedido", {
+    //       comunidad_autonoma: "Cataluña",
+    //       prioridad: "Normal",
+    //       estado: "Pendiente Tramitar A9",
+    //       tipo: "Transferencia",
+    //       fecha_inicio: "2024-09-13",
+    //       matricula: "exampleString",
+    //       documentos: "exampleString",
+    //       direccion_envio: "exampleString",
+    //       codigo_envio: "exampleString",
+    //       nuevo_contrato: 123,
+    //       notas: "exampleString",
+    //       itp_pagado: 123,
+    //       fecha_de_contacto: "2015-03-25",
+    //       total_facturado: 123,
+    //       mandatos: "No enviados",
+    //     });
+    //     console.log(response.data);
+    //   } catch (error) {
+    //     console.error(error.toString());
+    //     console.error(error?.response?.data);
+    //   }
+    // }
+
+    // await createItem();
+
+    res.status(200).json({
+      success: true,
+      message: "Order updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      `Error creating totalum order. \n ${error}`,
+      `Error creating totalum order. \n ${error}`
+    );
+    next(finalError);
+  }
+}
+
 export const updateOrder = async (
   req: Request,
   res: Response,
@@ -103,7 +163,7 @@ export const updateOrderWithDocumentsDetails = async (
 
     const filter = { orderId };
 
-    const orderDocument = await WebOrderModel.findOne(filter)
+    const orderDocument = await WebOrderModel.findOne(filter);
 
     if (!orderDocument) {
       const finalError = new CustomError(
@@ -118,13 +178,13 @@ export const updateOrderWithDocumentsDetails = async (
       ...orderDocument.vehicle,
       plate: vehiclePlate,
     };
-    
+
     const updatedUserData = {
-        fullName: orderDocument.user.fullName,
-        phoneNumber: orderDocument.user.phoneNumber,
-        email: orderDocument.user.email,
-        buyerCommunity: orderDocument.user.buyerCommunity,
-        shipmentAddress: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
+      fullName: orderDocument.user.fullName,
+      phoneNumber: orderDocument.user.phoneNumber,
+      email: orderDocument.user.email,
+      buyerCommunity: orderDocument.user.buyerCommunity,
+      shipmentAddress: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
     };
 
     const update: Partial<WebOrder & WebOrderDetails> = {

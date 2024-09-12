@@ -11,8 +11,6 @@ export interface ITotalumOrder {
     documentos: string;
     direccion_envio: string;
     codigo_envio: string;
-    cet: string;
-    nuevo_contrato: number;
     notas: string;
     itp_pagado: number;
     total_facturado: number;
