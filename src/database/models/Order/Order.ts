@@ -1,7 +1,8 @@
 import { model, Schema } from "mongoose";
+import { AutonomousCommunityValue } from "../../../interfaces/enums";
 
 export interface Order {
-  autonomousCommunity: string;
+  autonomousCommunity: AutonomousCommunityValue;
   priority: string;
   state: string;
   type: string;

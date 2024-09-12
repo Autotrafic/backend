@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import parseOrderFromTotalum from "../parsers/order";
+import { parseOrderFromTotalum } from "../parsers/order";
 import parseClientFromPrimitive from "../parsers/client";
 import { updateInvoiceNumber } from "../services/invoice";
 import parseInvoiceData from "../parsers/invoice";

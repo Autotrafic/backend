@@ -1,10 +1,28 @@
 import { Order } from "../../database/models/Order/Order";
-import { TotalumOrder } from "../../database/models/Order/TotalumSchema";
 import { WebOrder } from "../../database/models/Order/WebOrder";
+import {
+  autonomousCommunityMap,
+  AutonomousCommunityValue,
+  reverseAutonomousCommunityMap,
+} from "../../interfaces/enums";
 
-export default function parseOrderFromTotalum(order: TotalumOrder): Order {
+function parseAutonomousCommunityToTotalum(
+  value: AutonomousCommunityValue
+): TAutonomousCommunity {
+  return autonomousCommunityMap[value];
+}
+
+function parseAutonomousCommunityToEnum(
+  value: TAutonomousCommunity
+): AutonomousCommunityValue | undefined {
+  return reverseAutonomousCommunityMap[value];
+}
+
+export function parseOrderFromTotalum(order: TotalumOrder): Order {
   return {
-    autonomousCommunity: order.comunidad_autonoma,
+    autonomousCommunity: parseAutonomousCommunityToEnum(
+      order.comunidad_autonoma
+    ),
     priority: order.prioridad,
     state: order.estado,
     type: order.tipo,
