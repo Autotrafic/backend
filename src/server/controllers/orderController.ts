@@ -69,6 +69,34 @@ export const registerOrder = async (
   }
 };
 
+export const updateOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orderId } = req.params;
+    const { body: update } = req;
+
+    const filter = { orderId };
+
+    await WebOrderModel.findOneAndUpdate(filter, update);
+
+    res.status(200).json({
+      success: true,
+      message: "Order updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      "Error updating order.",
+      `Error updating order. \n ${error}`
+    );
+    next(finalError);
+  }
+};
+
 export async function createTotalumOrder(
   req: CreateTotalumOrderBody,
   res: Response,
@@ -106,33 +134,7 @@ export async function createTotalumOrder(
   }
 }
 
-export const updateOrder = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { orderId } = req.params;
-    const { body: update } = req;
 
-    const filter = { orderId };
-
-    await WebOrderModel.findOneAndUpdate(filter, update);
-
-    res.status(200).json({
-      success: true,
-      message: "Order updated successfully",
-    });
-  } catch (error) {
-    console.log(error);
-    const finalError = new CustomError(
-      400,
-      "Error updating order.",
-      `Error updating order. \n ${error}`
-    );
-    next(finalError);
-  }
-};
 
 export const updateOrderWithDocumentsDetails = async (
   req: UpdateOrderByDocumentsDetailsBody,

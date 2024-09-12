@@ -14,7 +14,7 @@ interface TotalumOrder {
   fecha_de_contacto: Date;
   total_facturado: number;
   mandatos: TMandate;
-  autotraficId: string;
+  autotrafic_id: string;
   cliente: string;
   createdAt: string;
   updatedAt: string;

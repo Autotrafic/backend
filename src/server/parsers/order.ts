@@ -22,6 +22,7 @@ export function parseOrderFromWebToTotalum(
   webOrder: WebOrder
 ): Partial<TotalumOrder> {
   return {
+    autotrafic_id: webOrder.orderId,
     prioridad: null,
     estado: "Nuevo pedido web",
     tipo: "Transferencia",
@@ -64,7 +65,7 @@ export function parseOrderFromTotalumToWeb(
     notes: order.notas,
     itpPaid: order.itp_pagado,
     totalInvoiced: order.total_facturado,
-    autotraficId: order.autotraficId,
+    autotraficId: order.autotrafic_id,
     clientId: order.cliente,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
