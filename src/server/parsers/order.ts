@@ -22,9 +22,6 @@ export function parseOrderFromWebToTotalum(
   webOrder: WebOrder
 ): Partial<TotalumOrder> {
   return {
-    comunidad_autonoma: parseAutonomousCommunityToTotalum(
-      webOrder.user.buyerCommunity
-    ),
     prioridad: null,
     estado: "Nuevo pedido web",
     tipo: "Transferencia",
@@ -33,10 +30,18 @@ export function parseOrderFromWebToTotalum(
     documentos: null,
     direccion_envio: null,
     codigo_envio: null,
-    notas: `Esperando documentación del cliente. ${webOrder.user.phoneNumber}`,
     fecha_de_contacto: null,
     total_facturado: Number(webOrder.prices.totalPrice),
     mandatos: "No enviados",
+    comunidad_autonoma: parseAutonomousCommunityToTotalum(
+      webOrder.user.buyerCommunity
+    ),
+    notas: `Esperando documentación del cliente. ${
+      webOrder.crossSelling.etiquetaMedioambiental &&
+      "❗️Pedido con Etiqueta Medioambiental❗️"
+    } ${webOrder.crossSelling.informeDgt && "❗️Pedido con Informe DGT❗️"} ${
+      webOrder.user.phoneNumber
+    }`,
   };
 }
 

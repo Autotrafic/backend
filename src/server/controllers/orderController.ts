@@ -14,6 +14,7 @@ import {
 } from "../../interfaces/import/order";
 import { TotalumApiSdk } from "totalum-api-sdk";
 import { totalumOptions } from "../../utils/constants";
+import { parseOrderFromWebToTotalum } from "../parsers/order";
 
 export const getOrderById = async (
   req: Request,
@@ -76,41 +77,23 @@ export async function createTotalumOrder(
   try {
     const { orderId } = req.body;
 
-    const order = await WebOrderModel.findOne({ orderId });
+    const order: WebOrder = await WebOrderModel.findOne({ orderId });
 
-    // const totalumSdk = new TotalumApiSdk(totalumOptions);
+    const newTotalumOrder = parseOrderFromWebToTotalum(order);
 
-    // async function createItem() {
-    //   try {
-    //     const response = await totalumSdk.crud.createItem("pedido", {
-    //       comunidad_autonoma: "Cataluña",
-    //       prioridad: "Normal",
-    //       estado: "Pendiente Tramitar A9",
-    //       tipo: "Transferencia",
-    //       fecha_inicio: "2024-09-13",
-    //       matricula: "exampleString",
-    //       documentos: "exampleString",
-    //       direccion_envio: "exampleString",
-    //       codigo_envio: "exampleString",
-    //       nuevo_contrato: 123,
-    //       notas: "exampleString",
-    //       itp_pagado: 123,
-    //       fecha_de_contacto: "2015-03-25",
-    //       total_facturado: 123,
-    //       mandatos: "No enviados",
-    //     });
-    //     console.log(response.data);
-    //   } catch (error) {
-    //     console.error(error.toString());
-    //     console.error(error?.response?.data);
-    //   }
-    // }
+    const totalumSdk = new TotalumApiSdk(totalumOptions);
 
-    // await createItem();
+    const response = await totalumSdk.crud.createItem(
+      "pedido",
+      newTotalumOrder
+    );
+
+    const newTotalumOrderId = response.data.data.insertedId;
 
     res.status(200).json({
       success: true,
-      message: "Order updated successfully",
+      message: "Order created in Totalum successfully",
+      totalumOrderId: newTotalumOrderId,
     });
   } catch (error) {
     console.log(error);
