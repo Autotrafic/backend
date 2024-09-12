@@ -11,10 +11,16 @@ import {
 import {
   CreateTotalumOrderBody,
   UpdateOrderByDocumentsDetailsBody,
+  UpdateTotalumOrderByDocumentsDetailsBody,
 } from "../../interfaces/import/order";
 import { TotalumApiSdk } from "totalum-api-sdk";
 import { totalumOptions } from "../../utils/constants";
-import { parseOrderFromWebToTotalum } from "../parsers/order";
+import {
+  parseOrderDetailsFromWebToTotalum,
+  parseOrderFromWebToTotalum,
+} from "../parsers/order";
+
+const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export const getOrderById = async (
   req: Request,
@@ -109,8 +115,6 @@ export async function createTotalumOrder(
 
     const newTotalumOrder = parseOrderFromWebToTotalum(order);
 
-    const totalumSdk = new TotalumApiSdk(totalumOptions);
-
     const response = await totalumSdk.crud.createItem(
       "pedido",
       newTotalumOrder
@@ -118,7 +122,7 @@ export async function createTotalumOrder(
 
     const newTotalumOrderId = response.data.data.insertedId;
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "Order created in Totalum successfully",
       totalumOrderId: newTotalumOrderId,
@@ -134,7 +138,51 @@ export async function createTotalumOrder(
   }
 }
 
+export async function updateTotalumOrderByDocumentsDetailsBody(
+  req: UpdateTotalumOrderByDocumentsDetailsBody,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { orderId } = req.body;
 
+    const filter = { autotrafic_id: orderId };
+
+    const response = await totalumSdk.crud.getItems("pedido", {
+      filter: [filter],
+    });
+
+    const totalumOrder: TotalumOrder = response.data.data[0];
+    const totalumOrderId = totalumOrder._id;
+
+    const parsedOrderDetails = parseOrderDetailsFromWebToTotalum(req.body);
+    const notas = totalumOrder.notas.replace(
+      "Esperando documentación del cliente. ",
+      ""
+    );
+    const update: TotalumOrder = {
+      ...totalumOrder,
+      ...parsedOrderDetails,
+      notas,
+    };
+
+    await totalumSdk.crud.editItemById("pedido", totalumOrderId, update);
+
+    res.status(200).json({
+      success: true,
+      message: "Order updated in Totalum successfully",
+      totalumOrderId,
+    });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      `Error updating totalum order. \n ${error}`,
+      `Error updating totalum order. \n ${error}`
+    );
+    next(finalError);
+  }
+}
 
 export const updateOrderWithDocumentsDetails = async (
   req: UpdateOrderByDocumentsDetailsBody,

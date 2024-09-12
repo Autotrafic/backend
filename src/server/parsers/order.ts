@@ -1,10 +1,14 @@
 import { TotalumParsedOrder } from "../../database/models/Order/Order";
-import { WebOrder } from "../../database/models/Order/WebOrder";
+import {
+  WebOrder,
+  WebOrderDetails,
+} from "../../database/models/Order/WebOrder";
 import {
   autonomousCommunityMap,
   AutonomousCommunityValue,
   reverseAutonomousCommunityMap,
 } from "../../interfaces/enums";
+import { OrderDetailsBody } from "../../interfaces/import/order";
 
 function parseAutonomousCommunityToTotalum(
   value: AutonomousCommunityValue
@@ -38,11 +42,23 @@ export function parseOrderFromWebToTotalum(
       webOrder.user.buyerCommunity
     ),
     notas: `Esperando documentación del cliente. ${
-      webOrder.crossSelling.etiquetaMedioambiental &&
-      "❗️Pedido con Etiqueta Medioambiental❗️"
-    } ${webOrder.crossSelling.informeDgt && "❗️Pedido con Informe DGT❗️"} ${
-      webOrder.user.phoneNumber
-    }`,
+      webOrder.crossSelling.etiquetaMedioambiental
+        ? "❗️Pedido con Etiqueta Medioambiental❗️"
+        : ""
+    } ${
+      webOrder.crossSelling.informeDgt ? "❗️Pedido con Informe DGT❗️" : ""
+    } ${webOrder.user.phoneNumber}`,
+  };
+}
+
+export function parseOrderDetailsFromWebToTotalum(
+  orderDetails: OrderDetailsBody
+): Partial<TotalumOrder> {
+  const { vehiclePlate, shipmentAddress } = orderDetails;
+
+  return {
+    matricula: vehiclePlate,
+    direccion_envio: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
   };
 }
 

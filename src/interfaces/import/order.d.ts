@@ -2,18 +2,28 @@ import { Request } from "express";
 import { AutonomousCommunityValue } from "../enums";
 
 export interface UpdateOrderByDocumentsDetailsBody extends Request {
-  body: {
-    vehiclePlate: string;
-    shipmentAddress: { address: string; city: string; postalCode: string };
-    buyerPhone: string;
-    sellerPhone: string;
-  };
+  body: OrderDetailsBody;
 }
 
 export interface CreateTotalumOrderBody extends Request {
   body: {
     orderId: string;
   };
+}
+
+export interface OrderDetailsBody {
+  vehiclePlate: string;
+  shipmentAddress: { address: string; city: string; postalCode: string };
+  buyerPhone: string;
+  sellerPhone: string;
+}
+
+interface OrderDetailsBodyWithId extends OrderDetailsBody {
+  orderId: string;
+}
+
+export interface UpdateTotalumOrderByDocumentsDetailsBody extends Request {
+  body: OrderDetailsBodyWithId;
 }
 
 interface ITP {
