@@ -59,6 +59,7 @@ export function parseOrderFromTotalumToWeb(
     notes: order.notas,
     itpPaid: order.itp_pagado,
     totalInvoiced: order.total_facturado,
+    autotraficId: order.autotraficId,
     clientId: order.cliente,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,

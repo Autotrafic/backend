@@ -14,6 +14,7 @@ interface TotalumOrder {
   fecha_de_contacto: Date;
   total_facturado: number;
   mandatos: TMandate;
+  autotraficId: string;
   cliente: string;
   createdAt: string;
   updatedAt: string;
@@ -34,6 +35,8 @@ interface TotalumParsedOrder {
   notes: string;
   itpPaid: number;
   totalInvoiced: number;
+  mandates: TMandate;
+  autotraficId: string;
   clientId: string;
   createdAt: string;
   updatedAt: string;

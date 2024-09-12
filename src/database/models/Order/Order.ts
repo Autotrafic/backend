@@ -14,6 +14,7 @@ export interface TotalumParsedOrder {
   notes: string;
   itpPaid: number;
   totalInvoiced: number;
+  autotraficId: string;
   clientId: string;
   createdAt: string;
   updatedAt: string;
