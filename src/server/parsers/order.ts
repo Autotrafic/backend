@@ -1,7 +1,8 @@
 import { Order } from "../../database/models/Order/Order";
-import { ITotalumOrder } from "../../database/models/Order/TotalumOrder";
+import { TotalumOrder } from "../../database/models/Order/TotalumSchema";
+import { WebOrder } from "../../database/models/Order/WebOrder";
 
-export default function parseOrderFromPrimitive(order: ITotalumOrder): Order {
+export default function parseOrderFromTotalum(order: TotalumOrder): Order {
   return {
     autonomousCommunity: order.comunidad_autonoma,
     priority: order.prioridad,
@@ -23,4 +24,10 @@ export default function parseOrderFromPrimitive(order: ITotalumOrder): Order {
     // eslint-disable-next-line no-underscore-dangle
     _id: order._id,
   };
+}
+
+export function parseWebOrderToTotalum(
+  webOrder: WebOrder
+): Partial<TotalumOrder> {
+  return {};
 }

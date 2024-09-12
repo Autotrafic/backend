@@ -1,4 +1,4 @@
-export default function parseDatetimeToSpanish(dateString: string): string {
+export default function parseDatetimeToSpanish(dateString: Date): string {
     const date = new Date(dateString);
 
     const monthsSpanish = [

@@ -5,7 +5,7 @@ export interface Order {
   priority: string;
   state: string;
   type: string;
-  startDate: string;
+  startDate: Date;
   invoice: object;
   vehiclePlate: string;
   documentsLink: string;
