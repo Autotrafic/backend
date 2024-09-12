@@ -8,8 +8,9 @@ export const totalumOptions = {
   },
 };
 
-export const CUSTOMER_FILES_DRIVE_FOLDER_ID =
-  "1lfiemHUd3-p9ATp29yRw7eEjzhixuB19";
+export const CUSTOMER_DRIVE_FOLDER_ID = "1lfiemHUd3-p9ATp29yRw7eEjzhixuB19";
+
+export const EXPEDIENTES_DRIVE_FOLDER_ID = "1qwTqsyVwSHezV4PlBtDNF_MhWm3hqAeW";
 
 export const WHITELIST_IPS = [
   "::1",

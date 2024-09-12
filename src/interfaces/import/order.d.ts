@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { AutonomousCommunityValue } from "../enums";
+import { DatabaseOrder } from "../../database/models/Order/WebOrder";
 
 export interface UpdateOrderByDocumentsDetailsBody extends Request {
   body: OrderDetailsBody;
@@ -24,6 +25,10 @@ interface OrderDetailsBodyWithId extends OrderDetailsBody {
 
 export interface UpdateTotalumOrderByDocumentsDetailsBody extends Request {
   body: OrderDetailsBodyWithId;
+}
+
+export interface UpdateDriveDocumentsOfTotalumOrderBody extends Request {
+  body: { orderId: string; driveFolderId: string };
 }
 
 interface ITP {

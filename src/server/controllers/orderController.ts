@@ -10,6 +10,7 @@ import {
 } from "../../database/models/Order/WebOrder";
 import {
   CreateTotalumOrderBody,
+  UpdateDriveDocumentsOfTotalumOrderBody,
   UpdateOrderByDocumentsDetailsBody,
   UpdateTotalumOrderByDocumentsDetailsBody,
 } from "../../interfaces/import/order";
@@ -138,7 +139,7 @@ export async function createTotalumOrder(
   }
 }
 
-export async function updateTotalumOrderByDocumentsDetailsBody(
+export async function updateTotalumOrderByDocumentsDetails(
   req: UpdateTotalumOrderByDocumentsDetailsBody,
   res: Response,
   next: NextFunction
@@ -164,6 +165,48 @@ export async function updateTotalumOrderByDocumentsDetailsBody(
       ...totalumOrder,
       ...parsedOrderDetails,
       notas,
+    };
+
+    await totalumSdk.crud.editItemById("pedido", totalumOrderId, update);
+
+    res.status(200).json({
+      success: true,
+      message: "Order updated in Totalum successfully",
+      totalumOrderId,
+    });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      `Error updating totalum order. \n ${error}`,
+      `Error updating totalum order. \n ${error}`
+    );
+    next(finalError);
+  }
+}
+
+export async function updateDriveDocumentsOfTotalumOrder(
+  req: UpdateDriveDocumentsOfTotalumOrderBody,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { orderId, driveFolderId } = req.body;
+
+    const filter = { autotrafic_id: orderId };
+
+    const response = await totalumSdk.crud.getItems("pedido", {
+      filter: [filter],
+    });
+
+    const totalumOrder: TotalumOrder = response.data.data[0];
+    const totalumOrderId = totalumOrder._id;
+
+    const driveFolderUrl = `https://drive.google.com/drive/folders/${driveFolderId}`;
+
+    const update: TotalumOrder = {
+      ...totalumOrder,
+      documentos: driveFolderUrl,
     };
 
     await totalumSdk.crud.editItemById("pedido", totalumOrderId, update);

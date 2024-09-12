@@ -4,7 +4,7 @@ import {
   getOrderFolder,
   uploadAdditionalInformationFile,
 } from "../services/googleDrive";
-import { CUSTOMER_FILES_DRIVE_FOLDER_ID } from "../../utils/constants";
+import { EXPEDIENTES_DRIVE_FOLDER_ID } from "../../utils/constants";
 import CustomError from "../../errors/CustomError";
 import { CreateInformationFileBody } from "../../interfaces/import/file";
 
@@ -24,7 +24,7 @@ export async function uploadFiles(
   try {
     const orderFolderId = await getOrderFolder(
       folderName,
-      CUSTOMER_FILES_DRIVE_FOLDER_ID
+      EXPEDIENTES_DRIVE_FOLDER_ID
     );
 
     // eslint-disable-next-line no-restricted-syntax
@@ -33,7 +33,7 @@ export async function uploadFiles(
       await uploadToGoogleDrive(file, orderFolderId);
     }
 
-    res.status(200).send({ message: "Files uploaded successfully" });
+    res.status(200).json({ folderId: orderFolderId });
   } catch (error) {
     console.error("Error uploading files to Google Drive:", error);
     const finalError = new CustomError(
@@ -55,12 +55,12 @@ export async function createAdditionalInformationFile(
   try {
     const orderFolderId = await getOrderFolder(
       folderName,
-      CUSTOMER_FILES_DRIVE_FOLDER_ID
+      EXPEDIENTES_DRIVE_FOLDER_ID
     );
 
     await uploadAdditionalInformationFile(orderData, orderFolderId);
 
-    res.status(200).send({ message: "File uploaded successfully" });
+    res.status(200).json({ folderId: orderFolderId });
   } catch (error) {
     console.error("Error uploading files to Google Drive:", error);
     const finalError = new CustomError(
