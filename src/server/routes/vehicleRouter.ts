@@ -2,10 +2,10 @@ import express from "express";
 import {
   getAllCars,
   getAllBrandNames,
-  getModelNamesFirstStep,
   getModelById,
   getItp,
   getFuels,
+  getModelNamesByFilters,
 } from "../controllers/carsController";
 import {
   getAllElectricMotorbikeCCs,
@@ -20,7 +20,7 @@ vehicleRouter.get("/brands", getAllBrandNames);
 
 vehicleRouter.post("/fuels", getFuels);
 
-vehicleRouter.post("/models", getModelNamesFirstStep);
+vehicleRouter.post("/models", getModelNamesByFilters);
 
 vehicleRouter.post("/model", getModelById);
 

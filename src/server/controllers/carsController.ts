@@ -100,35 +100,6 @@ export const getModelNamesByFilters = async (
   }
 };
 
-export const getModelNamesFirstStep = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { brandName, carYear, fuel } = req.body;
-
-  try {
-    const brand = await BrandModel.find({ brandName });
-
-    const modelNames = await CarModel.find({
-      modelOf: brand[0]._id,
-      startYear: { $lte: carYear },
-      endYear: { $gte: carYear },
-      fuel,
-    });
-
-    res.status(200).json(modelNames);
-  } catch (error) {
-    console.log(error);
-    const finalError = new CustomError(
-      400,
-      "Error loading models.",
-      `Error loading car model names with filters. \n ${error}`
-    );
-    next(finalError);
-  }
-};
-
 export const getModelById = async (
   req: Request,
   res: Response,
