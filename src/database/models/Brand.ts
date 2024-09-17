@@ -16,4 +16,6 @@ const brandSchema = new Schema({
     models: [{ type: Schema.Types.ObjectId, ref: "CarModel" }],
 });
 
+brandSchema.index({ brandName: 1 });
+
 export const BrandModel = model("Brand", brandSchema, "car-brands");

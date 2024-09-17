@@ -1,15 +1,15 @@
 import express from "express";
 import {
-    getAllCars,
-    getAllBrandNames,
-    getModelNamesWithFilters,
-    getModelById,
-    getItp,
-    getFuelsByModels,
+  getAllCars,
+  getAllBrandNames,
+  getModelNamesFirstStep,
+  getModelById,
+  getItp,
+  getFuels,
 } from "../controllers/carsController";
 import {
-    getAllElectricMotorbikeCCs,
-    getAllFuelMotorbikeCCs,
+  getAllElectricMotorbikeCCs,
+  getAllFuelMotorbikeCCs,
 } from "../controllers/motorBikesController";
 
 const vehicleRouter = express.Router();
@@ -18,9 +18,9 @@ vehicleRouter.get("/", getAllCars);
 
 vehicleRouter.get("/brands", getAllBrandNames);
 
-vehicleRouter.post("/fuels", getFuelsByModels);
+vehicleRouter.post("/fuels", getFuels);
 
-vehicleRouter.post("/models", getModelNamesWithFilters);
+vehicleRouter.post("/models", getModelNamesFirstStep);
 
 vehicleRouter.post("/model", getModelById);
 
@@ -31,4 +31,3 @@ vehicleRouter.get("/electric-ccs", getAllElectricMotorbikeCCs);
 vehicleRouter.post("/itp", getItp);
 
 export default vehicleRouter;
-

@@ -31,9 +31,11 @@ const carModelSchema = new Schema({
     cylindersNumber: Number,
 });
 
+carModelSchema.index({ modelOf: 1, startYear: 1, endYear: 1, fuel: 1 });
+
+export const CarModel = model("CarModel", carModelSchema, "car-models");
+
 export enum VehicleType {
     CAR = 1,
     MOTORBIKE = 2,
 }
-
-export const CarModel = model("CarModel", carModelSchema, "car-models");
