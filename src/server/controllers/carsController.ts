@@ -53,13 +53,13 @@ export const getFuels = async (
   try {
     const brand = await BrandModel.findOne({ brandName }).select({ brandName: 1 });
 
-    const modelNames = await CarModel.find({
+    const fuels = await CarModel.find({
       modelOf: brand._id,
       startYear: { $lte: carYear },
       endYear: { $gte: carYear },
     }).distinct("fuel");
 
-    res.status(200).json(modelNames);
+    res.status(200).json(fuels);
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
@@ -79,7 +79,7 @@ export const getModelNamesByFilters = async (
   const { brandName, carYear, fuel } = req.body;
 
   try {
-    const brand = await BrandModel.find({ brandName });
+    const brand = await BrandModel.find({ brandName }).select({ brandName: 1 });
 
     const modelNames = await CarModel.find({
       modelOf: brand[0]._id,
