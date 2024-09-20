@@ -65,8 +65,8 @@ export async function createAdditionalInformationFile(
     console.error("Error uploading files to Google Drive:", error);
     const finalError = new CustomError(
       500,
-      `Failed to upload additional information file to Google Drive. \n ${error}`,
-      `Failed to upload additional information file to Google Drive. \n ${error}`
+      `Failed to upload additional information file to Google Drive. \n ${error}. Body: ${JSON.stringify(req.body)}`,
+      `Failed to upload additional information file to Google Drive. \n ${error}. Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }

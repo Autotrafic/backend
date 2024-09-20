@@ -51,7 +51,9 @@ export const getFuels = async (
   const { brandName, carYear } = req.body;
 
   try {
-    const brand = await BrandModel.findOne({ brandName }).select({ brandName: 1 });
+    const brand = await BrandModel.findOne({ brandName }).select({
+      brandName: 1,
+    });
 
     const fuels = await CarModel.find({
       modelOf: brand._id,
@@ -138,8 +140,10 @@ export const getItp = async (
   } catch (error) {
     const finalError = new CustomError(
       400,
-      "Error calculating ITP value.",
-      `Error calculating ITP value. \n ${error}`
+      `Error calculating ITP value. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`,
+      `Error calculating ITP value. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
