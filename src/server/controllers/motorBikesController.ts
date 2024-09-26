@@ -16,7 +16,9 @@ export const getAllFuelMotorbikeCCs = async (
         const finalError = new CustomError(
             400,
             "Error loading fuel motorbike ccs.",
-            `Error loading fuel motorbike ccs. \n ${error}.
+            `Error loading fuel motorbike ccs.
+            ${error}.
+
       Body: ${JSON.stringify(req.body)}`
         );
         next(finalError);
@@ -36,7 +38,9 @@ export const getAllElectricMotorbikeCCs = async (
         const finalError = new CustomError(
             400,
             "Error loading electric motorbike ccs.",
-            `Error loading electric motorbike ccs. \n ${error}.
+            `Error loading electric motorbike ccs.
+            ${error}.
+            
       Body: ${JSON.stringify(req.body)}`
         );
         next(finalError);

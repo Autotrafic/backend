@@ -38,8 +38,10 @@ export async function uploadFiles(
     console.error("Error uploading files to Google Drive:", error);
     const finalError = new CustomError(
       500,
-      `Failed to upload files to Google Drive. \n ${error}`,
-      `Failed to upload files to Google Drive. \n ${error}.
+      `Failed to upload files to Google Drive. ${error}`,
+      `Failed to upload files to Google Drive.
+      ${error}.
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
@@ -54,6 +56,8 @@ export async function createAdditionalInformationFile(
   const { orderData, folderName } = req.body;
 
   try {
+    if (!folderName) throw new Error("No folder name provided");
+
     const orderFolderId = await getOrderFolder(
       folderName,
       EXPEDIENTES_DRIVE_FOLDER_ID
@@ -66,8 +70,11 @@ export async function createAdditionalInformationFile(
     console.error("Error uploading files to Google Drive:", error);
     const finalError = new CustomError(
       500,
-      `Failed to upload additional information file to Google Drive. \n ${error}. Body: ${JSON.stringify(req.body)}`,
-      `Failed to upload additional information file to Google Drive. \n ${error}. Body: ${JSON.stringify(req.body)}`
+      `Failed to upload additional information file to Google Drive. ${error}.`,
+      `Failed to upload additional information file to Google Drive.
+      ${error}
+      
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }

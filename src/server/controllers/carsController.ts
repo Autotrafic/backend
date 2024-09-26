@@ -18,7 +18,7 @@ export const getAllCars = async (
     const finalError = new CustomError(
       400,
       "Error loading brands.",
-      `Error loading all car brands. \n ${error}`
+      `Error loading all car brands. ${error}`
     );
     next(finalError);
   }
@@ -37,7 +37,7 @@ export const getAllBrandNames = async (
     const finalError = new CustomError(
       400,
       "Error loading brands.",
-      `Error loading all car brand names. \n ${error}`
+      `Error loading all car brand names. ${error}`
     );
     next(finalError);
   }
@@ -67,7 +67,9 @@ export const getFuels = async (
     const finalError = new CustomError(
       400,
       "Error loading car fuels by models.",
-      `Error loading car fuels by models. \n ${error}.
+      `Error loading car fuels by models.
+      ${error}.
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
@@ -97,7 +99,9 @@ export const getModelNamesByFilters = async (
     const finalError = new CustomError(
       400,
       "Error loading car model names with filters.",
-      `Error loading car model names with filters. \n ${error}.
+      `Error loading car model names with filters.
+      ${error}.
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
@@ -118,7 +122,9 @@ export const getModelById = async (
     const finalError = new CustomError(
       400,
       "Error finding model.",
-      `Error loading car model by id. \n ${error}.
+      `Error loading car model by id.
+      ${error}.
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
@@ -143,9 +149,10 @@ export const getItp = async (
   } catch (error) {
     const finalError = new CustomError(
       400,
-      `Error calculating ITP value. \n ${error}.
-      Body: ${JSON.stringify(req.body)}`,
-      `Error calculating ITP value. \n ${error}.
+      `Error calculating ITP value. ${error}`,
+      `Error calculating ITP value.
+      ${error}.
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);

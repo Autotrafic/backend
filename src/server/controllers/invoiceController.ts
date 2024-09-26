@@ -35,8 +35,10 @@ export async function createInvoiceData(
     console.log(error);
     const finalError = new CustomError(
       400,
-      `Error creating invoice data. \n ${error}`,
-      `Error creating invoice data. \n ${error}.
+      `Error creating invoice data. ${error}`,
+      `Error creating invoice data.
+      ${error}.
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
@@ -68,7 +70,9 @@ export async function updateInvoiceData(
     const finalError = new CustomError(
       400,
       "Error updating invoice data.",
-      `Error updating invoice data. \n ${error}.
+      `Error updating invoice data.
+      ${error}.
+      
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
