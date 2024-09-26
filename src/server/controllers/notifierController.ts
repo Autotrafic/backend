@@ -18,7 +18,8 @@ export default async function sendSlackMessage(
         const finalError = new CustomError(
             400,
             "Error sending message to Slack.",
-            `Error sending message to Slack. \n ${error}`
+            `Error sending message to Slack. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
         );
         next(finalError);
     }

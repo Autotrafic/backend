@@ -39,7 +39,8 @@ export const getOrderById = async (
     const finalError = new CustomError(
       400,
       "Error loading order.",
-      `Error loading order. \n ${error}`
+      `Error loading order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -70,7 +71,8 @@ export const registerOrder = async (
     const finalError = new CustomError(
       400,
       "Error creating order.",
-      `Error creating order. \n ${error}`
+      `Error creating order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -98,7 +100,8 @@ export const updateOrder = async (
     const finalError = new CustomError(
       400,
       "Error updating order.",
-      `Error updating order. \n ${error}`
+      `Error updating order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -133,7 +136,8 @@ export async function createTotalumOrder(
     const finalError = new CustomError(
       400,
       `Error creating totalum order. \n ${error}`,
-      `Error creating totalum order. \n ${error}`
+      `Error creating totalum order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -179,7 +183,8 @@ export async function updateTotalumOrderByDocumentsDetails(
     const finalError = new CustomError(
       400,
       `Error updating totalum order. \n ${error}`,
-      `Error updating totalum order. \n ${error}`
+      `Error updating totalum order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -221,7 +226,8 @@ export async function updateDriveDocumentsOfTotalumOrder(
     const finalError = new CustomError(
       400,
       `Error updating totalum order. \n ${error}`,
-      `Error updating totalum order. \n ${error}`
+      `Error updating totalum order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -283,7 +289,8 @@ export const updateOrderWithDocumentsDetails = async (
     const finalError = new CustomError(
       400,
       "Error updating order.",
-      `Error updating nested order. \n ${error}`
+      `Error updating nested order. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }

@@ -66,8 +66,9 @@ export const getFuels = async (
     console.log(error);
     const finalError = new CustomError(
       400,
-      "Error loading models.",
-      `Error loading car fuels by models. \n ${error}`
+      "Error loading car fuels by models.",
+      `Error loading car fuels by models. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -95,8 +96,9 @@ export const getModelNamesByFilters = async (
     console.log(error);
     const finalError = new CustomError(
       400,
-      "Error loading models.",
-      `Error loading car model names with filters. \n ${error}`
+      "Error loading car model names with filters.",
+      `Error loading car model names with filters. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
@@ -116,7 +118,8 @@ export const getModelById = async (
     const finalError = new CustomError(
       400,
       "Error finding model.",
-      `Error loading car model by id. \n ${error}`
+      `Error loading car model by id. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }

@@ -23,7 +23,8 @@ export default async function sendMessage(
         const finalError = new CustomError(
             500,
             `Error sending WhatsApp message. \n ${error}`,
-            `Error sending WhatsApp message. \n ${error}`
+            `Error sending WhatsApp message. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
         );
         next(finalError);
     }

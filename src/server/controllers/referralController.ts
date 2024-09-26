@@ -30,7 +30,8 @@ export async function generateReferralId(
         const finalError = new CustomError(
             400,
             "Error generating referral id.",
-            `Error generating referral id. \n ${error}`
+            `Error generating referral id. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
         );
         next(finalError);
     }
@@ -68,7 +69,8 @@ export async function validateReferralId(
         const finalError = new CustomError(
             400,
             "Error validating referral id.",
-            `Error validating referral id. \n ${error}`
+            `Error validating referral id. \n ${error}.
+      Body: ${JSON.stringify(req.body)}`
         );
         next(finalError);
     }
