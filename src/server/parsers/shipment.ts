@@ -33,8 +33,14 @@ export function parseShipmentToTotalum(
 }
 
 export function createParcelFromShipment(
-  shipment: ParsedTotalumShipment
+  shipment: ParsedTotalumShipment,
+  isTest: boolean
 ): Parcel {
+  const carrier = {
+    id: isTest ? 8 : 2524,
+    name: isTest ? "Unstamped Letter" : "Correos Express Paq24 0-1kg",
+  };
+
   return {
     reference: shipment.reference,
     name: shipment.customerName,
@@ -65,10 +71,7 @@ export function createParcelFromShipment(
     height: "0.1",
     total_order_value: shipment.value.toString(),
     total_order_value_currency: "EUR",
-    shipment: {
-      id: 2524,
-      name: "Correos Express Paq24 0-1kg",
-    },
+    shipment: carrier,
     quantity: 1,
     total_insured_value: 0,
     is_return: false,

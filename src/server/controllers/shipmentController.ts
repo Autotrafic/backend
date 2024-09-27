@@ -10,11 +10,11 @@ export async function createLabel(
   next: NextFunction
 ) {
   try {
-    const  totalumShipment  = req.body;
+    const { totalumShipment, isTest } = req.body;
 
     const shipment = parseTotalumShipment(totalumShipment);
 
-    await createSendcloudLabel(shipment);
+    await createSendcloudLabel(shipment, isTest);
 
     res.status(200).json({ message: "Sendcloud label created successfully" });
   } catch (error) {

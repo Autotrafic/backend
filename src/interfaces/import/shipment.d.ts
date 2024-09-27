@@ -1,5 +1,5 @@
 import { Request } from "express";
 
 export interface CreateLabelImportBody extends Request {
-  body: TotalumShipment;
+  body: { totalumShipment: TotalumShipment; isTest: boolean };
 }
