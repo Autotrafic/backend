@@ -1,3 +1,5 @@
+import { TAutonomousCommunity } from "./totalum/pedido";
+
 export enum Fuel {
   GASOLINA = "G",
   DIESEL = "D",
