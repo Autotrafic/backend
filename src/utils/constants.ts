@@ -1,6 +1,6 @@
 import "../loadEnvironment";
 
-export const SENDCLOUD_API = 'http://panel.sendcloud.sc/api/v2/';
+export const SENDCLOUD_API = 'https://panel.sendcloud.sc/api/v2/';
 
 export const VEHICLE_TYPE = { CAR: 1, MOTORBIKE: 2, CARAVAN: 3 };
 
