@@ -1,4 +1,6 @@
-interface TotalumOrder {
+import { AutonomousCommunityValue } from "../enums";
+
+export interface TotalumOrder {
   comunidad_autonoma: TAutonomousCommunity;
   prioridad: TPriority;
   estado: TState;
@@ -21,6 +23,7 @@ interface TotalumOrder {
   metadata: object;
   _id: string;
 }
+
 interface TotalumParsedOrder {
   autonomousCommunity: AutonomousCommunityValue;
   priority: string;
@@ -44,7 +47,7 @@ interface TotalumParsedOrder {
   _id: string;
 }
 
-type TAutonomousCommunity =
+export type TAutonomousCommunity =
   | "Cataluña"
   | "Andalucía"
   | "Aragón"

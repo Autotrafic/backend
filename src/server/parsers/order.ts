@@ -9,6 +9,7 @@ import {
   reverseAutonomousCommunityMap,
 } from "../../interfaces/enums";
 import { OrderDetailsBody } from "../../interfaces/import/order";
+import { TAutonomousCommunity, TotalumOrder } from "../../interfaces/totalum/pedido";
 
 function parseAutonomousCommunityToTotalum(
   value: AutonomousCommunityValue

@@ -20,6 +20,7 @@ import {
   parseOrderDetailsFromWebToTotalum,
   parseOrderFromWebToTotalum,
 } from "../parsers/order";
+import { TotalumOrder } from "../../interfaces/totalum/pedido";
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
