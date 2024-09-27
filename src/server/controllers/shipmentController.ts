@@ -1,7 +1,13 @@
 import { NextFunction, Response } from "express";
-import { CreateLabelImportBody } from "../../interfaces/import/shipment";
+import {
+  CreateLabelImportBody,
+  GetPdfLabelBody,
+} from "../../interfaces/import/shipment";
 import { parseTotalumShipment } from "../parsers/shipment";
-import { createSendcloudLabel } from "../services/sendcloud";
+import {
+  createSendcloudLabel,
+  getSendcloudPdfLabel,
+} from "../services/sendcloud";
 import CustomError from "../../errors/CustomError";
 
 export async function createLabel(
@@ -14,9 +20,38 @@ export async function createLabel(
 
     const shipment = parseTotalumShipment(totalumShipment);
 
-    await createSendcloudLabel(shipment, isTest);
+    const label = await createSendcloudLabel(shipment, isTest);
 
-    res.status(200).json({ message: "Sendcloud label created successfully" });
+    res
+      .status(200)
+      .json({ message: "Sendcloud label created successfully", label });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      "Error creating sendcloud label.",
+      `Error creating sendcloud label.
+      ${error}.
+
+      Body: ${JSON.stringify(req.body)}`
+    );
+    next(finalError);
+  }
+}
+
+export async function getPdfLabel(
+  req: GetPdfLabelBody,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { parcelId, startFrom = 0 } = req.body;
+
+    const pdfLabel = await getSendcloudPdfLabel(parcelId, startFrom);
+
+    res.setHeader("Content-Type", "application/pdf");
+
+    res.status(200).send(pdfLabel);
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
