@@ -10,7 +10,7 @@ export async function createLabel(
   next: NextFunction
 ) {
   try {
-    const { totalumShipment } = req.body;
+    const  totalumShipment  = req.body;
 
     const shipment = parseTotalumShipment(totalumShipment);
 
