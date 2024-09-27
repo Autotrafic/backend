@@ -11,6 +11,8 @@ interface RequestOptions {
 const username = process.env.SENDCLOUD_PUBLIC_KEY;
 const password = process.env.SENDCLOUD_SECRET_KEY;
 
+console.log('usrname and poasrwoi', username, password);
+
 export async function makeSendcloudRequest({
   endpoint,
   method,
