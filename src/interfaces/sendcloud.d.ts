@@ -1,8 +1,5 @@
-interface ParcelObject {
-  parcel: Parcel;
-}
-
 interface Parcel {
+  reference: string;
   name: string;
   telephone: string;
   address: string;

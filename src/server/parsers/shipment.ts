@@ -31,3 +31,49 @@ export function parseShipmentToTotalum(
     seguimiento: parsedShipment.tracking,
   };
 }
+
+export function createParcelFromShipment(
+  shipment: ParsedTotalumShipment
+): Parcel {
+  return {
+    reference: shipment.reference,
+    name: shipment.customerName,
+    telephone: shipment.phone,
+    address: shipment.address,
+    house_number: shipment.houseNumber,
+    postal_code: shipment.postalCode,
+    city: shipment.city,
+    country: "ES",
+    country_state: null,
+    email: shipment.email,
+    customs_invoice_nr: "",
+    customs_shipment_type: 1,
+    parcel_items: [
+      {
+        description: "Nueva documentación de vehículo",
+        hs_code: "4907",
+        origin_country: "ES",
+        product_id: "1",
+        quantity: 1,
+        value: shipment.value.toString(),
+        weight: "0.1",
+      },
+    ],
+    weight: "0.02",
+    length: "22",
+    width: "11",
+    height: "0.1",
+    total_order_value: shipment.value.toString(),
+    total_order_value_currency: "EUR",
+    shipment: {
+      id: 2524,
+      name: "Correos Express Paq24 0-1kg",
+    },
+    quantity: 1,
+    total_insured_value: 0,
+    is_return: false,
+    request_label: true,
+    apply_shipping_rules: false,
+    request_label_async: false,
+  };
+}

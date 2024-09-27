@@ -13,12 +13,13 @@ import orderRouter from "./routes/orderRouter";
 import messagesRouter from "./routes/messagesRouter";
 import invoiceRouter from "./routes/invoiceRouter";
 import referralRouter from "./routes/referralRouter";
+import shipmentRouter from "./routes/shipmentRouter";
 
 const app = express();
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 150,
+  windowMs: 15 * 60 * 1000,
+  max: 150,
 });
 
 app.use(limiter);
@@ -26,25 +27,25 @@ app.use(hpp());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(
-    helmet.contentSecurityPolicy({
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "https://trusted.cdn.com"],
-            objectSrc: ["'none'"],
-            upgradeInsecureRequests: [],
-        },
-    })
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://trusted.cdn.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  })
 );
 app.use(
-    express.json({
-        limit: "10kb",
-    })
+  express.json({
+    limit: "10kb",
+  })
 );
 app.use(
-    express.urlencoded({
-        limit: "10kb",
-        extended: true,
-    })
+  express.urlencoded({
+    limit: "10kb",
+    extended: true,
+  })
 );
 
 app.get("/", (req, res) => res.send("Working!"));
@@ -57,6 +58,7 @@ app.use("/order", orderRouter);
 app.use("/messages", messagesRouter);
 app.use("/invoice", invoiceRouter);
 app.use("/referral", referralRouter);
+app.use("/shipment", shipmentRouter);
 
 app.use(notFoundError);
 app.use(generalError);
