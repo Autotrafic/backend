@@ -31,9 +31,12 @@ export async function getShipmentNestedData() {
   }
 }
 
-export async function getShipmentsForShip() {
+export async function getOrdersPendingToShip() {
   const nestedTreeStructure = {
     pedido: {
+      envio: {},
+      persona_relacionada: {},
+      cliente: {},
       tableFilter: {
         filter: [
           {
@@ -46,8 +49,7 @@ export async function getShipmentsForShip() {
 
   try {
     const response = await totalumSdk.crud.getNestedData(nestedTreeStructure);
-    console.log(response.data);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw new Error(`Error fetching shipment nested data from Totalum. ${error}`);
   }

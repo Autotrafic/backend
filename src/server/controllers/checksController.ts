@@ -2,7 +2,7 @@ import { NextFunction, Response } from 'express';
 import { GetOrdersFindingsBody } from '../../interfaces/import/checks';
 import { TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
 import { addCheckToList } from '../../utils/funcs';
-import { getClientById, getShipmentNestedData, getShipmentsForShip } from '../services/totalum';
+import { getClientById, getShipmentNestedData, getOrdersPendingToShip } from '../services/totalum';
 import CustomError from '../../errors/CustomError';
 
 export async function getOrdersChecksForShipment(req: GetOrdersFindingsBody, res: Response, next: NextFunction) {
@@ -83,9 +83,9 @@ export async function getOrdersChecksForShipment(req: GetOrdersFindingsBody, res
     //   }
     // }
 
-    const shipments = await getShipmentsForShip();
+    const ordersPendingToShip = await getOrdersPendingToShip();
 
-    res.json(shipments);
+    res.json(ordersPendingToShip);
 
     // let documentOrders = [];
     // let documentOrdersWithSameAddress = [];

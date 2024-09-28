@@ -20,6 +20,7 @@ export const getWhatsappLogs = async (req: Request, res: Response, next: NextFun
     }
 };
 
+
 export const logWhatsappClick = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const today = new Date();
