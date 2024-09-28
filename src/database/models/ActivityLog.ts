@@ -1,21 +1,38 @@
-import { Schema, Document, model } from "mongoose";
+import { Schema, Document, model } from 'mongoose';
 
 export interface IActivityLog extends Document {
-    message: string;
-    sessionId: string;
-    userId: string;
-    timestamp: Date;
+  message: string;
+  sessionId: string;
+  userId: string;
+  timestamp: Date;
 }
 
 const ActivityLogSchema = new Schema({
-    message: { type: String, required: true },
-    sessionId: { type: String, required: true },
-    userId: { type: String, required: true },
-    timestamp: { type: Date, required: true },
+  message: { type: String, required: true },
+  sessionId: { type: String, required: true },
+  userId: { type: String, required: true },
+  timestamp: { type: Date, required: true },
 });
 
-export const ActivityLog = model<IActivityLog>(
-    "ActivityLog",
-    ActivityLogSchema,
-    "activity-logs"
-);
+export const ActivityLog = model<IActivityLog>('ActivityLog', ActivityLogSchema, 'activity-logs');
+
+const dayLogSchema = new Schema({
+  date: {
+    type: String,
+    required: true,
+  },
+  count: {
+    type: Number,
+    default: 0,
+  },
+});
+
+const monthLogSchema = new Schema({
+  month: {
+    type: String,
+    required: true,
+  },
+  days: [dayLogSchema],
+});
+
+export const WhatsappCount = model('WhatsappCount', monthLogSchema, 'whatsapp-count');

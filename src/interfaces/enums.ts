@@ -87,6 +87,24 @@ export const autonomousCommunityMap: Record<
   [AutonomousCommunityValue.VALENCIA]: "Valencia",
 };
 
+export enum TOrderState {
+  PendienteTramitarA9 = "Pendiente Tramitar A9",
+  PendienteEntregaTrafic = "Pendiente Entrega Tráfico",
+  EnTrafic = "En Tráfico",
+  PendienteEnvioCliente = "Pendiente Envío Cliente",
+  Rechazado = "Rechazado",
+  EnviadoCliente = "Enviado Cliente",
+  EntregadoCliente = "Entregado Cliente",
+  PendienteRecibirPermisoGestoria = "Pendiente Recibir Permiso Gestoría",
+  PendientePagoITP = "Pendiente Pago ITP",
+  PendienteEnviar3Gestoria = "Pendiente enviar 3º gestoría",
+  Enviado3Gestoria = "Enviado 3º gestoría",
+  PendienteRecibirInfoCliente = "Pendiente recibir info cliente",
+  PendienteRecogerCorreos = "Pendiente recoger Correos",
+  NuevoPedidoWeb = "Nuevo pedido web"
+}
+
+
 export const reverseAutonomousCommunityMap: Record<
   TAutonomousCommunity,
   AutonomousCommunityValue

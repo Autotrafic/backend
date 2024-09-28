@@ -1,19 +1,20 @@
-import cors from "cors";
-import express from "express";
-import bodyParser from "body-parser";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
-import hpp from "hpp";
-import { generalError, notFoundError } from "../errors/generalError";
-import vehicleRouter from "./routes/vehicleRouter";
-import paymentRouter from "./routes/paymentRouter";
-import filesRouter from "./routes/filesRouter";
-import logRouter from "./routes/logRouter";
-import orderRouter from "./routes/orderRouter";
-import messagesRouter from "./routes/messagesRouter";
-import invoiceRouter from "./routes/invoiceRouter";
-import referralRouter from "./routes/referralRouter";
-import shipmentRouter from "./routes/shipmentRouter";
+import cors from 'cors';
+import express from 'express';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import hpp from 'hpp';
+import { generalError, notFoundError } from '../errors/generalError';
+import vehicleRouter from './routes/vehicleRouter';
+import paymentRouter from './routes/paymentRouter';
+import filesRouter from './routes/filesRouter';
+import logRouter from './routes/logRouter';
+import orderRouter from './routes/orderRouter';
+import messagesRouter from './routes/messagesRouter';
+import invoiceRouter from './routes/invoiceRouter';
+import referralRouter from './routes/referralRouter';
+import shipmentRouter from './routes/shipmentRouter';
+import totalumRouter from './routes/totalumRouter';
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://trusted.cdn.com"],
+      scriptSrc: ["'self'", 'https://trusted.cdn.com'],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
@@ -38,27 +39,28 @@ app.use(
 );
 app.use(
   express.json({
-    limit: "10kb",
+    limit: '10kb',
   })
 );
 app.use(
   express.urlencoded({
-    limit: "10kb",
+    limit: '10kb',
     extended: true,
   })
 );
 
-app.get("/", (req, res) => res.send("Working!"));
+app.get('/', (req, res) => res.send('Working!'));
 
-app.use("/vehicles", vehicleRouter);
-app.use("/payment", paymentRouter);
-app.use("/files", filesRouter);
-app.use("/logs", logRouter);
-app.use("/order", orderRouter);
-app.use("/messages", messagesRouter);
-app.use("/invoice", invoiceRouter);
-app.use("/referral", referralRouter);
-app.use("/shipment", shipmentRouter);
+app.use('/vehicles', vehicleRouter);
+app.use('/payment', paymentRouter);
+app.use('/files', filesRouter);
+app.use('/logs', logRouter);
+app.use('/order', orderRouter);
+app.use('/messages', messagesRouter);
+app.use('/invoice', invoiceRouter);
+app.use('/referral', referralRouter);
+app.use('/shipment', shipmentRouter);
+app.use('/totalum', totalumRouter);
 
 app.use(notFoundError);
 app.use(generalError);
