@@ -38,7 +38,7 @@ export async function createInvoiceData(req: Request, res: Response, next: NextF
 
       Body: ${JSON.stringify(req.body)}`
     );
-    // next(finalError);
+    next(finalError);
   }
 }
 

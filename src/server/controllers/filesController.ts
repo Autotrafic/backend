@@ -1,18 +1,15 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 import {
   uploadStreamFileToDrive as uploadToGoogleDrive,
   getOrderFolder,
   uploadAdditionalInformationFile,
-} from "../services/googleDrive";
-import { EXPEDIENTES_DRIVE_FOLDER_ID } from "../../utils/constants";
-import CustomError from "../../errors/CustomError";
-import { CreateInformationFileBody } from "../../interfaces/import/file";
+} from '../services/googleDrive';
+import { EXPEDIENTES_DRIVE_FOLDER_ID } from '../../utils/constants';
+import CustomError from '../../errors/CustomError';
+import { CreateInformationFileBody } from '../../interfaces/import/file';
+import { PDFDocument } from 'pdf-lib';
 
-export async function uploadFiles(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export async function uploadFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
   const files = req.files as Express.Multer.File[];
   const { folderName } = req.body;
 
@@ -22,10 +19,7 @@ export async function uploadFiles(
   }
 
   try {
-    const orderFolderId = await getOrderFolder(
-      folderName,
-      EXPEDIENTES_DRIVE_FOLDER_ID
-    );
+    const orderFolderId = await getOrderFolder(folderName, EXPEDIENTES_DRIVE_FOLDER_ID);
 
     // eslint-disable-next-line no-restricted-syntax
     for (const file of files) {
@@ -35,7 +29,7 @@ export async function uploadFiles(
 
     res.status(200).json({ folderId: orderFolderId });
   } catch (error) {
-    console.error("Error uploading files to Google Drive:", error);
+    console.error('Error uploading files to Google Drive:', error);
     const finalError = new CustomError(
       500,
       `Failed to upload files to Google Drive. ${error}`,
@@ -56,22 +50,53 @@ export async function createAdditionalInformationFile(
   const { orderData, folderName } = req.body;
 
   try {
-    if (!folderName) throw new Error("No folder name provided");
+    if (!folderName) throw new Error('No folder name provided');
 
-    const orderFolderId = await getOrderFolder(
-      folderName,
-      EXPEDIENTES_DRIVE_FOLDER_ID
-    );
+    const orderFolderId = await getOrderFolder(folderName, EXPEDIENTES_DRIVE_FOLDER_ID);
 
     await uploadAdditionalInformationFile(orderData, orderFolderId);
 
     res.status(200).json({ folderId: orderFolderId });
   } catch (error) {
-    console.error("Error uploading files to Google Drive:", error);
+    console.error('Error uploading files to Google Drive:', error);
     const finalError = new CustomError(
       500,
-      `Failed to upload additional information file to Google Drive. ${error}.`,
+      `Failed to upload additional information file to Google Drive.`,
       `Failed to upload additional information file to Google Drive.
+      ${error}
+      
+      Body: ${JSON.stringify(req.body)}`
+    );
+    next(finalError);
+  }
+}
+
+export async function mergePdfBlobFiles(req: Request, res: Response, next: NextFunction) {
+  const { blobs } = req.body;
+
+  try {
+    const mergedPdf = await PDFDocument.create();
+
+    for (const blob of blobs) {
+      const pdfBytes = await blob.arrayBuffer();
+      const pdf = await PDFDocument.load(pdfBytes);
+
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => {
+        mergedPdf.addPage(page);
+      });
+    }
+
+    const mergedPdfBytes = await mergedPdf.save();
+    const mergedPdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+
+    res.status(201).json({ mergedPdf: mergedPdfBlob });
+  } catch (error) {
+    console.error('Error merging pdf files:', error);
+    const finalError = new CustomError(
+      500,
+      `Failed to merge pdf files.`,
+      `Failed to merge pdf files.
       ${error}
       
       Body: ${JSON.stringify(req.body)}`
