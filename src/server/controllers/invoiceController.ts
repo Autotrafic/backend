@@ -22,7 +22,7 @@ export async function createInvoiceData(
     const order = parseOrderFromTotalumToWeb(orderData);
     const client = parseClientFromPrimitive(partnerData ?? clientData);
 
-    if (!client.address && !order.shipmentAddress) {
+    if ((!client && !order.shipmentAddress) || (!client.address && !order.shipmentAddress)) {
       res.status(400).send(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
       return;
     }
@@ -36,17 +36,19 @@ export async function createInvoiceData(
     );
 
     res.status(200).json(invoiceData);
+
+    res.status(200).json(true);
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
       400,
-      `Error creating invoice data. ${error}`,
+      `Error creating invoice data.`,
       `Error creating invoice data.
       ${error}.
 
       Body: ${JSON.stringify(req.body)}`
     );
-    next(finalError);
+    // next(finalError);
   }
 }
 

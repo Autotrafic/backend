@@ -1,36 +1,23 @@
-import { TotalumParsedOrder } from "../../database/models/Order/Order";
-import {
-  WebOrder,
-  WebOrderDetails,
-} from "../../database/models/Order/WebOrder";
-import {
-  autonomousCommunityMap,
-  AutonomousCommunityValue,
-  reverseAutonomousCommunityMap,
-} from "../../interfaces/enums";
-import { OrderDetailsBody } from "../../interfaces/import/order";
-import { TAutonomousCommunity, TotalumOrder } from "../../interfaces/totalum/pedido";
+import { TotalumParsedOrder } from '../../database/models/Order/Order';
+import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
+import { autonomousCommunityMap, AutonomousCommunityValue, reverseAutonomousCommunityMap } from '../../interfaces/enums';
+import { OrderDetailsBody } from '../../interfaces/import/order';
+import { TAutonomousCommunity, TotalumOrder } from '../../interfaces/totalum/pedido';
 
-function parseAutonomousCommunityToTotalum(
-  value: AutonomousCommunityValue
-): TAutonomousCommunity {
+function parseAutonomousCommunityToTotalum(value: AutonomousCommunityValue): TAutonomousCommunity {
   return autonomousCommunityMap[value];
 }
 
-function parseAutonomousCommunityToEnum(
-  value: TAutonomousCommunity
-): AutonomousCommunityValue {
+function parseAutonomousCommunityToEnum(value: TAutonomousCommunity): AutonomousCommunityValue {
   return reverseAutonomousCommunityMap[value];
 }
 
-export function parseOrderFromWebToTotalum(
-  webOrder: WebOrder
-): Partial<TotalumOrder> {
+export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumOrder> {
   return {
     autotrafic_id: webOrder.orderId,
     prioridad: null,
-    estado: "Nuevo pedido web",
-    tipo: "Transferencia",
+    estado: 'Nuevo pedido web',
+    tipo: 'Transferencia',
     fecha_inicio: new Date(),
     matricula: null,
     documentos: null,
@@ -38,23 +25,15 @@ export function parseOrderFromWebToTotalum(
     codigo_envio: null,
     fecha_de_contacto: null,
     total_facturado: Number(webOrder.prices.totalPrice),
-    mandatos: "No enviados",
-    comunidad_autonoma: parseAutonomousCommunityToTotalum(
-      webOrder.user.buyerCommunity
-    ),
+    mandatos: 'No enviados',
+    comunidad_autonoma: parseAutonomousCommunityToTotalum(webOrder.user.buyerCommunity),
     notas: `Esperando documentación del cliente. ${
-      webOrder.crossSelling.etiquetaMedioambiental
-        ? "❗️Pedido con Etiqueta Medioambiental❗️"
-        : ""
-    } ${
-      webOrder.crossSelling.informeDgt ? "❗️Pedido con Informe DGT❗️" : ""
-    } ${webOrder.user.phoneNumber}`,
+      webOrder.crossSelling.etiquetaMedioambiental ? '❗️Pedido con Etiqueta Medioambiental❗️' : ''
+    } ${webOrder.crossSelling.informeDgt ? '❗️Pedido con Informe DGT❗️' : ''} ${webOrder.user.phoneNumber}`,
   };
 }
 
-export function parseOrderDetailsFromWebToTotalum(
-  orderDetails: OrderDetailsBody
-): Partial<TotalumOrder> {
+export function parseOrderDetailsFromWebToTotalum(orderDetails: OrderDetailsBody): Partial<TotalumOrder> {
   const { vehiclePlate, shipmentAddress } = orderDetails;
 
   return {
@@ -63,13 +42,11 @@ export function parseOrderDetailsFromWebToTotalum(
   };
 }
 
-export function parseOrderFromTotalumToWeb(
-  order: TotalumOrder
-): TotalumParsedOrder {
+export function parseOrderFromTotalumToWeb(order: TotalumOrder): TotalumParsedOrder {
+  if (!order) return null;
+
   return {
-    autonomousCommunity: parseAutonomousCommunityToEnum(
-      order.comunidad_autonoma
-    ),
+    autonomousCommunity: parseAutonomousCommunityToEnum(order.comunidad_autonoma),
     priority: order.prioridad,
     state: order.estado,
     type: order.tipo,
@@ -92,8 +69,6 @@ export function parseOrderFromTotalumToWeb(
   };
 }
 
-export function parseWebOrderToTotalum(
-  webOrder: WebOrder
-): Partial<TotalumOrder> {
+export function parseWebOrderToTotalum(webOrder: WebOrder): Partial<TotalumOrder> {
   return {};
 }
