@@ -40,12 +40,12 @@ app.use(
 );
 app.use(
   express.json({
-    limit: '50mb',
+    limit: '200mb',
   })
 );
 app.use(
   express.urlencoded({
-    limit: '50mb',
+    limit: '200mb',
     extended: true,
   })
 );
