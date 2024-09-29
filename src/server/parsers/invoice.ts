@@ -1,12 +1,8 @@
-import Client from "../../database/models/Client/Client";
-import Invoice from "../../database/models/Invoice";
-import { TotalumParsedOrder } from "../../database/models/Order/Order";
-import {
-  calculateInvoiceTotals,
-  roundInvoiceServicesPrices,
-  createInvoiceServicesList,
-} from "../services/invoice";
-import parseDatetimeToSpanish from "./dates";
+import Client from '../../database/models/Client/Client';
+import Invoice from '../../database/models/Invoice';
+import { TotalumParsedOrder } from '../../database/models/Order/Order';
+import { calculateInvoiceTotals, roundInvoiceServicesPrices, createInvoiceServicesList } from '../services/invoice';
+import parseDatetimeToSpanish from './dates';
 
 export default function parseInvoiceData(
   order: TotalumParsedOrder,
@@ -16,8 +12,8 @@ export default function parseInvoiceData(
 ): Invoice {
   const servicesList = createInvoiceServicesList(order, isForClient);
 
-  const servicesListWithRoundedPrices =
-    roundInvoiceServicesPrices(servicesList);
+  const servicesListWithRoundedPrices = roundInvoiceServicesPrices(servicesList);
+
   const totals = calculateInvoiceTotals(servicesList);
 
   const invoiceDate = parseDatetimeToSpanish(order.startDate);

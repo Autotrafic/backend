@@ -1,7 +1,7 @@
 /* eslint-disable no-else-return */
-import { InternInvoiceService } from "../../database/models/Invoice";
-import { TotalumParsedOrder } from "../../database/models/Order/Order";
-import { SHIPMENT_COST, ORDER_TYPES } from "../../utils/constants";
+import { InternInvoiceService } from '../../database/models/Invoice';
+import { TotalumParsedOrder } from '../../database/models/Order/Order';
+import { SHIPMENT_COST, ORDER_TYPES } from '../../utils/constants';
 
 const ORDER_PROFITS = 15;
 
@@ -9,25 +9,25 @@ function getOrderTypeDetails(orderType: string) {
   let taxValue = null;
   let hasShipmentCost = null;
 
-  if (orderType === "Transferencia") {
+  if (orderType === 'Transferencia') {
     taxValue = ORDER_TYPES.TRANSFERENCE.taxValue;
     hasShipmentCost = ORDER_TYPES.TRANSFERENCE.hasShipment;
-  } else if (orderType === "Transferencia ciclomotor") {
+  } else if (orderType === 'Transferencia ciclomotor') {
     taxValue = ORDER_TYPES.TRANSFERENCE_CICL.taxValue;
     hasShipmentCost = ORDER_TYPES.TRANSFERENCE_CICL.hasShipment;
-  } else if (orderType === "Entrega compraventa") {
+  } else if (orderType === 'Entrega compraventa') {
     taxValue = ORDER_TYPES.NOTIFICATION.taxValue;
     hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
-  } else if (orderType === "Transferencia por finalizacion entrega") {
+  } else if (orderType === 'Transferencia por finalizacion entrega') {
     taxValue = ORDER_TYPES.TRANSFERENCE.taxValue;
     hasShipmentCost = ORDER_TYPES.TRANSFERENCE.hasShipment;
-  } else if (orderType === "Duplicado permiso") {
+  } else if (orderType === 'Duplicado permiso') {
     taxValue = ORDER_TYPES.PERMIT_DUPLICATE.taxValue;
     hasShipmentCost = ORDER_TYPES.PERMIT_DUPLICATE.hasShipment;
-  } else if (orderType === "Distintivo") {
+  } else if (orderType === 'Distintivo') {
     taxValue = ORDER_TYPES.DISTINCTIVE.taxValue;
     hasShipmentCost = ORDER_TYPES.DISTINCTIVE.hasShipment;
-  } else if (orderType === "Notificacion") {
+  } else if (orderType === 'Notificacion') {
     taxValue = ORDER_TYPES.NOTIFICATION.taxValue;
     hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;
   }
@@ -50,27 +50,27 @@ export function createInvoiceServicesList(
   const shipmentCost = SHIPMENT_COST;
 
   const taxDGT = {
-    description: "Tasa DGT",
+    description: 'Tasa DGT',
     quantity: 1,
-    priceWithoutIVA: "-" as "-",
-    priceWithIVA: "-" as "-",
+    priceWithoutIVA: '-' as '-',
+    priceWithIVA: '-' as '-',
     totalPrice: taxValue,
   };
 
   const taxITP = itpPaid && {
-    description: "Tasa ITP",
+    description: 'Tasa ITP',
     quantity: 1,
-    priceWithoutIVA: "-" as "-",
-    priceWithIVA: "-" as "-",
+    priceWithoutIVA: '-' as '-',
+    priceWithIVA: '-' as '-',
     totalPrice: itpPaid,
   };
 
   const shipment = hasShipmentCost
     ? {
-        description: "Envío",
+        description: 'Envío',
         quantity: 1,
-        priceWithoutIVA: "-" as "-",
-        priceWithIVA: "-" as "-",
+        priceWithoutIVA: '-' as '-',
+        priceWithIVA: '-' as '-',
         totalPrice: shipmentCost,
       }
     : null;
@@ -79,10 +79,7 @@ export function createInvoiceServicesList(
 
   if (isForClient) {
     totalProfitsWithIVA =
-      totalInvoiced -
-      taxDGT.totalPrice -
-      (taxITP ? taxITP.totalPrice : 0) -
-      (shipment ? shipment.totalPrice : 0);
+      totalInvoiced - taxDGT.totalPrice - (taxITP ? taxITP.totalPrice : 0) - (shipment ? shipment.totalPrice : 0);
   } else {
     totalProfitsWithIVA = ORDER_PROFITS;
   }
@@ -90,7 +87,7 @@ export function createInvoiceServicesList(
   const profitsWithoutIVA = (totalProfitsWithIVA * 100) / 121;
 
   const profits = {
-    description: "Honorarios",
+    description: 'Honorarios',
     quantity: 1,
     priceWithoutIVA: profitsWithoutIVA,
     priceWithIVA: totalProfitsWithIVA,
@@ -98,53 +95,41 @@ export function createInvoiceServicesList(
   };
 
   const servicesList = [taxDGT, taxITP, shipment, profits].filter(
-    (item) => item !== null && item !== undefined
+    (item) => item !== null && item !== undefined && typeof item === 'object'
   );
 
   return servicesList;
 }
 
 export function roundInvoiceServicesPrices(services: InternInvoiceService[]) {
-  const roundedServices = services.map((service) => ({
-    ...service,
-    priceWithoutIVA:
-      typeof service.priceWithoutIVA === "number"
-        ? service.priceWithoutIVA.toFixed(2)
-        : service.priceWithoutIVA,
-    priceWithIVA:
-      typeof service.priceWithIVA === "number"
-        ? service.priceWithIVA.toFixed(2)
-        : service.priceWithIVA,
-    totalPrice: service.totalPrice.toFixed(2),
-  }));
+  const roundedServices = services.map((service) => {
+    return {
+      ...service,
+      priceWithoutIVA:
+        typeof service.priceWithoutIVA === 'number' ? service.priceWithoutIVA.toFixed(2) : service.priceWithoutIVA,
+      priceWithIVA: typeof service.priceWithIVA === 'number' ? service.priceWithIVA.toFixed(2) : service.priceWithIVA,
+      totalPrice: typeof service.totalPrice === 'number' ? service.totalPrice.toFixed(2) : null,
+    };
+  });
 
   return roundedServices;
 }
 
 export function calculateInvoiceTotals(services: InternInvoiceService[]) {
   const totalPriceWithIVA = services.reduce(
-    (total, service) =>
-      typeof service.priceWithIVA === "number"
-        ? total + service.priceWithIVA
-        : total,
+    (total, service) => (typeof service.priceWithIVA === 'number' ? total + service.priceWithIVA : total),
     0
   );
 
   const totalPriceWithoutIVA = services.reduce(
-    (total, service) =>
-      typeof service.priceWithoutIVA === "number"
-        ? total + service.priceWithoutIVA
-        : total,
+    (total, service) => (typeof service.priceWithoutIVA === 'number' ? total + service.priceWithoutIVA : total),
     0
   );
 
   const totalIVA = totalPriceWithIVA - totalPriceWithoutIVA;
 
   const grandTotal = services.reduce(
-    (total, service) =>
-      typeof service.totalPrice === "number"
-        ? total + service.totalPrice
-        : total,
+    (total, service) => (typeof service.totalPrice === 'number' ? total + service.totalPrice : total),
     0
   );
 
