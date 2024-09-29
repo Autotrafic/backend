@@ -7,7 +7,7 @@ import {
 import { EXPEDIENTES_DRIVE_FOLDER_ID } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import { CreateInformationFileBody } from '../../interfaces/import/file';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
 
 export async function uploadFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
   const files = req.files as Express.Multer.File[];
@@ -68,6 +68,37 @@ export async function createAdditionalInformationFile(
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
+  }
+}
+
+export async function createPdfFromString(req: Request, res: Response, next: NextFunction) {
+  const { content } = req.body;
+
+  if (!content) {
+      return res.status(400).json({ error: 'Content is required to create PDF.' });
+  }
+
+  try {
+      const pdfDoc = await PDFDocument.create();
+      
+      const page = pdfDoc.addPage([600, 400]);
+      
+      const { width, height } = page.getSize();
+      page.drawText(content, {
+          x: 50,
+          y: height,
+          size: 12,
+          color: rgb(0, 0, 0),
+      });
+
+      const pdfBytes = await pdfDoc.save();
+
+      const base64Pdf = Buffer.from(pdfBytes).toString('base64');
+
+      res.status(200).json({ pdf: base64Pdf });
+  } catch (error) {
+      console.error("Error creating PDF:", error);
+      next(error);
   }
 }
 
