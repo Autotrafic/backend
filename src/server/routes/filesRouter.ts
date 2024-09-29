@@ -4,7 +4,7 @@ import { uploadFiles, createAdditionalInformationFile, mergePdfBlobFiles, create
 
 const filesRouter = express.Router();
 
-const upload = multer({ limits: { fileSize: 25000000 }, dest: 'uploads/' });
+const upload = multer({ limits: { fileSize: 50 * 1024 * 1024 }, dest: 'uploads/' });
 
 filesRouter.post('/upload', upload.any(), uploadFiles);
 

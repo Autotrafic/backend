@@ -47,13 +47,13 @@ app.use((req, res, next) => {
 
 app.use(
   express.json({
-    limit: '200mb',
+    limit: '50mb',
   })
 );
 app.use(
   express.urlencoded({
-    limit: '200mb',
-    parameterLimit: 100000000,
+    limit: '50mb',
+    parameterLimit: 999999,
     extended: true,
   })
 );
