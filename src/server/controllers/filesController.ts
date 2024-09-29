@@ -110,36 +110,33 @@ export async function createPdfFromString(req: Request, res: Response, next: Nex
 }
 
 export async function mergePdfBlobFiles(req: Request, res: Response, next: NextFunction) {
-  const { blobs } = req.body;
+  const blobs = req.files as Express.Multer.File[];
 
   try {
-    const mergedPdf = await PDFDocument.create();
+      const mergedPdf = await PDFDocument.create();
 
-    for (const base64String of blobs) {
-      const pdfBytes = Buffer.from(base64String, 'base64');
-      const pdf = await PDFDocument.load(pdfBytes);
+      for (const file of blobs) {
+          const pdfBytes = file.buffer;
+          const pdf = await PDFDocument.load(pdfBytes);
 
-      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-      copiedPages.forEach((page) => {
-        mergedPdf.addPage(page);
-      });
-    }
+          const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+          copiedPages.forEach((page) => {
+              mergedPdf.addPage(page);
+          });
+      }
 
-    const mergedPdfBytes = await mergedPdf.save();
+      const mergedPdfBytes = await mergedPdf.save();
 
-    const mergedPdfBase64 = Buffer.from(mergedPdfBytes).toString('base64');
+      const mergedPdfBase64 = Buffer.from(mergedPdfBytes).toString('base64');
 
-    res.status(201).json({ mergedPdf: mergedPdfBase64 });
+      res.status(201).json({ mergedPdf: mergedPdfBase64 });
   } catch (error) {
-    console.error('Error merging pdf files:', error);
-    const finalError = new CustomError(
-      500,
-      `Failed to merge pdf files.`,
-      `Failed to merge pdf files.
-      ${error}
-      
-      Body: ${JSON.stringify(req.body)}`
-    );
-    next(finalError);
+      console.error('Error merging PDF files:', error);
+      const finalError = new CustomError(
+          500,
+          `Failed to merge PDF files.`,
+          `Failed to merge PDF files.\n${error}\n\nBody: ${JSON.stringify(req.body)}`
+      );
+      next(finalError); // Pass the error to the next middleware
   }
 }

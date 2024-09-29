@@ -11,6 +11,6 @@ filesRouter.post('/upload', upload.any(), uploadFiles);
 filesRouter.post('/create-information-file', createAdditionalInformationFile);
 filesRouter.post('/create-text-pdf', createPdfFromString);
 
-filesRouter.post('/merge-pdf-blobs', mergePdfBlobFiles);
+filesRouter.post('/merge-pdf-blobs', upload.any(), mergePdfBlobFiles);
 
 export default filesRouter;
