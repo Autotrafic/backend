@@ -7,6 +7,7 @@ import CustomError from '../../errors/CustomError';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import fetch from 'node-fetch';
+import { PDFDocument } from 'pdf-lib';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -70,39 +71,31 @@ export async function updateInvoiceData(req: Request, res: Response, next: NextF
 }
 
 export async function generateMultipleInvoices(req: Request, res: Response, next: NextFunction) {
-  const invoiceNumberDocumentId = "668cf28abc3208d35c20fdc8";
-  const invoiceTemplateId = "668555647039d527e634233d";
+  const invoiceNumberDocumentId = '668cf28abc3208d35c20fdc8';
+  const invoiceTemplateId = '668555647039d527e634233d';
 
-  async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any, orderDataId: any }) {
+  async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any; orderDataId: any }) {
     const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
 
-    const file = await totalumSdk.files.generatePdfByTemplate(
-      invoiceTemplateId,
-      invoiceData,
-      fileName
-    );
+    const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, invoiceData, fileName);
 
-    await totalumSdk.crud.editItemById("pedido", orderDataId, {
+    await totalumSdk.crud.editItemById('pedido', orderDataId, {
       factura: { name: fileName },
     });
 
-    const invoiceNumberResponse = await totalumSdk.crud.getItemById(
-      "numero_factura",
-      invoiceNumberDocumentId
-    );
+    const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', invoiceNumberDocumentId);
 
     const currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
 
-    await totalumSdk.crud.editItemById("numero_factura", invoiceNumberDocumentId, {
+    await totalumSdk.crud.editItemById('numero_factura', invoiceNumberDocumentId, {
       numero_factura: currentInvoiceNumber + 1,
     });
 
     const response = await fetch(file.data.data.url);
-    const buffer = await response.buffer(); // Get the response as a buffer
-    return buffer; // Return the buffer instead of a blob
+    const buffer = await response.buffer();
+    return buffer;
   }
 
-  // Convert buffer to base64 string
   async function bufferToBase64(buffer: Buffer) {
     return buffer.toString('base64');
   }
@@ -113,14 +106,27 @@ export async function generateMultipleInvoices(req: Request, res: Response, next
     const bufferRequests = invoiceOptions.map((invoiceOption: any) => generateInvoiceBlob(invoiceOption));
     const invoiceBuffers = await Promise.all(bufferRequests);
 
-    // Convert buffers to base64 strings
     const invoiceBase64Strings = await Promise.all(invoiceBuffers.map(bufferToBase64));
 
-    // Now you can send the base64 strings as a response or save them as needed
-    res.status(200).json({ invoiceBase64Strings });
+    const mergedPdf = await PDFDocument.create();
 
+    for (const base64String of invoiceBase64Strings) {
+      const pdfBytes = Buffer.from(base64String, 'base64');
+      const pdf = await PDFDocument.load(pdfBytes);
+
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => {
+        mergedPdf.addPage(page);
+      });
+    }
+
+    const mergedPdfBytes = await mergedPdf.save();
+
+    const mergedPdfBase64 = Buffer.from(mergedPdfBytes).toString('base64');
+
+    res.status(201).json({ mergedPdf: mergedPdfBase64 });
   } catch (error) {
-    console.error("Error generating invoices:", error);
-    next(error); // Pass the error to the next middleware or error handler
+    console.error('Error generating invoices:', error);
+    next(error);
   }
 }
