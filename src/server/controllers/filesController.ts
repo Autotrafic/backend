@@ -77,8 +77,8 @@ export async function mergePdfBlobFiles(req: Request, res: Response, next: NextF
   try {
     const mergedPdf = await PDFDocument.create();
 
-    for (const blob of blobs) {
-      const pdfBytes = await blob.arrayBuffer();
+    for (const base64String of blobs) {
+      const pdfBytes = Buffer.from(base64String, 'base64');
       const pdf = await PDFDocument.load(pdfBytes);
 
       const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
@@ -88,9 +88,10 @@ export async function mergePdfBlobFiles(req: Request, res: Response, next: NextF
     }
 
     const mergedPdfBytes = await mergedPdf.save();
-    const mergedPdfBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
 
-    res.status(201).json({ mergedPdf: mergedPdfBlob });
+    const mergedPdfBase64 = Buffer.from(mergedPdfBytes).toString('base64');
+
+    res.status(201).json({ mergedPdf: mergedPdfBase64 });
   } catch (error) {
     console.error('Error merging pdf files:', error);
     const finalError = new CustomError(
