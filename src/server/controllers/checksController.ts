@@ -65,23 +65,23 @@ export async function getOrdersChecksForShipment(req: GetOrdersFindingsBody, res
   // }
 
   try {
-    // const allOrders = req.body;
+    const allOrders = req.body;
 
-    // const ordersToShip = allOrders.filter((order) => order.estado === 'Pendiente Envío Cliente');
-    // if (ordersToShip.length < 1) {
-    //   alert('No hay pedidos pendientes de envío');
-    //   res.status(200).json({ success: false, check: TOTALUM_CHECKS.ORDERS_WITHOUT_SHIPPING_ORDER });
-    // }
+    const ordersToShip = allOrders.filter((order) => order.estado === 'Pendiente Envío Cliente');
+    if (ordersToShip.length < 1) {
+      alert('No hay pedidos pendientes de envío');
+      res.status(200).json({ success: false, check: TOTALUM_CHECKS.ORDERS_WITHOUT_SHIPPING_ORDER });
+    }
 
-    // const ordersWithoutAddress = ordersToShip.filter((order) => order.direccion_envio === null);
-    // const ordersWithAddress = ordersToShip.filter((order) => order.direccion_envio !== null && order.direccion_envio !== '');
+    const ordersWithoutAddress = ordersToShip.filter((order) => order.direccion_envio === null);
+    const ordersWithAddress = ordersToShip.filter((order) => order.direccion_envio !== null && order.direccion_envio !== '');
 
-    // // Orders without address
-    // if (ordersWithoutAddress.length > 0) {
-    //   for (let order of ordersWithoutAddress) {
-    //     addCheckToList(foundedChecks, order.matricula, TOTALUM_CHECKS.ORDER_WITHOUT_ADDRESS);
-    //   }
-    // }
+    // Orders without address
+    if (ordersWithoutAddress.length > 0) {
+      for (let order of ordersWithoutAddress) {
+        addCheckToList(foundedChecks, order.matricula, TOTALUM_CHECKS.ORDER_WITHOUT_ADDRESS);
+      }
+    }
 
     const ordersPendingToShip = await getOrdersPendingToShip();
 

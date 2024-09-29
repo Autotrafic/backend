@@ -15,6 +15,7 @@ import invoiceRouter from './routes/invoiceRouter';
 import referralRouter from './routes/referralRouter';
 import shipmentRouter from './routes/shipmentRouter';
 import totalumRouter from './routes/totalumRouter';
+import scriptRouter from './routes/scriptRouter';
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use('/invoice', invoiceRouter);
 app.use('/referral', referralRouter);
 app.use('/shipment', shipmentRouter);
 app.use('/totalum', totalumRouter);
+app.use('/script', scriptRouter);
 
 app.use(notFoundError);
 app.use(generalError);

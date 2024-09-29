@@ -29,3 +29,18 @@ export function addCheckToList(list: TCheck[], reference: string, check: Check) 
 
   return updatedList;
 }
+
+export function getCurrentTrimesterDates() {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+
+  const startMonth = currentMonth < 3 ? 0 : currentMonth < 6 ? 3 : currentMonth < 9 ? 6 : 9;
+
+  const start = new Date(now.getFullYear(), startMonth, 1);
+  const end = new Date(now.getFullYear(), startMonth + 3, 0);
+
+  return {
+    start: start.toISOString(),
+    end: new Date(end.setHours(23, 59, 59, 999)).toISOString(),
+  };
+}

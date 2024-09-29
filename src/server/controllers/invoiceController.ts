@@ -22,6 +22,11 @@ export async function createInvoiceData(
     const order = parseOrderFromTotalumToWeb(orderData);
     const client = parseClientFromPrimitive(partnerData ?? clientData);
 
+    if (!client.address && !order.shipmentAddress) {
+      res.status(400).send(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
+      return;
+    }
+
     const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
     const invoiceData = parseInvoiceData(
       order,
