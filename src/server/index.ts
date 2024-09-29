@@ -39,12 +39,6 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  const contentLength = req.headers['content-length'];
-  console.log(`Content Length: ${contentLength} bytes`);
-  next();
-});
-
 app.use(
   express.json({
     limit: '50mb',
