@@ -13,13 +13,25 @@ export async function createInvoiceData(req: Request, res: Response, next: NextF
     const client = parseClientFromPrimitive(partnerData ?? clientData);
 
     if (!client) {
-      res.status(400).send(`${order.vehiclePlate} no contiene cliente o socio profesional para generar la factura.`);
-      return;
+      const finalError = new CustomError(
+        400,
+        `${order.vehiclePlate} no contiene cliente o socio profesional para generar la factura.`,
+        `Error creating invoice data.
+  
+        Body: ${JSON.stringify(req.body)}`
+      );
+      next(finalError);
     }
 
     if (!client.address && !order.shipmentAddress) {
-      res.status(400).send(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
-      return;
+      const finalError = new CustomError(
+        400,
+        `${order.vehiclePlate} no contiene direccion para generar la factura.`,
+        `Error creating invoice data.
+  
+        Body: ${JSON.stringify(req.body)}`
+      );
+      next(finalError);
     }
 
     const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
