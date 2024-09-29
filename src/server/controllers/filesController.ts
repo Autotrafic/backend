@@ -137,6 +137,6 @@ export async function mergePdfBlobFiles(req: Request, res: Response, next: NextF
           `Failed to merge PDF files.`,
           `Failed to merge PDF files.\n${error}\n\nBody: ${JSON.stringify(req.body)}`
       );
-      next(finalError); // Pass the error to the next middleware
+      next(finalError);
   }
 }

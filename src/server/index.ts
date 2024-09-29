@@ -38,6 +38,13 @@ app.use(
     },
   })
 );
+
+app.use((req, res, next) => {
+  const contentLength = req.headers['content-length'];
+  console.log(`Content Length: ${contentLength} bytes`);
+  next();
+});
+
 app.use(
   express.json({
     limit: '200mb',
@@ -50,12 +57,6 @@ app.use(
     extended: true,
   })
 );
-
-app.use((req, res, next) => {
-  const contentLength = req.headers['content-length'];
-  console.log(`Content Length: ${contentLength} bytes`);
-  next();
-});
 
 app.get('/', (req, res) => res.send('Working!'));
 
