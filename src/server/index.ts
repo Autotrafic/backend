@@ -50,6 +50,12 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  const contentLength = req.headers['content-length'];
+  console.log(`Content Length: ${contentLength} bytes`);
+  next();
+});
+
 app.get('/', (req, res) => res.send('Working!'));
 
 app.use('/vehicles', vehicleRouter);
