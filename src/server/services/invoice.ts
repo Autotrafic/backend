@@ -154,10 +154,10 @@ export function updateInvoiceNumber(currentInvoiceNumber: number): number {
 export async function createInvoiceDataLogic(options: {
   orderData: any;
   clientData: any;
-  currentInvoiceNumber: number;
+  invoiceNumber: number;
   isForClient: boolean;
 }) {
-  const { orderData, clientData, currentInvoiceNumber, isForClient } = options;
+  const { orderData, clientData, invoiceNumber, isForClient } = options;
 
   const order = parseOrderFromTotalumToWeb(orderData);
   const client = parseClientFromPrimitive(clientData);
@@ -170,7 +170,6 @@ export async function createInvoiceDataLogic(options: {
     throw new Error(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
   }
 
-  const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
   const invoiceData = parseInvoiceData(order, client, invoiceNumber, isForClient);
 
   return invoiceData;
@@ -181,13 +180,18 @@ export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[
   //   throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
   // }
 
-  const optionRequests = orders.map((order: TotalumOrder) => fetchInvoiceOptions(order));
+  const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', INVOICE_NUMBER_DOC_ID);
+    let currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
+
+  const optionRequests = orders.map((order, index) => {
+    const invoiceNumber = currentInvoiceNumber + index + 1;
+    return fetchInvoiceOptions(order, invoiceNumber);
+  });
   const invoicesOptions = await Promise.all(optionRequests);
 
   const errors = invoicesOptions.filter((option) => typeof option === 'string').join('\n');
 
   if (errors.length > 0) {
-
     const pdfWithErrors = await createPdfFromStringLogic(errors);
 
     return {
@@ -200,7 +204,7 @@ export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[
   return { success: true, invoicesOptions };
 }
 
-async function generateInvoiceOptions(orderData: TotalumOrder) {
+async function generateInvoiceOptions(orderData: TotalumOrder, invoiceNumber: number) {
   try {
     const clientResponse = orderData.cliente ? await totalumSdk.crud.getItemById('cliente', orderData.cliente) : null;
     const clientData = clientResponse ? clientResponse.data.data : null;
@@ -214,25 +218,18 @@ async function generateInvoiceOptions(orderData: TotalumOrder) {
         : null;
     const partnerClientData = partnerClientResponse ? partnerClientResponse.data.data : null;
 
-    const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', INVOICE_NUMBER_DOC_ID);
-    const currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
-    await totalumSdk.crud.editItemById('numero_factura', INVOICE_NUMBER_DOC_ID, {
-      numero_factura: currentInvoiceNumber + 1,
-    });
-    console.log('currentInvoiceNumber', currentInvoiceNumber)
-
     const isForClient = false;
 
     const invoiceOptions = {
       orderData,
       clientData: partnerClientData ?? clientData,
-      currentInvoiceNumber,
+      invoiceNumber,
       isForClient,
     };
 
     const invoiceData = await createInvoiceDataLogic(invoiceOptions);
 
-    return { invoiceData, currentInvoiceNumber, orderDataId: orderData._id };
+    return { invoiceData, invoiceNumber, orderDataId: orderData._id };
   } catch (error) {
     if (error.response && error.response.data) {
       throw new Error(error.response.data);
@@ -242,9 +239,9 @@ async function generateInvoiceOptions(orderData: TotalumOrder) {
   }
 }
 
-export async function fetchInvoiceOptions(order: TotalumOrder) {
+export async function fetchInvoiceOptions(order: TotalumOrder, invoiceNumber: number) {
   try {
-    return await generateInvoiceOptions(order);
+    return await generateInvoiceOptions(order, invoiceNumber);
   } catch (error) {
     return error.response ? error.response.data : error.message;
   }
@@ -264,7 +261,7 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoic
     const buffer = await response.buffer();
     return buffer;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || error.message || 'Unknown error';
+    const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Unknown error';
     throw new Error(`Error creating Totalum invoice.
       Order id: ${orderDataId}
       Invoice data: ${JSON.stringify(invoiceData)}
