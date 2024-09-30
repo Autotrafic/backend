@@ -177,9 +177,9 @@ export async function createInvoiceDataLogic(options: {
 }
 
 export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[]) {
-  if (orders.length > 20) {
-    throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
-  }
+  // if (orders.length > 20) {
+  //   throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
+  // }
 
   const optionRequests = orders.map((order: TotalumOrder) => fetchInvoiceOptions(order));
   const invoicesOptions = await Promise.all(optionRequests);
@@ -219,6 +219,7 @@ async function generateInvoiceOptions(orderData: TotalumOrder) {
     await totalumSdk.crud.editItemById('numero_factura', INVOICE_NUMBER_DOC_ID, {
       numero_factura: currentInvoiceNumber + 1,
     });
+    console.log('currentInvoiceNumber', currentInvoiceNumber)
 
     const isForClient = false;
 
