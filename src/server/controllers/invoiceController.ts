@@ -81,7 +81,7 @@ export async function generateMultipleInvoicesPdf(req: Request, res: Response, n
     console.log(error);
     const finalError = new CustomError(
       400,
-      'Error generating invoices.',
+      `Error generating invoices. ${error}`,
       `Error generating invoices.
       ${error}.`
     );
