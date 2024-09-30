@@ -51,26 +51,31 @@ export async function updateInvoiceData(req: Request, res: Response, next: NextF
 }
 
 export async function generateMultipleInvoicesOptions(req: Request, res: Response, next: NextFunction) {
-  const {allOrders: orders} = req.body;
+  const { allOrders: orders } = req.body;
 
   try {
     if (orders.length > 20) {
-      throw new Error("Selecciona la opción de mostrar 20 pedidos por página, como máximo");
-  }
+      throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
+    }
 
-  const optionRequests = orders.map((order: TotalumOrder) => fetchInvoiceOptions(order));
-  const invoiceOptions = await Promise.all(optionRequests);
+    const optionRequests = orders.map((order: TotalumOrder) => fetchInvoiceOptions(order));
+    const invoiceOptions = await Promise.all(optionRequests);
 
-  const errors = invoiceOptions.filter(option => typeof option === 'string').join('\n');
+    const errors = invoiceOptions.filter((option) => typeof option === 'string').join('\n');
 
-  if (errors.length > 0) {
+    if (errors.length > 0) {
       try {
-          // await downloadErrorsPdf(errors);
-          throw new Error("No se han podido generar las facturas. Se ha descargado un PDF con los errores.");
+        res.status(400).json({
+          message: 'No se han podido generar las facturas. Se ha descargado un PDF con los errores.',
+          errors: errors,
+        });
+        return;
       } catch {
-          throw new Error("No se han podido generar las facturas. Hay errores y no se ha podido descargar el archivo que los contiene");
+        throw new Error(
+          'No se han podido generar las facturas. Hay errores y no se ha podido descargar el archivo que los contiene'
+        );
       }
-  }
+    }
 
     res.status(201).json({ invoicesOptions: invoiceOptions });
   } catch (error) {
