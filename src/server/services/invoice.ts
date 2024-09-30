@@ -263,9 +263,10 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoic
     const buffer = await response.buffer();
     return buffer;
   } catch (error) {
+    const errorMessage = error.response?.data?.error || error.message || 'Unknown error';
     throw new Error(`Error creating Totalum invoice.
       Order id: ${orderDataId}
       Invoice data: ${JSON.stringify(invoiceData)}
-      Error: ${error}`);
+      Error: ${errorMessage}`);
   }
 }
