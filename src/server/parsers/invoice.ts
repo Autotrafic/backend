@@ -1,6 +1,7 @@
 import Client from '../../database/models/Client/Client';
 import Invoice from '../../database/models/Invoice';
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
+import { getInvoiceName } from '../../utils/invoice';
 import { calculateInvoiceTotals, roundInvoiceServicesPrices, createInvoiceServicesList } from '../services/invoice';
 import parseDatetimeToSpanish from './dates';
 
@@ -17,7 +18,7 @@ export default function parseInvoiceData(
   const totals = calculateInvoiceTotals(servicesList);
 
   const invoiceDate = parseDatetimeToSpanish(order.startDate);
-  const invoiceNumber = `${upcomingInvoiceNumber}`;
+  const invoiceNumber = getInvoiceName(upcomingInvoiceNumber);
 
   const invoiceOrder = {
     type: order.type,

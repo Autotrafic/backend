@@ -174,10 +174,6 @@ export async function createInvoiceDataLogic(options: InvoicePrimitiveOptions) {
 export async function generateMultipleInvoicesOptionsLogic(
   orders: TotalumOrder[]
 ): Promise<InvoiceSuccessOptions | InvoiceErrorOptions> {
-  // if (orders.length > 20) {
-  //   throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
-  // }
-
   const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', INVOICE_NUMBER_DOC_ID);
   let currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
 
