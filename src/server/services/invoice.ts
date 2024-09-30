@@ -8,6 +8,7 @@ import axios from 'axios';
 import { parseOrderFromTotalumToWeb } from '../parsers/order';
 import parseClientFromPrimitive from '../parsers/client';
 import parseInvoiceData from '../parsers/invoice';
+import { createPdfFromStringLogic } from './file';
 
 const ORDER_PROFITS = 15;
 const INVOICE_NUMBER_DOC_ID = '668cf28abc3208d35c20fdc8';
@@ -173,6 +174,30 @@ export async function createInvoiceDataLogic(options: {
   const invoiceData = parseInvoiceData(order, client, invoiceNumber, isForClient);
 
   return invoiceData;
+}
+
+export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[]) {
+  if (orders.length > 20) {
+    throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
+  }
+
+  const optionRequests = orders.map((order: TotalumOrder) => fetchInvoiceOptions(order));
+  const invoicesOptions = await Promise.all(optionRequests);
+
+  const errors = invoicesOptions.filter((option) => typeof option === 'string').join('\n');
+
+  if (errors.length > 0) {
+
+    const pdfWithErrors = await createPdfFromStringLogic(errors);
+
+    return {
+      success: false,
+      message: 'No se han podido generar las facturas. Se ha descargado un PDF con los errores.',
+      pdfWithErrors,
+    };
+  }
+
+  return { success: true, invoicesOptions };
 }
 
 async function generateInvoiceOptions(orderData: TotalumOrder) {
