@@ -60,7 +60,8 @@ export async function generateMultipleInvoicesPdf(req: Request, res: Response, n
     const invoicesOptionsResult = await generateMultipleInvoicesOptionsLogic(req.body);
 
     if (!invoicesOptionsResult.success) {
-      res.json({ success: false, pdfWithErrors: invoicesOptionsResult.pdfWithErrors });
+      const { pdfWithErrors, message } = invoicesOptionsResult;
+      res.json({ success: false, pdfWithErrors: pdfWithErrors, message: message });
       return;
     }
 
@@ -73,7 +74,9 @@ export async function generateMultipleInvoicesPdf(req: Request, res: Response, n
 
     const mergedPdfBase64 = await mergePdfFromBase64Strings(invoicesBase64);
 
-    res.status(201).json({ success: true, mergedPdf: mergedPdfBase64 });
+    res
+      .status(201)
+      .json({ success: true, mergedPdf: mergedPdfBase64, message: 'Se han generado las facturas correctamente' });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
