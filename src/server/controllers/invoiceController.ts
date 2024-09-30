@@ -75,7 +75,8 @@ export async function generateMultipleInvoices(req: Request, res: Response, next
   const invoiceTemplateId = '668555647039d527e634233d';
 
   async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any; orderDataId: any }) {
-    const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
+    try {
+      const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
 
     const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, invoiceData, fileName);
 
@@ -94,6 +95,13 @@ export async function generateMultipleInvoices(req: Request, res: Response, next
     const response = await fetch(file.data.data.url);
     const buffer = await response.buffer();
     return buffer;
+    } catch (error) {
+      throw new Error(`Error creating Totalum invoice.
+        Order id: ${orderDataId}
+        Invoice data: ${JSON.stringify(invoiceData)}
+        Error: ${error}`)
+    }
+    
   }
 
   async function bufferToBase64(buffer: Buffer) {
@@ -126,7 +134,13 @@ export async function generateMultipleInvoices(req: Request, res: Response, next
 
     res.status(201).json({ mergedPdf: mergedPdfBase64 });
   } catch (error) {
-    console.error('Error generating invoices:', error);
-    next(error);
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      'Error generating invoices.',
+      `Error generating invoices.
+      ${error}.`
+    );
+    next(finalError);
   }
 }
