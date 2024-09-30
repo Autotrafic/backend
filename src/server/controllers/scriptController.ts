@@ -4,6 +4,7 @@ import { totalumOptions } from '../../utils/constants';
 import { getActualTrimesterExtendedOrders, getExtendedOrders, getOrderById } from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import fetch from 'node-fetch';
+import CustomError from '../../errors/CustomError';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -101,13 +102,19 @@ export async function runSecondScript(req: Request, res: Response, next: NextFun
           const response = await fetch(file.data.data.url);
           await response.buffer();
       } catch (error) {
-          console.error(`Error on iteration ${i + 1}:`, error);
-          // Handle errors as needed (e.g., continue to next iteration, retry, etc.)
+          throw new Error(error);
       }
   }
 
     res.status(201).json({ message: 'completed' });
   } catch (error) {
-    console.error(error);
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      'Error generating invoices.',
+      `Error generating invoices.
+      ${error}.`
+    );
+    next(finalError);
   }
 }
