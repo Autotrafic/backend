@@ -233,8 +233,8 @@ async function generateInvoiceOptions(orderData: TotalumOrder, invoiceNumber: nu
 
     return { invoiceData, invoiceNumber, orderDataId: orderData._id };
   } catch (error) {
-    if (error.response && error.response.data) {
-      throw new Error(error.response.data);
+    if (error) {
+      throw new Error(error);
     } else {
       throw new Error(`No se ha podido generar la factura de ${orderData.matricula}`);
     }
