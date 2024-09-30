@@ -8,6 +8,7 @@ import { parseOrderFromTotalumToWeb } from '../parsers/order';
 import parseClientFromPrimitive from '../parsers/client';
 import parseInvoiceData from '../parsers/invoice';
 import { createPdfFromStringLogic } from './file';
+import { bufferToBase64 } from '../parsers/file';
 
 const ORDER_PROFITS = 17;
 const INVOICE_NUMBER_DOC_ID = '668cf28abc3208d35c20fdc8';
@@ -269,4 +270,20 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoic
       Order id: ${orderDataId}
       Error: ${JSON.stringify(errorMessage)}`);
   }
+}
+
+export async function generateInvoicesBase64(invoicesOptions: any) {
+  const invoicesBuffers = [];
+    for (const invoiceOption of invoicesOptions) {
+      try {
+        const buffer = await generateInvoiceBlob(invoiceOption);
+        invoicesBuffers.push(buffer);
+      } catch (error) {
+        throw new Error(error);
+      }
+    }
+
+    const invoicesBase64 = await Promise.all(invoicesBuffers.map(bufferToBase64));
+
+    return invoicesBase64;
 }

@@ -5,6 +5,7 @@ import {
   createInvoiceDataLogic,
   fetchInvoiceOptions,
   generateInvoiceBlob,
+  generateInvoicesBase64,
   generateMultipleInvoicesOptionsLogic,
 } from '../services/invoice';
 import parseInvoiceData from '../parsers/invoice';
@@ -65,13 +66,7 @@ export async function generateMultipleInvoicesPdf(req: Request, res: Response, n
       return;
     }
 
-    const bufferRequests = invoicesOptionsResult.invoicesOptions.map((invoiceOption: any) =>
-      generateInvoiceBlob(invoiceOption)
-    );
-    const invoicesBuffers = await Promise.all(bufferRequests);
-    
-
-    const invoicesBase64 = await Promise.all(invoicesBuffers.map(bufferToBase64));
+    const invoicesBase64 = await generateInvoicesBase64(invoicesOptionsResult.invoicesOptions);
 
     const mergedPdfBase64 = await mergePdfFromBase64Strings(invoicesBase64);
 
