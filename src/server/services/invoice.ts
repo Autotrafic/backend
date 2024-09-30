@@ -9,6 +9,7 @@ import { parseOrderFromTotalumToWeb } from '../parsers/order';
 import parseClientFromPrimitive from '../parsers/client';
 import parseInvoiceData from '../parsers/invoice';
 import { createPdfFromStringLogic } from './file';
+import { bufferToBase64 } from '../parsers/file';
 
 const ORDER_PROFITS = 15;
 const INVOICE_NUMBER_DOC_ID = '668cf28abc3208d35c20fdc8';
@@ -181,13 +182,17 @@ export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[
   // }
 
   const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', INVOICE_NUMBER_DOC_ID);
-    let currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
+  let currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
 
   const optionRequests = orders.map((order, index) => {
     const invoiceNumber = currentInvoiceNumber + index + 1;
     return fetchInvoiceOptions(order, invoiceNumber);
   });
   const invoicesOptions = await Promise.all(optionRequests);
+
+  await totalumSdk.crud.editItemById('numero_factura', INVOICE_NUMBER_DOC_ID, {
+    numero_factura: currentInvoiceNumber + orders.length,
+  });
 
   const errors = invoicesOptions.filter((option) => typeof option === 'string').join('\n');
 
@@ -265,6 +270,6 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoic
     throw new Error(`Error creating Totalum invoice.
       Order id: ${orderDataId}
       Invoice data: ${JSON.stringify(invoiceData)}
-      Error: ${errorMessage}`);
+      Error: ${JSON.stringify(errorMessage)}`);
   }
 }

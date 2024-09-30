@@ -69,6 +69,7 @@ export async function generateMultipleInvoicesPdf(req: Request, res: Response, n
       generateInvoiceBlob(invoiceOption)
     );
     const invoicesBuffers = await Promise.all(bufferRequests);
+    
 
     const invoicesBase64 = await Promise.all(invoicesBuffers.map(bufferToBase64));
 
