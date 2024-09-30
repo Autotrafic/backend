@@ -1,35 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import { parseOrderFromTotalumToWeb } from '../parsers/order';
 import parseClientFromPrimitive from '../parsers/client';
-import { updateInvoiceNumber } from '../services/invoice';
+import { createInvoiceDataLogic, fetchInvoiceOptions, generateInvoiceBlob } from '../services/invoice';
 import parseInvoiceData from '../parsers/invoice';
 import CustomError from '../../errors/CustomError';
-import { TotalumApiSdk } from 'totalum-api-sdk';
-import { totalumOptions } from '../../utils/constants';
-import fetch from 'node-fetch';
-import { PDFDocument } from 'pdf-lib';
-
-const totalumSdk = new TotalumApiSdk(totalumOptions);
+import { bufferToBase64, mergePdfFromBase64Strings } from '../parsers/file';
+import { TotalumOrder } from '../../interfaces/totalum/pedido';
 
 export async function createInvoiceData(req: Request, res: Response, next: NextFunction) {
   try {
-    const { orderData, clientData, partnerData, currentInvoiceNumber, isForClient } = req.body;
-
-    const order = parseOrderFromTotalumToWeb(orderData);
-    const client = parseClientFromPrimitive(partnerData ?? clientData);
-
-    if (!client) {
-      res.status(400).send(`${order.vehiclePlate} no contiene cliente o socio profesional para generar la factura.`);
-      return;
-    }
-
-    if (!client.address && !order.shipmentAddress) {
-      res.status(400).send(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
-      return;
-    }
-
-    const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
-    const invoiceData = parseInvoiceData(order, client, invoiceNumber, isForClient);
+    const invoiceData = await createInvoiceDataLogic(req.body);
 
     res.status(200).json(invoiceData);
   } catch (error) {
@@ -63,64 +43,58 @@ export async function updateInvoiceData(req: Request, res: Response, next: NextF
       'Error updating invoice data.',
       `Error updating invoice data.
       ${error}.
-      
+
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
   }
 }
 
-export async function generateMultipleInvoices(req: Request, res: Response, next: NextFunction) {
-  const invoiceTemplateId = '668555647039d527e634233d';
-
-  async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any; orderDataId: any }) {
-    try {
-      const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
-
-      const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, invoiceData, fileName);
-
-      await totalumSdk.crud.editItemById('pedido', orderDataId, {
-        factura: { name: fileName },
-      });
-
-      const response = await fetch(file.data.data.url);
-      const buffer = await response.buffer();
-      return buffer;
-    } catch (error) {
-      throw new Error(`Error creating Totalum invoice.
-        Order id: ${orderDataId}
-        Invoice data: ${JSON.stringify(invoiceData)}
-        Error: ${error}`);
-    }
-  }
-
-  async function bufferToBase64(buffer: Buffer) {
-    return buffer.toString('base64');
-  }
+export async function generateMultipleInvoicesOptions(req: Request, res: Response, next: NextFunction) {
+  const {allOrders: orders} = req.body;
 
   try {
-    const { invoiceOptions } = req.body;
+    if (orders.length > 20) {
+      throw new Error("Selecciona la opción de mostrar 20 pedidos por página, como máximo");
+  }
 
-    const bufferRequests = invoiceOptions.map((invoiceOption: any) => generateInvoiceBlob(invoiceOption));
+  const optionRequests = orders.map((order: TotalumOrder) => fetchInvoiceOptions(order));
+  const invoiceOptions = await Promise.all(optionRequests);
+
+  const errors = invoiceOptions.filter(option => typeof option === 'string').join('\n');
+
+  if (errors.length > 0) {
+      try {
+          // await downloadErrorsPdf(errors);
+          throw new Error("No se han podido generar las facturas. Se ha descargado un PDF con los errores.");
+      } catch {
+          throw new Error("No se han podido generar las facturas. Hay errores y no se ha podido descargar el archivo que los contiene");
+      }
+  }
+
+    res.status(201).json({ invoicesOptions: invoiceOptions });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      'Error generating invoices options.',
+      `Error generating invoices options.
+      ${error}.`
+    );
+    next(finalError);
+  }
+}
+
+export async function generateMultipleInvoicesPdf(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { invoicesOptions } = req.body;
+
+    const bufferRequests = invoicesOptions.map((invoiceOption: any) => generateInvoiceBlob(invoiceOption));
     const invoiceBuffers = await Promise.all(bufferRequests);
 
     const invoiceBase64Strings = await Promise.all(invoiceBuffers.map(bufferToBase64));
 
-    const mergedPdf = await PDFDocument.create();
-
-    for (const base64String of invoiceBase64Strings) {
-      const pdfBytes = Buffer.from(base64String, 'base64');
-      const pdf = await PDFDocument.load(pdfBytes);
-
-      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-      copiedPages.forEach((page) => {
-        mergedPdf.addPage(page);
-      });
-    }
-
-    const mergedPdfBytes = await mergedPdf.save();
-
-    const mergedPdfBase64 = Buffer.from(mergedPdfBytes).toString('base64');
+    const mergedPdfBase64 = await mergePdfFromBase64Strings(invoiceBase64Strings);
 
     res.status(201).json({ mergedPdf: mergedPdfBase64 });
   } catch (error) {

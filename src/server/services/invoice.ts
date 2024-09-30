@@ -1,9 +1,19 @@
-/* eslint-disable no-else-return */
+import { TotalumApiSdk } from 'totalum-api-sdk';
 import { InternInvoiceService } from '../../database/models/Invoice';
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
-import { SHIPMENT_COST, ORDER_TYPES } from '../../utils/constants';
+import { SHIPMENT_COST, ORDER_TYPES, totalumOptions } from '../../utils/constants';
+import fetch from 'node-fetch';
+import { TotalumOrder } from '../../interfaces/totalum/pedido';
+import axios from 'axios';
+import { parseOrderFromTotalumToWeb } from '../parsers/order';
+import parseClientFromPrimitive from '../parsers/client';
+import parseInvoiceData from '../parsers/invoice';
 
 const ORDER_PROFITS = 15;
+const INVOICE_NUMBER_DOC_ID = '668cf28abc3208d35c20fdc8';
+const TOTALUM_INVOICE_TEMPLATE_ID = '668555647039d527e634233d';
+
+const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 function getOrderTypeDetails(orderType: string) {
   let taxValue = null;
@@ -138,4 +148,99 @@ export function calculateInvoiceTotals(services: InternInvoiceService[]) {
 
 export function updateInvoiceNumber(currentInvoiceNumber: number): number {
   return currentInvoiceNumber + 1;
+}
+
+export async function createInvoiceDataLogic(options: {
+  orderData: any;
+  clientData: any;
+  currentInvoiceNumber: number;
+  isForClient: boolean;
+}) {
+  const { orderData, clientData, currentInvoiceNumber, isForClient } = options;
+
+  const order = parseOrderFromTotalumToWeb(orderData);
+  const client = parseClientFromPrimitive(clientData);
+
+  if (!client) {
+    throw new Error(`${order.vehiclePlate} no contiene cliente o socio profesional para generar la factura.`);
+  }
+
+  if (!client.address && !order.shipmentAddress) {
+    throw new Error(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
+  }
+
+  const invoiceNumber = updateInvoiceNumber(currentInvoiceNumber);
+  const invoiceData = parseInvoiceData(order, client, invoiceNumber, isForClient);
+
+  return invoiceData;
+}
+
+async function generateInvoiceOptions(orderData: TotalumOrder) {
+  try {
+    const clientResponse = orderData.cliente ? await totalumSdk.crud.getItemById('cliente', orderData.cliente) : null;
+    const clientData = clientResponse ? clientResponse.data.data : null;
+
+    const partnerResponse = orderData.socio_profesional
+      ? await totalumSdk.crud.getItemById('socios_profesionales', orderData.socio_profesional)
+      : null;
+    const partnerClientResponse =
+      partnerResponse && partnerResponse.data && partnerResponse.data.data
+        ? await totalumSdk.crud.getItemById('cliente', partnerResponse.data.data.cliente)
+        : null;
+    const partnerClientData = partnerClientResponse ? partnerClientResponse.data.data : null;
+
+    const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', INVOICE_NUMBER_DOC_ID);
+    const currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
+    await totalumSdk.crud.editItemById('numero_factura', INVOICE_NUMBER_DOC_ID, {
+      numero_factura: currentInvoiceNumber + 1,
+    });
+
+    const isForClient = false;
+
+    const invoiceOptions = {
+      orderData,
+      clientData: partnerClientData ?? clientData,
+      currentInvoiceNumber,
+      isForClient,
+    };
+
+    const invoiceData = await createInvoiceDataLogic(invoiceOptions);
+
+    return { invoiceData, currentInvoiceNumber, orderDataId: orderData._id };
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data);
+    } else {
+      throw new Error(`No se ha podido generar la factura de ${orderData.matricula}`);
+    }
+  }
+}
+
+export async function fetchInvoiceOptions(order: TotalumOrder) {
+  try {
+    return await generateInvoiceOptions(order);
+  } catch (error) {
+    return error.response ? error.response.data : error.message;
+  }
+}
+
+export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any; orderDataId: any }) {
+  try {
+    const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
+
+    const file = await totalumSdk.files.generatePdfByTemplate(TOTALUM_INVOICE_TEMPLATE_ID, invoiceData, fileName);
+
+    await totalumSdk.crud.editItemById('pedido', orderDataId, {
+      factura: { name: fileName },
+    });
+
+    const response = await fetch(file.data.data.url);
+    const buffer = await response.buffer();
+    return buffer;
+  } catch (error) {
+    throw new Error(`Error creating Totalum invoice.
+      Order id: ${orderDataId}
+      Invoice data: ${JSON.stringify(invoiceData)}
+      Error: ${error}`);
+  }
 }

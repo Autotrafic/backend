@@ -18,6 +18,7 @@ export interface TotalumOrder {
   mandatos: TMandate;
   autotrafic_id: string;
   cliente: string;
+  socio_profesional: string;
   createdAt: string;
   updatedAt: string;
   metadata: object;
