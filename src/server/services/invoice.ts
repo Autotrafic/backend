@@ -271,7 +271,7 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: InvoiceO
 }
 
 export async function generateInvoicesBase64(invoicesOptions: InvoiceOptions[]) {
-  const batchSize = 5;
+  const batchSize = 10;
   let invoicesBuffers: any = [];
 
   for (let i = 0; i < invoicesOptions.length; i += batchSize) {
