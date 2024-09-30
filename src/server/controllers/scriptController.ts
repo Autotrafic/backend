@@ -96,7 +96,7 @@ export async function runSecondScript(req: Request, res: Response, next: NextFun
 
     const fileName = `factura.pdf`;
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 20; i++) {
       try {
           const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, options, fileName);
           const response = await fetch(file.data.data.url);
