@@ -1,8 +1,9 @@
 import express from "express";
-import { runScript } from "../controllers/scriptController";
+import { runScript, runSecondScript } from "../controllers/scriptController";
 
 const scriptRouter = express.Router();
 
 scriptRouter.get("/", runScript);
+scriptRouter.get('/2', runSecondScript);
 
 export default scriptRouter;

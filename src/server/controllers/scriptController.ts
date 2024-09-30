@@ -3,6 +3,7 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { getActualTrimesterExtendedOrders, getExtendedOrders, getOrderById } from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
+import fetch from 'node-fetch';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -34,12 +35,78 @@ export async function runScript(req: Request, res: Response, next: NextFunction)
     );
 
     const setOrdersWithPartnerAddress = async (ordersWithPartner: Order[]) => {
-        ordersWithPartner.forEach((order) => {
-
-        })
+      ordersWithPartner.forEach((order) => {});
     };
 
     res.status(200).json(ordersWithPartner.length + ordersWithoutPartner.length);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function runSecondScript(req: Request, res: Response, next: NextFunction) {
+  const invoiceTemplateId = '668555647039d527e634233d';
+
+  try {
+    const options = {
+      order: {
+        type: 'Transferencia por finalizacion entrega',
+        vehiclePlate: '7830GJW',
+      },
+      client: {
+        name: 'IDAN CARS S.L.',
+        firstSurname: null as null,
+        secondSurname: null as null,
+        nif: 'B09879255',
+        address: 'CTRA PRAT DE LLUÇANES, NUM 326, 08208 SABADELL',
+        phoneNumber: '683 36 13 86',
+        email: null as null,
+      },
+      services: [
+        {
+          description: 'Tasa DGT',
+          quantity: 1,
+          priceWithoutIVA: '-',
+          priceWithIVA: '-',
+          totalPrice: '55.70',
+        },
+        {
+          description: 'Envío',
+          quantity: 1,
+          priceWithoutIVA: '-',
+          priceWithIVA: '-',
+          totalPrice: '5.50',
+        },
+        {
+          description: 'Honorarios',
+          quantity: 1,
+          priceWithoutIVA: '12.40',
+          priceWithIVA: '15.00',
+          totalPrice: '15.00',
+        },
+      ],
+      summary: {
+        totalIVA: '2.60',
+        grandTotal: '76.20',
+      },
+      invoiceDate: '25 de septiembre de 2024',
+      invoiceNumber: '417',
+    };
+
+    const fileName = `factura.pdf`;
+
+    for (let i = 0; i < 50; i++) {
+      try {
+          const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, options, fileName);
+          const response = await fetch(file.data.data.url);
+          await response.buffer();
+      } catch (error) {
+          console.error(`Error on iteration ${i + 1}:`, error);
+          // Handle errors as needed (e.g., continue to next iteration, retry, etc.)
+      }
+  }
+
+    res.status(201).json({ message: 'completed' });
   } catch (error) {
     console.error(error);
   }
