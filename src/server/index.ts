@@ -27,7 +27,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(hpp());
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '10mb'}));
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -39,18 +39,8 @@ app.use(
   })
 );
 
-app.use(
-  express.json({
-    limit: '50mb',
-  })
-);
-app.use(
-  express.urlencoded({
-    limit: '50mb',
-    parameterLimit: 999999,
-    extended: true,
-  })
-);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.get('/', (req, res) => res.send('Working!'));
 
