@@ -71,37 +71,27 @@ export async function updateInvoiceData(req: Request, res: Response, next: NextF
 }
 
 export async function generateMultipleInvoices(req: Request, res: Response, next: NextFunction) {
-  const invoiceNumberDocumentId = '668cf28abc3208d35c20fdc8';
   const invoiceTemplateId = '668555647039d527e634233d';
 
   async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any; orderDataId: any }) {
     try {
       const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
 
-    const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, invoiceData, fileName);
+      const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, invoiceData, fileName);
 
-    await totalumSdk.crud.editItemById('pedido', orderDataId, {
-      factura: { name: fileName },
-    });
+      await totalumSdk.crud.editItemById('pedido', orderDataId, {
+        factura: { name: fileName },
+      });
 
-    // const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', invoiceNumberDocumentId);
-
-    // const currentInvoiceNumber = 300;
-
-    // await totalumSdk.crud.editItemById('numero_factura', invoiceNumberDocumentId, {
-    //   numero_factura: currentInvoiceNumber + 1,
-    // });
-
-    const response = await fetch(file.data.data.url);
-    const buffer = await response.buffer();
-    return buffer;
+      const response = await fetch(file.data.data.url);
+      const buffer = await response.buffer();
+      return buffer;
     } catch (error) {
       throw new Error(`Error creating Totalum invoice.
         Order id: ${orderDataId}
         Invoice data: ${JSON.stringify(invoiceData)}
-        Error: ${error}`)
+        Error: ${error}`);
     }
-    
   }
 
   async function bufferToBase64(buffer: Buffer) {
