@@ -271,15 +271,13 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: InvoiceO
 }
 
 export async function generateInvoicesBase64(invoicesOptions: InvoiceOptions[]) {
-  const invoicesBuffers = [];
+  const batchSize = 5;
+  let invoicesBuffers: any = [];
 
-  for (const invoiceOption of invoicesOptions) {
-    try {
-      const buffer = await generateInvoiceBlob(invoiceOption);
-      invoicesBuffers.push(buffer);
-    } catch (error) {
-      throw new Error(error);
-    }
+  for (let i = 0; i < invoicesOptions.length; i += batchSize) {
+    const batch = invoicesOptions.slice(i, i + batchSize);
+    const batchBuffers = await Promise.all(batch.map(generateInvoiceBlob));
+    invoicesBuffers = invoicesBuffers.concat(batchBuffers);
   }
 
   const invoicesBase64 = await Promise.all(invoicesBuffers.map(bufferToBase64));
