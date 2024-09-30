@@ -84,13 +84,13 @@ export async function generateMultipleInvoices(req: Request, res: Response, next
       factura: { name: fileName },
     });
 
-    const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', invoiceNumberDocumentId);
+    // const invoiceNumberResponse = await totalumSdk.crud.getItemById('numero_factura', invoiceNumberDocumentId);
 
-    const currentInvoiceNumber = invoiceNumberResponse.data.data.numero_factura;
+    // const currentInvoiceNumber = 300;
 
-    await totalumSdk.crud.editItemById('numero_factura', invoiceNumberDocumentId, {
-      numero_factura: currentInvoiceNumber + 1,
-    });
+    // await totalumSdk.crud.editItemById('numero_factura', invoiceNumberDocumentId, {
+    //   numero_factura: currentInvoiceNumber + 1,
+    // });
 
     const response = await fetch(file.data.data.url);
     const buffer = await response.buffer();
