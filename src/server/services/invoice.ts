@@ -4,14 +4,12 @@ import { TotalumParsedOrder } from '../../database/models/Order/Order';
 import { SHIPMENT_COST, ORDER_TYPES, totalumOptions } from '../../utils/constants';
 import fetch from 'node-fetch';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
-import axios from 'axios';
 import { parseOrderFromTotalumToWeb } from '../parsers/order';
 import parseClientFromPrimitive from '../parsers/client';
 import parseInvoiceData from '../parsers/invoice';
 import { createPdfFromStringLogic } from './file';
-import { bufferToBase64 } from '../parsers/file';
 
-const ORDER_PROFITS = 15;
+const ORDER_PROFITS = 17;
 const INVOICE_NUMBER_DOC_ID = '668cf28abc3208d35c20fdc8';
 const TOTALUM_INVOICE_TEMPLATE_ID = '668555647039d527e634233d';
 
