@@ -1,4 +1,4 @@
-export default interface ClientPrimitive {
+interface TClient {
     _id: string;
     tipo: string;
     nombre_o_razon_social: string;
@@ -12,3 +12,5 @@ export default interface ClientPrimitive {
     updatedAt: string;
     id: string;
 }
+
+type TClientType = 'Particular' | 'Autónomo' | 'Empresa';

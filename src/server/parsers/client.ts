@@ -1,11 +1,9 @@
 import Client from '../../database/models/Client/Client';
-import ClientPrimitive from '../../database/models/Client/ClientPrimitive';
 
-export default function parseClientFromPrimitive(client: ClientPrimitive): Client {
+export default function parseClientFromPrimitive(client: TClient): Client {
   if (!client) return null;
 
   return {
-    // eslint-disable-next-line no-underscore-dangle
     _id: client._id,
     id: client.id,
     type: client.tipo,

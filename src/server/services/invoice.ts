@@ -1,5 +1,5 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
-import { InternInvoiceService } from '../../database/models/Invoice';
+import Invoice, { InternInvoiceService } from '../../database/models/Invoice';
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
 import { SHIPMENT_COST, ORDER_TYPES, totalumOptions } from '../../utils/constants';
 import fetch from 'node-fetch';
@@ -9,6 +9,7 @@ import parseClientFromPrimitive from '../parsers/client';
 import parseInvoiceData from '../parsers/invoice';
 import { createPdfFromStringLogic } from './file';
 import { bufferToBase64 } from '../parsers/file';
+import { InvoiceErrorOptions, InvoiceOptions, InvoicePrimitiveOptions, InvoiceSuccessOptions } from '../../interfaces/invoice';
 
 const ORDER_PROFITS = 17;
 const INVOICE_NUMBER_DOC_ID = '668cf28abc3208d35c20fdc8';
@@ -151,12 +152,7 @@ export function updateInvoiceNumber(currentInvoiceNumber: number): number {
   return currentInvoiceNumber + 1;
 }
 
-export async function createInvoiceDataLogic(options: {
-  orderData: any;
-  clientData: any;
-  invoiceNumber: number;
-  isForClient: boolean;
-}) {
+export async function createInvoiceDataLogic(options: InvoicePrimitiveOptions) {
   const { orderData, clientData, invoiceNumber, isForClient } = options;
 
   const order = parseOrderFromTotalumToWeb(orderData);
@@ -175,7 +171,9 @@ export async function createInvoiceDataLogic(options: {
   return invoiceData;
 }
 
-export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[]) {
+export async function generateMultipleInvoicesOptionsLogic(
+  orders: TotalumOrder[]
+): Promise<InvoiceSuccessOptions | InvoiceErrorOptions> {
   // if (orders.length > 20) {
   //   throw new Error('Selecciona la opción de mostrar 20 pedidos por página, como máximo');
   // }
@@ -205,10 +203,10 @@ export async function generateMultipleInvoicesOptionsLogic(orders: TotalumOrder[
     };
   }
 
-  return { success: true, invoicesOptions };
+  return { success: true, invoicesOptions } as InvoiceSuccessOptions;
 }
 
-async function generateInvoiceOptions(orderData: TotalumOrder, invoiceNumber: number) {
+async function generateInvoiceOptions(orderData: TotalumOrder, invoiceNumber: number): Promise<InvoiceOptions> {
   try {
     const clientResponse = orderData.cliente ? await totalumSdk.crud.getItemById('cliente', orderData.cliente) : null;
     const clientData = clientResponse ? clientResponse.data.data : null;
@@ -224,7 +222,7 @@ async function generateInvoiceOptions(orderData: TotalumOrder, invoiceNumber: nu
 
     const isForClient = false;
 
-    const invoiceOptions = {
+    const invoiceOptions: InvoicePrimitiveOptions = {
       orderData,
       clientData: partnerClientData ?? clientData,
       invoiceNumber,
@@ -243,7 +241,7 @@ async function generateInvoiceOptions(orderData: TotalumOrder, invoiceNumber: nu
   }
 }
 
-export async function fetchInvoiceOptions(order: TotalumOrder, invoiceNumber: number) {
+export async function fetchInvoiceOptions(order: TotalumOrder, invoiceNumber: number): Promise<InvoiceOptions | string> {
   try {
     return await generateInvoiceOptions(order, invoiceNumber);
   } catch (error) {
@@ -251,7 +249,7 @@ export async function fetchInvoiceOptions(order: TotalumOrder, invoiceNumber: nu
   }
 }
 
-export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoiceData: any; orderDataId: any }) {
+export async function generateInvoiceBlob({ invoiceData, orderDataId }: InvoiceOptions) {
   try {
     const fileName = `factura-${invoiceData.invoiceNumber}.pdf`;
 
@@ -272,18 +270,19 @@ export async function generateInvoiceBlob({ invoiceData, orderDataId }: { invoic
   }
 }
 
-export async function generateInvoicesBase64(invoicesOptions: any) {
+export async function generateInvoicesBase64(invoicesOptions: InvoiceOptions[]) {
   const invoicesBuffers = [];
-    for (const invoiceOption of invoicesOptions) {
-      try {
-        const buffer = await generateInvoiceBlob(invoiceOption);
-        invoicesBuffers.push(buffer);
-      } catch (error) {
-        throw new Error(error);
-      }
+
+  for (const invoiceOption of invoicesOptions) {
+    try {
+      const buffer = await generateInvoiceBlob(invoiceOption);
+      invoicesBuffers.push(buffer);
+    } catch (error) {
+      throw new Error(error);
     }
+  }
 
-    const invoicesBase64 = await Promise.all(invoicesBuffers.map(bufferToBase64));
+  const invoicesBase64 = await Promise.all(invoicesBuffers.map(bufferToBase64));
 
-    return invoicesBase64;
+  return invoicesBase64;
 }

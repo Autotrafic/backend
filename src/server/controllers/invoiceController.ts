@@ -12,6 +12,7 @@ import parseInvoiceData from '../parsers/invoice';
 import CustomError from '../../errors/CustomError';
 import { bufferToBase64, mergePdfFromBase64Strings } from '../parsers/file';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
+import { InvoiceErrorOptions } from '../../interfaces/invoice';
 
 export async function createInvoiceData(req: Request, res: Response, next: NextFunction) {
   try {
@@ -60,7 +61,7 @@ export async function generateMultipleInvoicesPdf(req: Request, res: Response, n
   try {
     const invoicesOptionsResult = await generateMultipleInvoicesOptionsLogic(req.body);
 
-    if (!invoicesOptionsResult.success) {
+    if (invoicesOptionsResult.success === false) {
       const { pdfWithErrors, message } = invoicesOptionsResult;
       res.json({ success: false, pdfWithErrors: pdfWithErrors, message: message });
       return;
