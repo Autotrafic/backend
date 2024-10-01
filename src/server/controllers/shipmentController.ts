@@ -19,9 +19,9 @@ export async function makeShipment(req: CreateLabelImportBody, res: Response, ne
       return;
     }
 
-    const pdfLabel = await getSendcloudPdfLabel(parcelId);
+    const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
 
-    const labelBase64 = await bufferToBase64(pdfLabel);
+    const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
 
     res.status(201).json({ labelBase64, success: true, message: 'Se ha generado la etiqueta correctamente' });
   } catch (error) {
