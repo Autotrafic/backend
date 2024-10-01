@@ -1,6 +1,4 @@
-export function parseTotalumShipment(
-  shipment: TotalumShipment
-): ParsedTotalumShipment {
+export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumShipment {
   return {
     customerName: shipment.nombre_cliente,
     phone: shipment.telefono,
@@ -15,9 +13,7 @@ export function parseTotalumShipment(
   };
 }
 
-export function parseShipmentToTotalum(
-  parsedShipment: ParsedTotalumShipment
-): TotalumShipment {
+export function parseShipmentToTotalum(parsedShipment: ParsedTotalumShipment): TotalumShipment {
   return {
     nombre_cliente: parsedShipment.customerName,
     telefono: parsedShipment.phone,
@@ -32,13 +28,10 @@ export function parseShipmentToTotalum(
   };
 }
 
-export function createParcelFromShipment(
-  shipment: ParsedTotalumShipment,
-  isTest: boolean
-): Parcel {
+export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest: boolean): ParcelRequest {
   const carrier = {
     id: isTest ? 8 : 2524,
-    name: isTest ? "Unstamped Letter" : "Correos Express Paq24 0-1kg",
+    name: isTest ? 'Unstamped Letter' : 'Correos Express Paq24 0-1kg',
   };
 
   return {
@@ -49,28 +42,28 @@ export function createParcelFromShipment(
     house_number: shipment.houseNumber,
     postal_code: shipment.postalCode,
     city: shipment.city,
-    country: "ES",
+    country: 'ES',
     country_state: null,
     email: shipment.email,
-    customs_invoice_nr: "",
+    customs_invoice_nr: '',
     customs_shipment_type: 1,
     parcel_items: [
       {
-        description: "Nueva documentación de vehículo",
-        hs_code: "4907",
-        origin_country: "ES",
-        product_id: "1",
+        description: 'Nueva documentación de vehículo',
+        hs_code: '4907',
+        origin_country: 'ES',
+        product_id: '1',
         quantity: 1,
         value: shipment.value.toString(),
-        weight: "0.1",
+        weight: '0.1',
       },
     ],
-    weight: "0.02",
-    length: "22",
-    width: "11",
-    height: "0.1",
+    weight: '0.02',
+    length: '22',
+    width: '11',
+    height: '0.1',
     total_order_value: shipment.value.toString(),
-    total_order_value_currency: "EUR",
+    total_order_value_currency: 'EUR',
     shipment: carrier,
     quantity: 1,
     total_insured_value: 0,

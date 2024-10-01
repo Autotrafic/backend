@@ -183,10 +183,6 @@ export async function generateMultipleInvoicesOptionsLogic(
   });
   const invoicesOptions = await Promise.all(optionRequests);
 
-  await totalumSdk.crud.editItemById('numero_factura', INVOICE_NUMBER_DOC_ID, {
-    numero_factura: currentInvoiceNumber + orders.length,
-  });
-
   const errors = invoicesOptions.filter((option) => typeof option === 'string').join('\n');
 
   if (errors.length > 0) {
@@ -198,6 +194,10 @@ export async function generateMultipleInvoicesOptionsLogic(
       pdfWithErrors,
     };
   }
+
+  await totalumSdk.crud.editItemById('numero_factura', INVOICE_NUMBER_DOC_ID, {
+    numero_factura: currentInvoiceNumber + orders.length,
+  });
 
   return { success: true, invoicesOptions } as InvoiceSuccessOptions;
 }

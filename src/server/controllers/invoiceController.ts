@@ -1,18 +1,33 @@
 import { NextFunction, Request, Response } from 'express';
 import { parseOrderFromTotalumToWeb } from '../parsers/order';
 import parseClientFromPrimitive from '../parsers/client';
-import {
-  createInvoiceDataLogic,
-  fetchInvoiceOptions,
-  generateInvoiceBlob,
-  generateInvoicesBase64,
-  generateMultipleInvoicesOptionsLogic,
-} from '../services/invoice';
+import { createInvoiceDataLogic, generateInvoicesBase64, generateMultipleInvoicesOptionsLogic } from '../services/invoice';
 import parseInvoiceData from '../parsers/invoice';
 import CustomError from '../../errors/CustomError';
-import { bufferToBase64, mergePdfFromBase64Strings } from '../parsers/file';
-import { TotalumOrder } from '../../interfaces/totalum/pedido';
-import { InvoiceErrorOptions } from '../../interfaces/invoice';
+import { mergePdfFromBase64Strings } from '../parsers/file';
+import { catchControllerError } from '../../errors/generalError';
+
+export async function generateMultipleInvoicesPdf(req: Request, res: Response, next: NextFunction) {
+  try {
+    const invoicesOptionsResult = await generateMultipleInvoicesOptionsLogic(req.body);
+
+    if (invoicesOptionsResult.success === false) {
+      const { pdfWithErrors, message } = invoicesOptionsResult;
+      res.json({ success: false, pdfWithErrors: pdfWithErrors, message: message });
+      return;
+    }
+
+    const invoicesBase64 = await generateInvoicesBase64(invoicesOptionsResult.invoicesOptions);
+
+    const mergedPdfBase64 = await mergePdfFromBase64Strings(invoicesBase64);
+
+    res
+      .status(201)
+      .json({ success: true, mergedPdf: mergedPdfBase64, message: 'Se han generado las facturas correctamente' });
+  } catch (error) {
+    catchControllerError(error, 'Error generating invoices', req.body, next);
+  }
+}
 
 export async function createInvoiceData(req: Request, res: Response, next: NextFunction) {
   try {
@@ -52,35 +67,6 @@ export async function updateInvoiceData(req: Request, res: Response, next: NextF
       ${error}.
 
       Body: ${JSON.stringify(req.body)}`
-    );
-    next(finalError);
-  }
-}
-
-export async function generateMultipleInvoicesPdf(req: Request, res: Response, next: NextFunction) {
-  try {
-    const invoicesOptionsResult = await generateMultipleInvoicesOptionsLogic(req.body);
-
-    if (invoicesOptionsResult.success === false) {
-      const { pdfWithErrors, message } = invoicesOptionsResult;
-      res.json({ success: false, pdfWithErrors: pdfWithErrors, message: message });
-      return;
-    }
-
-    const invoicesBase64 = await generateInvoicesBase64(invoicesOptionsResult.invoicesOptions);
-
-    const mergedPdfBase64 = await mergePdfFromBase64Strings(invoicesBase64);
-
-    res
-      .status(201)
-      .json({ success: true, mergedPdf: mergedPdfBase64, message: 'Se han generado las facturas correctamente' });
-  } catch (error) {
-    console.log(error);
-    const finalError = new CustomError(
-      400,
-      `Error generating invoices. ${error}`,
-      `Error generating invoices.
-      ${error}.`
     );
     next(finalError);
   }

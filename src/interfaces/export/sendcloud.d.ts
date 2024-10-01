@@ -1,4 +1,4 @@
 interface CreateLabelExportBody {
-  parcel: Parcel;
+  parcel: ParcelRequest;
   isTest: boolean;
 }

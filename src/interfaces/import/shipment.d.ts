@@ -1,9 +1,14 @@
-import { Request } from "express";
+import { Request } from 'express';
 
 export interface CreateLabelImportBody extends Request {
-  body: { totalumShipment: TotalumShipment; isTest: boolean };
+  body: CreateLabelImport;
 }
 
 export interface GetPdfLabelBody extends Request {
   body: { parcelId: number; startFrom: number };
+}
+
+interface CreateLabelImport {
+  totalumShipment: TotalumShipment;
+  isTest: boolean;
 }
