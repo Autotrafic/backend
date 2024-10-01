@@ -2,6 +2,7 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { TOrderState } from '../../interfaces/enums';
 import { getCurrentTrimesterDates } from '../../utils/funcs';
+import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -105,7 +106,31 @@ export async function getActualTrimesterExtendedOrders() {
   }
 }
 
-export async function getOrdersPendingToShip() {
+export async function getOrdersPendingToShip(): Promise<ExtendedTotalumOrder[]> {
+  const nestedTreeStructure = {
+    pedido: {
+      envio: {},
+      persona_relacionada: {},
+      cliente: {},
+      tableFilter: {
+        filter: [
+          {
+            estado: TOrderState.PendienteEnvioCliente,
+          },
+        ],
+      },
+    },
+  };
+
+  try {
+    const response = await totalumSdk.crud.getNestedData(nestedTreeStructure);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching orders pending to ship from Totalum. ${error}`);
+  }
+}
+
+export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
   const nestedTreeStructure = {
     pedido: {
       envio: {},

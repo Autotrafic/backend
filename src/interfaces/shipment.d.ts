@@ -10,3 +10,14 @@ interface ParsedTotalumShipment {
   value: number;
   tracking: string;
 }
+
+interface CheckForShipmentSuccess {
+  success: true;
+  labelBase64: string;
+}
+
+interface CheckForShipmentFail {
+  success: false;
+  message: 'No se han podido generar las etiquetas. Se ha descargado un PDF con los errores.';
+  pdfWithErrors: string;
+}

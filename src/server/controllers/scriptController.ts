@@ -1,10 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import { getActualTrimesterExtendedOrders, getExtendedOrders, getOrderById } from '../services/totalum';
+import {
+  getActualTrimesterExtendedOrders,
+  getExtendedOrders,
+  getOrderById,
+  getOrdersPendingToShip,
+} from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import fetch from 'node-fetch';
 import CustomError from '../../errors/CustomError';
+import { TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
+import { addCheckToList } from '../../utils/funcs';
+import { checkShipmentAvailability } from '../handlers/checks';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -14,32 +22,9 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const allOrders = await getActualTrimesterExtendedOrders();
+    const checks = await checkShipmentAvailability();
 
-    let incompleteOrders: any = [];
-    allOrders.forEach((order: Order) => {
-      if (!order.hasOwnProperty('cliente') && (!order.hasOwnProperty('socio_profesional') || !order.socio_profesional)) {
-        incompleteOrders.push(order);
-      }
-    });
-
-    if (incompleteOrders.length > 0) {
-      res.status(200).json(incompleteOrders);
-      return;
-    }
-
-    const ordersWithPartner = allOrders.filter(
-      (order: Order) => order.hasOwnProperty('socio_profesional') && order.socio_profesional
-    );
-    const ordersWithoutPartner = allOrders.filter(
-      (order: Order) => !order.hasOwnProperty('socio_profesional') || !order.socio_profesional
-    );
-
-    const setOrdersWithPartnerAddress = async (ordersWithPartner: Order[]) => {
-      ordersWithPartner.forEach((order) => {});
-    };
-
-    res.status(200).json(ordersWithPartner.length + ordersWithoutPartner.length);
+    res.status(200).json(checks);
   } catch (error) {
     console.error(error);
   }
@@ -96,17 +81,19 @@ export async function runSecondScript(req: Request, res: Response, next: NextFun
 
     const fileName = `factura.pdf`;
 
-    const pdfPromises = Array(40).fill(null).map(async (_, index) => {
-      try {
+    const pdfPromises = Array(40)
+      .fill(null)
+      .map(async (_, index) => {
+        try {
           const file = await totalumSdk.files.generatePdfByTemplate(invoiceTemplateId, options, fileName);
           const response = await fetch(file.data.data.url);
           await response.buffer();
-      } catch (error) {
-          throw new Error(error)
-      }
-  });
+        } catch (error) {
+          throw new Error(error);
+        }
+      });
 
-  await Promise.all(pdfPromises);
+    await Promise.all(pdfPromises);
 
     res.status(201).json({ message: 'completed' });
   } catch (error) {

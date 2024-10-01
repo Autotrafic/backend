@@ -54,7 +54,7 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
         origin_country: 'ES',
         product_id: '1',
         quantity: 1,
-        value: shipment.value.toString(),
+        value: shipment?.value?.toString() ?? '129.95',
         weight: '0.1',
       },
     ],

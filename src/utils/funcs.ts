@@ -10,9 +10,7 @@ export function getMonthNameInSpanish(): string {
 }
 
 export function addCheckToList(list: TCheck[], reference: string, check: Check) {
-  let updatedList = [...list];
-
-  const checkToUpdate = updatedList.find((item) => item.reference === reference);
+  const checkToUpdate = list.find((item) => item.reference === reference);
 
   if (checkToUpdate) {
     const checkExists = checkToUpdate.checks.some((existingCheck) => existingCheck.id === check.id);
@@ -21,13 +19,13 @@ export function addCheckToList(list: TCheck[], reference: string, check: Check) 
       checkToUpdate.checks.push(check);
     }
   } else {
-    updatedList.push({
+    list.push({
       reference: reference,
       checks: [check],
     });
   }
 
-  return updatedList;
+  return list;
 }
 
 export function getCurrentTrimesterDates() {

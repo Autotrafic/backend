@@ -25,6 +25,11 @@ export interface TotalumOrder {
   _id: string;
 }
 
+export interface ExtendedTotalumOrder extends Omit<TotalumOrder, 'cliente'> {
+  cliente: TClient;
+  envio: TotalumShipment[];
+}
+
 interface TotalumParsedOrder {
   autonomousCommunity: AutonomousCommunityValue;
   priority: string;

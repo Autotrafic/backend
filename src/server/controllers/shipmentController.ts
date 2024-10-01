@@ -6,7 +6,6 @@ import CustomError from '../../errors/CustomError';
 import { createSendcloudLabel } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
-import { bufferToBase64 } from '../parsers/file';
 
 export async function makeShipment(req: CreateLabelImportBody, res: Response, next: NextFunction) {
   try {
@@ -15,7 +14,7 @@ export async function makeShipment(req: CreateLabelImportBody, res: Response, ne
     const parcelId = parcel.id;
 
     if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
-      res.status(200).json({ success: false, message: 'No se ha podido generar la etiqueta. Contacta con mantenimiento.' });
+      res.status(200).json({ success: false, message: 'No se ha podido generar la etiqueta. Contacta con soporte.' });
       return;
     }
 
