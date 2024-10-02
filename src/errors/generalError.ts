@@ -46,7 +46,7 @@ export function catchControllerError(
   message: string,
   requestBody: any,
   nextFunction: NextFunction,
-  errorCode: number = 400
+  errorCode: number = 500
 ) {
   console.log(error);
   const finalError = new CustomError(
