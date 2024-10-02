@@ -9,6 +9,7 @@ import { getShipmentByVehiclePlate } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
 import { checkShipmentAvailability } from '../handlers/checks';
 import sseClientManager from '../../sse/sseClientManager';
+import { updateTotalumOrderWhenShipped } from '../services/shipments';
 
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
@@ -20,9 +21,13 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
     const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
     const labelsBase64 = await Promise.all(labelsPromises);
 
+    await updateTotalumOrderWhenShipped(shipments);
+
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
 
     res.status(200).json({ mergedLabelsBase64 });
+
+    res.status(200).json(shipments);
   } catch (error) {
     catchControllerError(error, 'Error making multiple shipments', req.body, next);
   }

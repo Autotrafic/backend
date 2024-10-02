@@ -11,7 +11,7 @@ export function addSseClient(req: Request, res: Response, next: NextFunction) {
 
   const keepAliveInterval = setInterval(() => {
     res.write(`: keep-alive\n\n`);
-  }, 30000);
+  }, 20000);
 
   req.on('close', () => {
     clearInterval(keepAliveInterval);

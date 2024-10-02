@@ -1,4 +1,5 @@
-import { AutonomousCommunityValue } from "../enums";
+import { AutonomousCommunityValue } from '../enums';
+import { TotalumShipment } from './envio';
 
 export interface TotalumOrder {
   comunidad_autonoma: TAutonomousCommunity;
@@ -54,51 +55,53 @@ interface TotalumParsedOrder {
 }
 
 export type TAutonomousCommunity =
-  | "Cataluña"
-  | "Andalucía"
-  | "Aragón"
-  | "Asturias"
-  | "Baleares"
-  | "Canarias"
-  | "Cantabria"
-  | "Castilla y León"
-  | "Castilla la Mancha"
-  | "Extremadura"
-  | "Galicia"
-  | "Madrid"
-  | "Murcia"
-  | "Navarra"
-  | "País Vasco"
-  | "La Rioja"
-  | "Valencia";
+  | 'Cataluña'
+  | 'Andalucía'
+  | 'Aragón'
+  | 'Asturias'
+  | 'Baleares'
+  | 'Canarias'
+  | 'Cantabria'
+  | 'Castilla y León'
+  | 'Castilla la Mancha'
+  | 'Extremadura'
+  | 'Galicia'
+  | 'Madrid'
+  | 'Murcia'
+  | 'Navarra'
+  | 'País Vasco'
+  | 'La Rioja'
+  | 'Valencia';
 
-type TPriority = "Normal" | "Alta";
+type TPriority = 'Normal' | 'Alta';
 
-type TState =
-  | "Pendiente Tramitar A9"
-  | "Pendiente Entrega Tráfico"
-  | "En Tráfico"
-  | "Pendiente Envío Cliente"
-  | "Rechazado"
-  | "Enviado Cliente"
-  | "Entregado Cliente"
-  | "Pendiente Recibir Permiso Gestoría"
-  | "Pendiente Pago ITP"
-  | "Pendiente enviar 3º gestoría"
-  | "Enviado 3º gestoría"
-  | "Pendiente recibir info cliente"
-  | "Pendiente recoger Correos"
-  | "Nuevo pedido web";
+export type TState =
+  | 'Pendiente Tramitar A9'
+  | 'Pendiente Entrega Tráfico'
+  | 'En Tráfico'
+  | 'Pendiente Envío Cliente'
+  | 'Rechazado'
+  | 'Enviado Cliente'
+  | 'Entregado Cliente'
+  | 'Pendiente Recibir Permiso Gestoría'
+  | 'Pendiente Pago ITP'
+  | 'Pendiente enviar 3º gestoría'
+  | 'Enviado 3º gestoría'
+  | 'Pendiente recibir info cliente'
+  | 'Pendiente recoger Correos'
+  | 'Nuevo pedido web'
+  | 'Pendiente devolución Correos'
+  | 'Pendiente entrega Correos';
 
 type TType =
-  | "Transferencia"
-  | "Duplicado permiso"
-  | "Distintivo"
-  | "Notificacion"
-  | "Transferencia ciclomotor"
-  | "Entrega compraventa"
-  | "Transferencia por finalizacion entrega"
-  | "Alta por baja voluntaria"
-  | "Cambio de domicilio";
+  | 'Transferencia'
+  | 'Duplicado permiso'
+  | 'Distintivo'
+  | 'Notificacion'
+  | 'Transferencia ciclomotor'
+  | 'Entrega compraventa'
+  | 'Transferencia por finalizacion entrega'
+  | 'Alta por baja voluntaria'
+  | 'Cambio de domicilio';
 
-type TMandate = "No enviados" | "Enviados" | "Firmados" | "Adjuntados";
+type TMandate = 'No enviados' | 'Enviados' | 'Firmados' | 'Adjuntados';

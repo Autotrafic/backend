@@ -3,6 +3,7 @@ import { totalumOptions } from '../../utils/constants';
 import { TOrderState } from '../../interfaces/enums';
 import { getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
+import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -154,7 +155,7 @@ export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
   }
 }
 
-export async function getShipmentByVehiclePlate(vehiclePlate: string): Promise<TotalumShipment> {
+export async function getShipmentByVehiclePlate(vehiclePlate: string): Promise<ExtendedTotalumShipment> {
   const nestedQuery = {
     envio: {
       tableFilter: {
@@ -173,5 +174,13 @@ export async function getShipmentByVehiclePlate(vehiclePlate: string): Promise<T
     return response.data.data[0];
   } catch (error) {
     throw new Error(`Error fetching Totalum shipments by vehicle plate. ${error}`);
+  }
+}
+
+export async function updateOrderById(orderId: string, update: Partial<ExtendedTotalumOrder>) {
+  try {
+    await totalumSdk.crud.editItemById('pedido', orderId, update);
+  } catch (error) {
+    throw new Error(`Error updating Totalum order. ${error}`);
   }
 }

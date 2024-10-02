@@ -1,4 +1,5 @@
 import { CheckType, TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
+import { TotalumShipment } from '../../interfaces/totalum/envio';
 import { addCheckToList } from '../../utils/funcs';
 import { getOrdersPendingToShip } from '../services/totalum';
 

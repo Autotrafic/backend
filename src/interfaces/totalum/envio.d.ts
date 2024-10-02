@@ -1,4 +1,6 @@
-interface TotalumShipment {
+import { TotalumOrder } from "./pedido";
+
+export interface TotalumShipment {
     nombre_cliente: string;
     telefono: string;
     direccion: string;
@@ -9,4 +11,8 @@ interface TotalumShipment {
     referencia: string;
     valor: number;
     seguimiento: string;
+}
+
+export interface ExtendedTotalumShipment extends TotalumShipment {
+    pedido: TotalumOrder[];
 }
