@@ -26,8 +26,6 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
 
     res.status(200).json({ mergedLabelsBase64 });
-
-    res.status(200).json(shipments);
   } catch (error) {
     catchControllerError(error, 'Error making multiple shipments', req.body, next);
   }
