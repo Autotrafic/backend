@@ -9,7 +9,12 @@ export function addSseClient(req: Request, res: Response, next: NextFunction) {
   res.write(`data: Connected to SSE\n\n`);
   sseClientManager.addClient(res);
 
+  const keepAliveInterval = setInterval(() => {
+    res.write(`: keep-alive\n\n`);
+  }, 30000);
+
   req.on('close', () => {
+    clearInterval(keepAliveInterval);
     sseClientManager.removeClient(res);
   });
 }
