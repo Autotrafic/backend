@@ -1,9 +1,9 @@
 import express from 'express';
-import { createLabel, getPdfLabel, makeShipment } from '../controllers/shipmentController';
+import { createLabel, getPdfLabel, makeMultipleShipments } from '../controllers/shipmentController';
 
 const shipmentRouter = express.Router();
 
-shipmentRouter.post('/', makeShipment);
+shipmentRouter.post('/', makeMultipleShipments);
 
 shipmentRouter.post('/create-label', createLabel);
 shipmentRouter.post('/get-pdf-label', getPdfLabel);

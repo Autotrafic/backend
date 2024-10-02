@@ -25,7 +25,11 @@ export async function runScript(req: Request, res: Response, next: NextFunction)
   try {
     const checks = await checkShipmentAvailability();
 
-    sseClientManager.broadcast('data', checks);
+    if (checks.length > 0) {
+      sseClientManager.broadcast('data', checks);
+      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
+      return;
+    }
 
     res.status(200).json(checks);
   } catch (error) {

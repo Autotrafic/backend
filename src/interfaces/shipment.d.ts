@@ -18,6 +18,5 @@ interface CheckForShipmentSuccess {
 
 interface CheckForShipmentFail {
   success: false;
-  message: 'No se han podido generar las etiquetas. Se ha descargado un PDF con los errores.';
-  pdfWithErrors: string;
+  message: string;
 }

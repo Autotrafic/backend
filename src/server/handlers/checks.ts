@@ -1,4 +1,4 @@
-import { TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
+import { CheckType, TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
 import { addCheckToList } from '../../utils/funcs';
 import { getOrdersPendingToShip } from '../services/totalum';
 
@@ -23,7 +23,7 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
     }
   }
 
-  const checksConfig: { filterProp: keyof TotalumShipment; checkType: { id: number; title: string; type: string } }[] = [
+  const checksConfig: { filterProp: keyof TotalumShipment; checkType: { id: number; title: string; type: CheckType } }[] = [
     { filterProp: 'nombre_cliente', checkType: TOTALUM_CHECKS.SHIPMENT_WITHOUT_CUSTOMER_NAME },
     { filterProp: 'telefono', checkType: TOTALUM_CHECKS.SHIPMENT_WITHOUT_PHONE },
     { filterProp: 'direccion', checkType: TOTALUM_CHECKS.SHIPMENT_WITHOUT_ADDRESS },
@@ -34,10 +34,17 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
   ];
 
   checksConfig.forEach(({ filterProp, checkType }) => {
-    const shipmentsWithoutProp = shipments.filter((shipment) => {return !shipment[filterProp]});
+    const shipmentsWithoutProp = shipments.filter((shipment) => !shipment[filterProp]);
     shipmentsWithoutProp.forEach((shipment) => {
       addCheckToList(checks, shipment.referencia, checkType);
     });
+  });
+
+  shipments.forEach((shipment) => {
+    const isComplete = checksConfig.every(({ filterProp }) => shipment[filterProp]);
+    if (isComplete) {
+      addCheckToList(checks, shipment.referencia, TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
+    }
   });
 
   return checks;

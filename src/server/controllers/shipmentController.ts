@@ -9,33 +9,25 @@ import { SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
 import { checkShipmentAvailability } from '../handlers/checks';
 import sseClientManager from '../../sse/sseClientManager';
 
-export async function makeShipment(req: CreateLabelImportBody, res: Response, next: NextFunction) {
-  try {
-    const parcel = await createSendcloudLabel(req.body);
+export async function makeMultipleShipments(req: CreateLabelImportBody, res: Response, next: NextFunction) {
+  // try {
+  //   const ordersForShip = await createSendcloudLabel(req.body);
 
-    const parcelId = parcel.id;
+  //   const parcelId = parcel.id;
 
-    if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
-      res.status(200).json({ success: false, message: 'No se ha podido generar la etiqueta. Contacta con soporte.' });
-      return;
-    }
+  //   if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
+  //     res.status(200).json({ success: false, message: 'No se ha podido generar la etiqueta. Contacta con soporte.' });
+  //     return;
+  //   }
 
-    const checks = await checkShipmentAvailability();
+  //   const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
 
-    if (checks.length > 0) {
-      sseClientManager.broadcast('data', checks);
-      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
-      return;
-    }
+  //   const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
 
-    const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
-
-    const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
-
-    res.status(201).json({ labelBase64, success: true, message: 'Se ha generado la etiqueta correctamente' });
-  } catch (error) {
-    catchControllerError(error, 'Error making shipment', req.body, next);
-  }
+  //   res.status(201).json({ labelBase64, success: true, message: 'Se ha generado la etiqueta correctamente' });
+  // } catch (error) {
+  //   catchControllerError(error, 'Error making shipment', req.body, next);
+  // }
 }
 
 export async function createLabel(req: CreateLabelImportBody, res: Response, next: NextFunction) {
