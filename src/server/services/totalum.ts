@@ -153,3 +153,25 @@ export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
     throw new Error(`Error fetching orders pending to ship from Totalum. ${error}`);
   }
 }
+
+export async function getShipmentByVehiclePlate(vehiclePlate: string): Promise<TotalumShipment> {
+  const nestedQuery = {
+    envio: {
+      tableFilter: {
+        filter: [
+          {
+            referencia: vehiclePlate,
+          },
+        ],
+      },
+      pedido: {},
+    },
+  };
+
+  try {
+    const response = await totalumSdk.crud.getNestedData(nestedQuery);
+    return response.data.data[0];
+  } catch (error) {
+    throw new Error(`Error fetching Totalum shipments by vehicle plate. ${error}`);
+  }
+}

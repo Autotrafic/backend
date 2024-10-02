@@ -6,6 +6,7 @@ import {
   getExtendedOrders,
   getOrderById,
   getOrdersPendingToShip,
+  getShipmentByVehiclePlate,
 } from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import fetch from 'node-fetch';
@@ -23,13 +24,15 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const checks = await checkShipmentAvailability();
+    
 
-    if (checks.length > 0) {
-      sseClientManager.broadcast('data', checks);
-      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
-      return;
-    }
+    const checks = await getShipmentByVehiclePlate('1732CVN');
+
+    // if (checks.length > 0) {
+    //   sseClientManager.broadcast('data', checks);
+    //   res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
+    //   return;
+    // }
 
     res.status(200).json(checks);
   } catch (error) {

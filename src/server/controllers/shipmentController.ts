@@ -1,38 +1,34 @@
 import { NextFunction, Response } from 'express';
-import { CreateLabelImportBody, GetPdfLabelBody } from '../../interfaces/import/shipment';
+import { CreateLabelImportBody, GetPdfLabelBody, MakeMultipleShipmentsImportBody } from '../../interfaces/import/shipment';
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
 import CustomError from '../../errors/CustomError';
-import { createSendcloudLabel } from '../handlers/shipment';
+import { makeShipment } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
-import { SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
-import { checkShipmentAvailability } from '../handlers/checks';
-import sseClientManager from '../../sse/sseClientManager';
+import { getShipmentByVehiclePlate } from '../services/totalum';
+import { mergePdfFromBase64Strings } from '../parsers/file';
 
-export async function makeMultipleShipments(req: CreateLabelImportBody, res: Response, next: NextFunction) {
-  // try {
-  //   const ordersForShip = await createSendcloudLabel(req.body);
+export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
+  try {
+    const { vehiclePlates, isTest } = req.body;
 
-  //   const parcelId = parcel.id;
+    const shipmentsPromises = vehiclePlates.map((plate) => getShipmentByVehiclePlate(plate));
+    const shipments = await Promise.all(shipmentsPromises);
 
-  //   if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
-  //     res.status(200).json({ success: false, message: 'No se ha podido generar la etiqueta. Contacta con soporte.' });
-  //     return;
-  //   }
+    const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
+    const labelsBase64 = await Promise.all(labelsPromises);
 
-  //   const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
+    const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
 
-  //   const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
-
-  //   res.status(201).json({ labelBase64, success: true, message: 'Se ha generado la etiqueta correctamente' });
-  // } catch (error) {
-  //   catchControllerError(error, 'Error making shipment', req.body, next);
-  // }
+    res.status(200).json(mergedLabelsBase64);
+  } catch (error) {
+    catchControllerError(error, 'Error making multiple shipments', req.body, next);
+  }
 }
 
 export async function createLabel(req: CreateLabelImportBody, res: Response, next: NextFunction) {
   try {
-    const { totalumShipment, isTest } = req.body;
+    const { totalumShipment: totalumShipment, isTest } = req.body;
 
     const shipment = parseTotalumShipment(totalumShipment);
 
