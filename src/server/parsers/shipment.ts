@@ -62,7 +62,7 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
     length: '22',
     width: '11',
     height: '0.1',
-    total_order_value: shipment.value.toString(),
+    total_order_value: shipment?.value?.toString() ?? '129.95',
     total_order_value_currency: 'EUR',
     shipment: carrier,
     quantity: 1,

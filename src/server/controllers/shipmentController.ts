@@ -1,4 +1,4 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { CreateLabelImportBody, GetPdfLabelBody, MakeMultipleShipmentsImportBody } from '../../interfaces/import/shipment';
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
@@ -7,6 +7,8 @@ import { makeShipment } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByVehiclePlate } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
+import { checkShipmentAvailability } from '../handlers/checks';
+import sseClientManager from '../../sse/sseClientManager';
 
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
@@ -20,9 +22,26 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
 
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
 
-    res.status(200).json(mergedLabelsBase64);
+    res.status(200).json({ mergedLabelsBase64 });
   } catch (error) {
+    res.status(500).json(error);
     catchControllerError(error, 'Error making multiple shipments', req.body, next);
+  }
+}
+
+export async function checkShipmentsAvailability(req: Request, res: Response, next: NextFunction) {
+  try {
+    const checks = await checkShipmentAvailability();
+
+    if (checks.length > 0) {
+      sseClientManager.broadcast('data', checks);
+      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
+      return;
+    }
+
+    res.status(200).json(checks);
+  } catch (error) {
+    catchControllerError(error, 'Error checking shipments availability', req.body, next);
   }
 }
 

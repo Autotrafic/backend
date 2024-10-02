@@ -4,7 +4,7 @@ export async function bufferToBase64(buffer: Buffer) {
   return buffer.toString('base64');
 }
 
-export async function mergePdfFromBase64Strings(base64Strings: string[]) {
+export async function mergePdfFromBase64Strings(base64Strings: string[]): Promise<string> {
   const mergedPdf = await PDFDocument.create();
 
   for (const base64String of base64Strings) {

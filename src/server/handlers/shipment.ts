@@ -16,6 +16,7 @@ export async function createSendcloudLabel({
 
 export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<string> {
   const shipmentReference = shipmentInfo.totalumShipment.referencia;
+  
   const parcel = await createSendcloudLabel(shipmentInfo);
 
   const parcelId = parcel.id;
@@ -24,9 +25,12 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
     throw new Error(`Sendcloud no reconoce el envío de ${shipmentReference} como listo para enviar. Contacta con soporte.`);
   }
 
+
   const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
 
+
   const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
+
 
   return labelBase64;
 }
