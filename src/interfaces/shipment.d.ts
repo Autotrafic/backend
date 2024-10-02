@@ -1,4 +1,5 @@
 interface ParsedTotalumShipment {
+  id: string;
   customerName: string;
   phone: string;
   address: string;

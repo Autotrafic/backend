@@ -1,5 +1,8 @@
+import { TotalumShipment } from "../../interfaces/totalum/envio";
+
 export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumShipment {
   return {
+    id: shipment._id,
     customerName: shipment.nombre_cliente,
     phone: shipment.telefono,
     address: shipment.direccion,
@@ -15,6 +18,7 @@ export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumSh
 
 export function parseShipmentToTotalum(parsedShipment: ParsedTotalumShipment): TotalumShipment {
   return {
+    _id: parsedShipment.id,
     nombre_cliente: parsedShipment.customerName,
     telefono: parsedShipment.phone,
     direccion: parsedShipment.address,
