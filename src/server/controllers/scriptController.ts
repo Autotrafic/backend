@@ -25,6 +25,8 @@ export async function runScript(req: Request, res: Response, next: NextFunction)
   try {
     const checks = await checkShipmentAvailability();
 
+    sseClientManager.broadcast('data', checks);
+
     res.status(200).json(checks);
   } catch (error) {
     console.error(error);
@@ -35,7 +37,7 @@ export async function runSecondScript(req: Request, res: Response, next: NextFun
   try {
     const message = 'Thisis fucking awesome';
 
-    sseClientManager.broadcast('message', { text: message });
+    sseClientManager.broadcast('data', { text: message });
 
     res.status(200).send('Message broadcasted to all connected clients');
   } catch (error) {
