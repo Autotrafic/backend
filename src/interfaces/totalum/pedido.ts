@@ -102,6 +102,7 @@ type TType =
   | 'Entrega compraventa'
   | 'Transferencia por finalizacion entrega'
   | 'Alta por baja voluntaria'
-  | 'Cambio de domicilio';
+  | 'Cambio de domicilio'
+  | 'Baja temporal';
 
 type TMandate = 'No enviados' | 'Enviados' | 'Firmados' | 'Adjuntados';

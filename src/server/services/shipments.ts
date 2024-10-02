@@ -13,6 +13,6 @@ export async function updateTotalumOrderWhenShipped(shipmentsShipped: ExtendedTo
 
     await Promise.all(updatePromises);
   } catch (error) {
-    throw new Error(error);
+    throw new Error(`Error updating Totalum order state to 'Pendiente entregar Correos': ${error}`);
   }
 }

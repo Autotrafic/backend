@@ -72,3 +72,7 @@ export function parseOrderFromTotalumToWeb(order: TotalumOrder): TotalumParsedOr
 export function parseWebOrderToTotalum(webOrder: WebOrder): Partial<TotalumOrder> {
   return {};
 }
+
+export function getDriveFolderIdFromLink(driveLink: string): string {
+  return driveLink.split('/').pop();
+}

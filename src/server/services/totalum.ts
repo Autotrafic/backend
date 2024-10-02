@@ -1,6 +1,6 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import { TOrderState } from '../../interfaces/enums';
+import { TOrderState, TOrderType } from '../../interfaces/enums';
 import { getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
@@ -25,6 +25,56 @@ export async function getOrderById(orderId: string) {
   }
 }
 
+export async function getOrdersByVehiclePlateAndOrderType(
+  vehiclePlate: string,
+  orderType: TOrderType
+): Promise<ExtendedTotalumOrder[]> {
+  const nestedQuery = {
+    pedido: {
+      tableFilter: {
+        filter: [
+          {
+            matricula: vehiclePlate,
+          },
+          {
+            tipo: orderType,
+          },
+        ],
+      },
+      envio: {},
+    },
+  };
+
+  try {
+    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return clientResponse.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching Totalum order by id. ${error}`);
+  }
+}
+
+export async function getExtendedShipmentById(shipmentId: string): Promise<ExtendedTotalumShipment> {
+  const nestedQuery = {
+    envio: {
+      tableFilter: {
+        filter: [
+          {
+            _id: shipmentId,
+          },
+        ],
+      },
+      pedido: {},
+    },
+  };
+
+  try {
+    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return clientResponse.data.data[0];
+  } catch (error) {
+    throw new Error(`Error fetching Totalum shipment by id. ${error}`);
+  }
+}
+
 export async function getProfessionalPartnerById(partnerId: string) {
   try {
     const clientResponse = await totalumSdk.crud.getItemById('socio_profesional', partnerId);
@@ -34,7 +84,7 @@ export async function getProfessionalPartnerById(partnerId: string) {
   }
 }
 
-export async function getShipmentNestedData() {
+export async function getShipmentsNestedData() {
   const nestedTreeStructure = {
     envio: {
       pedido: {

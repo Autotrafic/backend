@@ -7,7 +7,7 @@ import {
 import { EXPEDIENTES_DRIVE_FOLDER_ID } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import { CreateInformationFileBody } from '../../interfaces/import/file';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import { createPdfFromStringLogic } from '../services/file';
 
 export async function uploadFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -22,9 +22,7 @@ export async function uploadFiles(req: Request, res: Response, next: NextFunctio
   try {
     const orderFolderId = await getOrderFolder(folderName, EXPEDIENTES_DRIVE_FOLDER_ID);
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const file of files) {
-      // eslint-disable-next-line no-await-in-loop
       await uploadToGoogleDrive(file, orderFolderId);
     }
 

@@ -103,6 +103,20 @@ export enum TOrderState {
   PendienteEntregarCorreos = 'Pendiente entrega Correos',
 }
 
+export enum TOrderType {
+  Transferencia = 'Transferencia',
+  DuplicadoPermiso = 'Duplicado permiso',
+  Distintivo = 'Distintivo',
+  Notificacion = 'Notificacion',
+  TransferenciaCiclomotor = 'Transferencia ciclomotor',
+  EntregaCompraventa = 'Entrega compraventa',
+  TransferenciaPorFinalizacionEntrega = 'Transferencia por finalizacion entrega',
+  AltaPorBajaVoluntaria = 'Alta por baja voluntaria',
+  CambioDeDomicilio = 'Cambio de domicilio',
+  BajaTemporal = 'Baja temporal',
+}
+
+
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,
   Aragón: AutonomousCommunityValue.ARAGON,
