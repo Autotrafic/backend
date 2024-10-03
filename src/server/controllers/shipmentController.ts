@@ -14,12 +14,18 @@ import { updateTotalumOrderWhenShipped } from '../services/shipments';
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
     const { vehiclePlates, isTest } = req.body;
+    let labelsBase64: string[] = [];
 
     const shipmentsPromises = vehiclePlates.map((plate) => getShipmentByVehiclePlate(plate));
     const shipments = await Promise.all(shipmentsPromises);
 
-    const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
-    const labelsBase64 = await Promise.all(labelsPromises);
+    // const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
+    // const labelsBase64 = await Promise.all(labelsPromises);
+
+    for (let shipment of shipments) {
+      const label = await makeShipment({ totalumShipment: shipment, isTest });
+      labelsBase64.push(label);
+    }
 
     await updateTotalumOrderWhenShipped(shipments);
 

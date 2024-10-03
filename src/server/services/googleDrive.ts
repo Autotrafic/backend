@@ -16,7 +16,7 @@ const drive = google.drive({ version: 'v3', auth: jwtClient });
 
 export async function uploadBase64FileToDrive(base64Data: string, folderId: string) {
   try {
-    const file = parseBase64ToPDFFile(base64Data, 'Etiqueta envio');
+    const file = parseBase64ToPDFFile(base64Data, `Etiqueta envio ${folderId.substring(0, 6)}`);
     await uploadStreamFileToDrive(file, folderId);
 
     fs.unlinkSync(file.path);
