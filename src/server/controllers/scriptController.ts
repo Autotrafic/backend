@@ -14,6 +14,7 @@ import { TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
 import { addCheckToList } from '../../utils/funcs';
 import { checkShipmentAvailability } from '../handlers/checks';
 import sseClientManager from '../../sse/sseClientManager';
+import { shortUrl } from '../services/other';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -23,15 +24,10 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const checks = await checkShipmentAvailability();
+    const url = await shortUrl('https://tracking.eu-central-1-0.sendcloud.sc/forward?carrier=correos_express&code=3230007909971066&destination=ES&lang=es-es&source=ES&type=parcel&verification=13005&servicepoint_verification=&shipping_product_code=correos_express%3Apaq24&created_at=2024-10-03');
 
-    if (checks.length > 0) {
-      sseClientManager.broadcast('data', checks);
-      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
-      return;
-    }
 
-    res.status(200).json(checks);
+    res.status(200).json(url);
   } catch (error) {
     console.error(error);
   }

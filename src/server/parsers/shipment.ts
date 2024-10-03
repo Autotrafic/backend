@@ -80,3 +80,4 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
     request_label_async: false,
   };
 }
+
