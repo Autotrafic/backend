@@ -37,6 +37,7 @@ interface ParcelResponse {
   reference: string;
   status: ParcelStatus;
   tracking_number: string;
+  tracking_url?: string;
   weight: string;
   order_number: string;
   total_insured_value: number;

@@ -6,6 +6,7 @@ import { getDriveFolderIdFromLink } from '../parsers/order';
 import { parseTotalumShipment } from '../parsers/shipment';
 import { ensureFolderExists, uploadBase64FileToDrive } from '../services/googleDrive';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
+import { updateTotalumOrderWhenShipped } from '../services/shipments';
 import { getExtendedShipmentById } from '../services/totalum';
 
 export async function createSendcloudLabel({
@@ -24,8 +25,9 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
     const shipmentReference = shipmentInfo.totalumShipment.referencia;
 
     const parcel = await createSendcloudLabel(shipmentInfo);
-
     const parcelId = parcel.id;
+
+    await updateTotalumOrderWhenShipped(shipmentInfo.totalumShipment, parcel);
 
     if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
       throw new Error(

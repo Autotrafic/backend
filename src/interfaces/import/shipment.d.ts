@@ -19,6 +19,6 @@ interface MakeMultipleShipmentsImport {
 }
 
 interface CreateLabelImport {
-  totalumShipment: TotalumShipment;
+  totalumShipment: ExtendedTotalumShipment;
   isTest: boolean;
 }

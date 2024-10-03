@@ -234,3 +234,11 @@ export async function updateOrderById(orderId: string, update: Partial<ExtendedT
     throw new Error(`Error updating Totalum order. ${error}`);
   }
 }
+
+export async function updateShipmentById(shipmentId: string, update: Partial<ExtendedTotalumShipment>) {
+  try {
+    await totalumSdk.crud.editItemById('envio', shipmentId, update);
+  } catch (error) {
+    throw new Error(`Error updating Totalum shipment. ${error}`);
+  }
+}

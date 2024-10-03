@@ -1,17 +1,22 @@
 import { TOrderState } from '../../interfaces/enums';
-import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
-import { updateOrderById } from './totalum';
+import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
+import { updateOrderById, updateShipmentById } from './totalum';
 
-export async function updateTotalumOrderWhenShipped(shipmentsShipped: ExtendedTotalumShipment[]) {
+export async function updateTotalumOrderWhenShipped(shipmentShipped: ExtendedTotalumShipment, parcel: ParcelResponse) {
   try {
-    const updatePromises = shipmentsShipped.map((shipment) => {
-      const orderId = shipment.pedido[0]._id;
+    const updateOrdersPromises = shipmentShipped.pedido.map((order) => {
+      const orderId = order._id;
       const update = { estado: TOrderState.PendienteEntregarCorreos };
 
       return updateOrderById(orderId, update);
     });
 
-    await Promise.all(updatePromises);
+    await Promise.all(updateOrdersPromises);
+
+    await updateShipmentById(shipmentShipped._id, {
+      codigo_seguimiento: parcel.tracking_number,
+      enlace_seguimiento: parcel?.tracking_url,
+    });
   } catch (error) {
     throw new Error(`Error updating Totalum order state to 'Pendiente entregar Correos': ${error}`);
   }

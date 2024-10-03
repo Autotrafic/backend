@@ -16,11 +16,7 @@ export async function requestSendcloudLabel(shipment: ParsedTotalumShipment, isT
     body: parcel,
   };
 
-  console.log('request 1111111111111111111111', JSON.stringify(options))
-
   const result = await makeSendcloudRequest(options);
-
-  console.log('response 111111111111111111', JSON.stringify(result));
 
   return result;
 }
