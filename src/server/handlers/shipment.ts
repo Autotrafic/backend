@@ -1,4 +1,4 @@
-import { SENDCLOUD_SHIP_STATUS, TOrderType } from '../../interfaces/enums';
+import { SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
 import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
 import { getActualDay, getMonthNameInSpanish } from '../../utils/funcs';
@@ -6,7 +6,7 @@ import { getDriveFolderIdFromLink } from '../parsers/order';
 import { parseTotalumShipment } from '../parsers/shipment';
 import { ensureFolderExists, uploadBase64FileToDrive } from '../services/googleDrive';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
-import { getExtendedShipmentById, getOrdersByVehiclePlateAndOrderType } from '../services/totalum';
+import { getExtendedShipmentById } from '../services/totalum';
 
 export async function createSendcloudLabel({
   totalumShipment: totalumShipment,

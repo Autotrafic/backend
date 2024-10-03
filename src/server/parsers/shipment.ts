@@ -1,4 +1,4 @@
-import { TotalumShipment } from "../../interfaces/totalum/envio";
+import { TotalumShipment } from '../../interfaces/totalum/envio';
 
 export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumShipment {
   return {
@@ -12,7 +12,8 @@ export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumSh
     email: shipment.email,
     reference: shipment.referencia,
     value: shipment.valor,
-    tracking: shipment.seguimiento,
+    trackingCode: shipment.codigo_seguimiento,
+    trackingUrl: shipment.enlace_seguimiento,
   };
 }
 
@@ -28,7 +29,8 @@ export function parseShipmentToTotalum(parsedShipment: ParsedTotalumShipment): T
     email: parsedShipment.email,
     referencia: parsedShipment.reference,
     valor: parsedShipment.value,
-    seguimiento: parsedShipment.tracking,
+    codigo_seguimiento: parsedShipment.trackingCode,
+    enlace_seguimiento: parsedShipment.trackingUrl,
   };
 }
 
@@ -40,6 +42,7 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
 
   return {
     reference: shipment.reference,
+    external_reference: shipment.reference,
     name: shipment.customerName,
     telephone: shipment.phone,
     address: shipment.address,

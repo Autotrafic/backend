@@ -11,7 +11,8 @@ export interface TotalumShipment {
   email: string;
   referencia: string;
   valor: number;
-  seguimiento: string;
+  codigo_seguimiento: string;
+  enlace_seguimiento: string;
 }
 
 export interface ExtendedTotalumShipment extends TotalumShipment {

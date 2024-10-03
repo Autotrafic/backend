@@ -9,7 +9,8 @@ interface ParsedTotalumShipment {
   email: string;
   reference: string;
   value: number;
-  tracking: string;
+  trackingCode: string;
+  trackingUrl: string;
 }
 
 interface CheckForShipmentSuccess {

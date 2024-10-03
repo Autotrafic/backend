@@ -1,7 +1,6 @@
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function bufferToBase64(buffer: Buffer) {
   return buffer.toString('base64');
@@ -13,7 +12,6 @@ export function parseBase64ToPDFFile(base64Data: string, fileNameWithoutExtensio
     const completeFileName = `${fileNameWithoutExtension}.pdf`;
     const filePath = path.join(__dirname, 'temp', completeFileName);
 
-    // Ensure the 'temp' directory exists
     fs.mkdirSync(path.join(__dirname, 'temp'), { recursive: true });
 
     fs.writeFileSync(filePath, Buffer.from(base64String, 'base64'));
