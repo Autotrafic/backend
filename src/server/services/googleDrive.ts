@@ -67,7 +67,7 @@ async function createFolder(folderName: string, parentFolderId?: string): Promis
   }
 }
 
-async function ensureFolderExists(folderName: string, folderToCheck: string): Promise<string | null> {
+export async function ensureFolderExists(folderName: string, folderToCheck: string): Promise<string | null> {
   try {
     const query = `'${folderToCheck}' in parents and name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
     const response = await drive.files.list({

@@ -1,8 +1,10 @@
 import { SENDCLOUD_SHIP_STATUS, TOrderType } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
+import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
+import { getActualDay, getMonthNameInSpanish } from '../../utils/funcs';
 import { getDriveFolderIdFromLink } from '../parsers/order';
 import { parseTotalumShipment } from '../parsers/shipment';
-import { uploadBase64FileToDrive } from '../services/googleDrive';
+import { ensureFolderExists, uploadBase64FileToDrive } from '../services/googleDrive';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { getExtendedShipmentById, getOrdersByVehiclePlateAndOrderType } from '../services/totalum';
 
@@ -49,4 +51,14 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
   } catch (error) {
     throw new Error(`Error making shipment with shipment info. ${error}`);
   }
+}
+
+export async function uploadMergedLabelsToDrive(mergedLabelsBase64: string) {
+  const actualMonthName = getMonthNameInSpanish().toUpperCase();
+  const actualDayNumber = `${getActualDay()}`;
+
+  const monthFolderId = await ensureFolderExists(actualMonthName, ENVIOS_DRIVE_FOLDER_ID);
+  const dayFolderId = await ensureFolderExists(actualDayNumber, monthFolderId);
+
+  await uploadBase64FileToDrive(mergedLabelsBase64, dayFolderId);
 }

@@ -3,7 +3,7 @@ import { CreateLabelImportBody, GetPdfLabelBody, MakeMultipleShipmentsImportBody
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
 import CustomError from '../../errors/CustomError';
-import { makeShipment } from '../handlers/shipment';
+import { makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByVehiclePlate } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
@@ -14,22 +14,17 @@ import { updateTotalumOrderWhenShipped } from '../services/shipments';
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
     const { vehiclePlates, isTest } = req.body;
-    let labelsBase64: string[] = [];
 
     const shipmentsPromises = vehiclePlates.map((plate) => getShipmentByVehiclePlate(plate));
     const shipments = await Promise.all(shipmentsPromises);
 
-    // const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
-    // const labelsBase64 = await Promise.all(labelsPromises);
-
-    for (let shipment of shipments) {
-      const label = await makeShipment({ totalumShipment: shipment, isTest });
-      labelsBase64.push(label);
-    }
+    const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
+    const labelsBase64 = await Promise.all(labelsPromises);
 
     await updateTotalumOrderWhenShipped(shipments);
 
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
+    await uploadMergedLabelsToDrive(mergedLabelsBase64);
 
     res.status(200).json({ mergedLabelsBase64 });
   } catch (error) {

@@ -28,6 +28,11 @@ export function addCheckToList(list: TCheck[], reference: string, check: Check) 
   return list;
 }
 
+export function getActualDay(): number {
+  const today = new Date();
+  return today.getDate();
+}
+
 export function getCurrentTrimesterDates() {
   const now = new Date();
   const currentMonth = now.getMonth();
