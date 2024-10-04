@@ -13,8 +13,8 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
     return checks;
   }
 
-  const ordersWithoutShipment = ordersPendingToShip.filter((order) => order.envio.length < 1);
-  const ordersWithShipment = ordersPendingToShip.filter((order) => order.envio.length > 0);
+  const ordersWithoutShipment = ordersPendingToShip.filter((order) => !order.envio || order.envio.length < 1);
+  const ordersWithShipment = ordersPendingToShip.filter((order) => order.envio && order.envio.length > 0);
 
   const shipments = ordersWithShipment.map((order) => order.envio[0]);
 
@@ -47,6 +47,8 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
       addCheckToList(checks, shipment.referencia, TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
     }
   });
+
+  console.log('checks', checks);
 
   return checks;
 }

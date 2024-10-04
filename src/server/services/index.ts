@@ -31,11 +31,11 @@ export async function makeSendcloudRequest({ endpoint, method, body }: RequestOp
 
     return response.data;
   } catch (error) {
-    console.error('Error making the request:', error);
-    notifySlack(`Request options:
-      Endpoint: ${endpoint}
+    console.error('Error making sendcloud request:', error);
+    notifySlack(`Error making sendcloud request:
+      Endpoint: ${SENDCLOUD_API}${endpoint}
       Method: ${method},
-      Body: ${body}`);
+      Body: ${JSON.stringify(body)}`);
     throw error;
   }
 }
