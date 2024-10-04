@@ -15,6 +15,7 @@ import { addCheckToList } from '../../utils/funcs';
 import { checkShipmentAvailability } from '../handlers/checks';
 import sseClientManager from '../../sse/sseClientManager';
 import { shortUrl } from '../services/other';
+import axios from 'axios';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -24,10 +25,16 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const url = await shortUrl('https://tracking.eu-central-1-0.sendcloud.sc/forward?carrier=correos_express&code=3230007909971066&destination=ES&lang=es-es&source=ES&type=parcel&verification=13005&servicepoint_verification=&shipping_product_code=correos_express%3Apaq24&created_at=2024-10-03');
+   const WHATSAPP_API_URL = 'https://autotrafic-whatsapp-d396136eabe5.herokuapp.com/messages/send';
 
+   const options = {
+    phoneNumber: "34674218987",
+    message: 'TEst'
+   }
 
-    res.status(200).json(url);
+   const result = await axios.post(WHATSAPP_API_URL, options);
+
+    res.status(200).json(result.data);
   } catch (error) {
     console.error(error);
   }
