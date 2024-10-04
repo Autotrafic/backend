@@ -22,3 +22,11 @@ interface CheckForShipmentFail {
   success: false;
   message: string;
 }
+
+interface ShipmentNotificationData {
+  clientName: string;
+  vehiclePlate: string;
+  address: string;
+  isFastShipment: string;
+  shipmentUrl: string;
+}

@@ -1,21 +1,17 @@
-import '../../loadEnvironment';
 import { NextFunction, Request, Response } from 'express';
 import CustomError from '../../errors/CustomError';
-import notifySlack from '../services/notifier';
-import axios from 'axios';
+import notifySlack, { sendWhatsappMessage } from '../services/notifier';
 
-const whatsappApi = process.env.AUTOTRAFIC_WHATSAPP_API;
+interface SendWhatsappBody extends Request {
+  phoneNumber: string;
+  message: string;
+}
 
-export async function sendWhatsappMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { phoneNumber, message } = req.body;
-
-  const endpoint = `${whatsappApi}/messages/send`;
-  const options = { phoneNumber, message };
-
+export async function sendWhatsapp(req: SendWhatsappBody, res: Response, next: NextFunction): Promise<void> {
   try {
-    const response = await axios.post(endpoint, options);
+    const response = await sendWhatsappMessage(req.body);
 
-    res.send(response.data);
+    res.send(response);
   } catch (error) {
     const finalError = new CustomError(
       500,

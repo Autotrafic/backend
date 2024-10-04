@@ -1,9 +1,9 @@
 import express from 'express';
-import { sendSlackMessage, sendWhatsappMessage } from '../controllers/notifierController';
+import { sendSlackMessage, sendWhatsapp } from '../controllers/notifierController';
 
 const messagesRouter = express.Router();
 
-messagesRouter.post('/whatsapp', sendWhatsappMessage);
+messagesRouter.post('/whatsapp', sendWhatsapp);
 
 messagesRouter.post('/slack', sendSlackMessage);
 

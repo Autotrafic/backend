@@ -1,10 +1,14 @@
-import { SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
+import { autonomousCommunityMap, AutonomousCommunityValue, SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
+import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
 import { getActualDay, getMonthNameInSpanish } from '../../utils/funcs';
 import { getDriveFolderIdFromLink } from '../parsers/order';
-import { parseTotalumShipment } from '../parsers/shipment';
+import { parsePhoneNumberForWhatsApp } from '../parsers/other';
+import { parseAddressFromTotalumToRedeable, parseTotalumShipment } from '../parsers/shipment';
 import { ensureFolderExists, uploadBase64FileToDrive } from '../services/googleDrive';
+import notifySlack, { sendWhatsappMessage } from '../services/notifier';
+import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
 import { getExtendedShipmentById } from '../services/totalum';
@@ -27,7 +31,10 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
     const parcel = await createSendcloudLabel(shipmentInfo);
     const parcelId = parcel.id;
 
-    await updateTotalumOrderWhenShipped(shipmentInfo.totalumShipment, parcel);
+    const trackingNumber = parcel.tracking_number;
+    const trackingUrl = await shortUrl(parcel?.tracking_url);
+
+    await updateTotalumOrderWhenShipped(shipmentInfo.totalumShipment, { trackingNumber, trackingUrl });
 
     if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
       throw new Error(
@@ -49,6 +56,8 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
 
     await Promise.all(uploadLabelPromises);
 
+    if (!shipmentInfo.isTest) await notifyShipmentClient(shipmentInfo.totalumShipment);
+
     return labelBase64;
   } catch (error) {
     throw new Error(`Error making shipment with shipment info. ${error}`);
@@ -63,4 +72,37 @@ export async function uploadMergedLabelsToDrive(mergedLabelsBase64: string) {
   const dayFolderId = await ensureFolderExists(actualDayNumber, monthFolderId);
 
   await uploadBase64FileToDrive(mergedLabelsBase64, dayFolderId, 'Etiquetas_envio');
+}
+
+async function notifyShipmentClient(shipmentInfo: ExtendedTotalumShipment) {
+  try {
+    const message = getShipmentNotifyMessage(shipmentInfo);
+    const phoneNumber = parsePhoneNumberForWhatsApp(shipmentInfo.telefono);
+
+    await sendWhatsappMessage({ phoneNumber, message });
+  } catch (error) {
+    notifySlack(`Error sending shipment notify whatsapp message: ${error}`);
+  }
+}
+
+function getShipmentNotifyMessage(shipmentInfo: ExtendedTotalumShipment): string {
+  const { nombre_cliente, referencia, enlace_seguimiento, pedido } = shipmentInfo;
+  const { comunidad_autonoma } = pedido[0];
+
+  const isFastShipment = comunidad_autonoma === autonomousCommunityMap[AutonomousCommunityValue.CATALUNA];
+  const address = parseAddressFromTotalumToRedeable(shipmentInfo);
+
+  const message = `👋 Muy buenas, *${nombre_cliente}*
+
+🚚 Le informamos que su nuevo permiso de circulación del vehículo con matrícula *${referencia}* está en camino
+
+🏠 Su destino es ${address}
+
+⏱ Llegará en un plazo de *${isFastShipment ? '3/5' : '5/7'}* días 
+
+🔍 Puedes conocer el estado del envío mediante éste enlace: ${enlace_seguimiento}
+
+☀️ Le deseamos un buen día`;
+
+  return message;
 }

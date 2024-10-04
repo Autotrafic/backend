@@ -79,3 +79,9 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
     request_label_async: false,
   };
 }
+
+export function parseAddressFromTotalumToRedeable(shipmentInfo: TotalumShipment): string {
+  const { direccion, numero_domicilio, codigo_postal, localidad } = shipmentInfo;
+
+  return `${direccion}, ${numero_domicilio}, ${codigo_postal}, ${localidad}`;
+}
