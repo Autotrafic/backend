@@ -1,17 +1,15 @@
 const shortener = require('node-url-shortener');
+import { requestShortenUrl } from '.';
 import notifySlack from './notifier';
 
 export async function shortUrl(urlToShort: string): Promise<string> {
   if (!urlToShort) return '';
 
-  return new Promise((resolve, reject) => {
-    shortener.short(urlToShort, (err: any, shortUrl: string) => {
-      if (err) {
-        notifySlack(`Error while requesting shortened URL: ${err}`);
-        resolve(urlToShort);
-      } else {
-        resolve(shortUrl);
-      }
-    });
-  });
+  try {
+    const shortedUrl = await requestShortenUrl(urlToShort);
+    return shortedUrl;
+  } catch (error) {
+    notifySlack(`Error shorting shipping tracking url. The shorten service has failed: ${error}`);
+    return urlToShort;
+  }
 }

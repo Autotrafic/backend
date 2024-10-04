@@ -42,7 +42,6 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
 
   return {
     reference: shipment.reference,
-    external_reference: shipment.reference,
     name: shipment.customerName,
     telephone: shipment.phone,
     address: shipment.address,
@@ -80,4 +79,3 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
     request_label_async: false,
   };
 }
-

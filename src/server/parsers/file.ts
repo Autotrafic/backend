@@ -1,36 +1,52 @@
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
+import { nanoid } from 'nanoid';
 
 export async function bufferToBase64(buffer: Buffer) {
   return buffer.toString('base64');
 }
 
-export function parseBase64ToPDFFile(base64Data: string, fileNameWithoutExtension: string) {
-  try {
-    const base64String = base64Data.split(';base64,').pop();
-    const completeFileName = `${fileNameWithoutExtension}.pdf`;
-    const filePath = path.join(__dirname, 'temp', completeFileName);
+export function parseBase64ToPDFFile(base64Data: string, fileNameWithoutExtension: string): Promise<Express.Multer.File> {
+  return new Promise((resolve, reject) => {
+    try {
+      const base64String = base64Data.split(';base64,').pop();
+      const completeFileName = `${fileNameWithoutExtension}_${nanoid(8)}.pdf`;
 
-    fs.mkdirSync(path.join(__dirname, 'temp'), { recursive: true });
+      if (!base64String) {
+        throw new Error('Failed to parse base 64 to PDF file: Invalid base64 data.');
+      }
 
-    fs.writeFileSync(filePath, Buffer.from(base64String, 'base64'));
+      if (!fs.existsSync('uploads/')) {
+        fs.mkdirSync('uploads/', { recursive: true });
+      }
 
-    return {
-      path: filePath,
-      originalname: completeFileName,
-      mimetype: 'application/pdf',
-      filename: filePath,
-      size: Buffer.byteLength(base64String),
-      buffer: Buffer.from(base64String, 'base64'),
-      fieldname: '',
-      encoding: '',
-      destination: '',
-      stream: fs.createReadStream(filePath),
-    };
-  } catch (error) {
-    throw new Error(`Error parsing base64 to file: ${error}`);
-  }
+      const filePath = path.join('uploads/', completeFileName);
+      const buffer = Buffer.from(base64String, 'base64');
+
+      fs.writeFile(filePath, buffer, (error) => {
+        if (error) {
+          reject(`Error writing file: ${error}`);
+        } else {
+          const fileDetails: Express.Multer.File = {
+            path: filePath,
+            originalname: completeFileName,
+            mimetype: 'application/pdf',
+            filename: completeFileName,
+            size: buffer.length,
+            buffer: buffer,
+            fieldname: '',
+            encoding: '7bit',
+            destination: 'uploads/',
+            stream: fs.createReadStream(filePath),
+          };
+          resolve(fileDetails);
+        }
+      });
+    } catch (error) {
+      reject(`Error parsing base64 to file: ${error}`);
+    }
+  });
 }
 
 export async function mergePdfFromBase64Strings(base64Strings: string[]): Promise<string> {

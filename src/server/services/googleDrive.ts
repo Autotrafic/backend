@@ -14,12 +14,10 @@ const key = {
 const jwtClient = new google.auth.JWT(key.client_email, null, key.private_key, ['https://www.googleapis.com/auth/drive']);
 const drive = google.drive({ version: 'v3', auth: jwtClient });
 
-export async function uploadBase64FileToDrive(base64Data: string, folderId: string) {
+export async function uploadBase64FileToDrive(base64Data: string, folderId: string, fileName: string) {
   try {
-    const file = parseBase64ToPDFFile(base64Data, `Etiqueta envio ${folderId.substring(0, 6)}`);
+    const file = await parseBase64ToPDFFile(base64Data, fileName);
     await uploadStreamFileToDrive(file, folderId);
-
-    fs.unlinkSync(file.path);
   } catch (error) {
     throw new Error(`Failed to upload base64 file to Drive: ${error}`);
   }
@@ -42,7 +40,12 @@ export async function uploadStreamFileToDrive(file: Express.Multer.File, parentF
 
     await drive.files.create(fileMetadata);
 
-    unlink(file.path, (err) => console.log(err));
+    unlink(file.path, (err) => {
+      if (err) console.log(err);
+      else {
+        console.log(`\nDeleted uploaded file from: ${file.path}`);
+      }
+    });
   } catch (error) {
     throw new Error(`Failed to upload stream file to Drive: ${error}`);
   }

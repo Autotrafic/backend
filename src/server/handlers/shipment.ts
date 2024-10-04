@@ -44,7 +44,7 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
 
     const uploadLabelPromises = shipmentOrders.map((order) => {
       const folderId = getDriveFolderIdFromLink(order.documentos);
-      return uploadBase64FileToDrive(labelBase64, folderId);
+      return uploadBase64FileToDrive(labelBase64, folderId, 'Etiqueta_envio');
     });
 
     await Promise.all(uploadLabelPromises);
@@ -62,5 +62,5 @@ export async function uploadMergedLabelsToDrive(mergedLabelsBase64: string) {
   const monthFolderId = await ensureFolderExists(actualMonthName, ENVIOS_DRIVE_FOLDER_ID);
   const dayFolderId = await ensureFolderExists(actualDayNumber, monthFolderId);
 
-  await uploadBase64FileToDrive(mergedLabelsBase64, dayFolderId);
+  await uploadBase64FileToDrive(mergedLabelsBase64, dayFolderId, 'Etiquetas_envio');
 }
