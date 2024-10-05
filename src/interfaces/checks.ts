@@ -29,4 +29,9 @@ export const TOTALUM_CHECKS = {
   SHIPMENT_WITHOUT_CITY: { id: 11, title: 'El envío no contiene localidad', type: CheckType.WARNING },
   SHIPMENT_WITHOUT_REFERENCE: { id: 12, title: 'El envío no contiene referencia', type: CheckType.WARNING },
   ORDER_AVAILABLE_FOR_SHIP: { id: 13, title: 'El pedido está listo para enviar', type: CheckType.GOOD },
+  SHIPMENT_WITH_CITY_WITH_MORE_30_CHAR: {
+    id: 14,
+    title: 'La localidad debe contener como máximo 30 carácteres',
+    type: CheckType.WARNING,
+  },
 };

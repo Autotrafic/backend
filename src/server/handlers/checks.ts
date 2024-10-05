@@ -42,13 +42,17 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
   });
 
   shipments.forEach((shipment) => {
+    if (shipment.localidad && shipment.localidad.length > 30) {
+      addCheckToList(checks, shipment.referencia, TOTALUM_CHECKS.SHIPMENT_WITH_CITY_WITH_MORE_30_CHAR);
+    }
+  });
+
+  shipments.forEach((shipment) => {
     const isComplete = checksConfig.every(({ filterProp }) => shipment[filterProp]);
     if (isComplete) {
       addCheckToList(checks, shipment.referencia, TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
     }
   });
-
-  console.log('checks', checks);
 
   return checks;
 }
