@@ -8,7 +8,6 @@ import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByVehiclePlate } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
 import { checkShipmentAvailability } from '../handlers/checks';
-import sseClientManager from '../../sse/sseClientManager';
 
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
@@ -34,8 +33,7 @@ export async function checkShipmentsAvailability(req: Request, res: Response, ne
     const checks = await checkShipmentAvailability();
 
     if (checks.length > 0) {
-      sseClientManager.broadcast('data', checks);
-      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.' });
+      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.', checks });
       return;
     }
 

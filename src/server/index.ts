@@ -16,6 +16,7 @@ import referralRouter from './routes/referralRouter';
 import shipmentRouter from './routes/shipmentRouter';
 import scriptRouter from './routes/scriptRouter';
 import { addSseClient } from '../sse/controllers';
+import totalumRouter from './routes/totalumRouter';
 
 const app = express();
 
@@ -54,6 +55,8 @@ app.use('/messages', messagesRouter);
 app.use('/invoice', invoiceRouter);
 app.use('/referral', referralRouter);
 app.use('/shipment', shipmentRouter);
+app.use('/totalum', totalumRouter);
+
 app.use('/script', scriptRouter);
 
 app.use(notFoundError);

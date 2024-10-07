@@ -116,6 +116,11 @@ export enum TOrderType {
   BajaTemporal = 'Baja temporal',
 }
 
+export enum THeaderType {
+  Default = 0,
+  Shipment = 1
+}
+
 
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,
