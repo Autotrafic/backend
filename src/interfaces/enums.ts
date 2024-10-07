@@ -117,8 +117,8 @@ export enum TOrderType {
 }
 
 export enum THeaderType {
-  Default = 0,
-  Shipment = 1
+  Default = 1,
+  Shipment = 2
 }
 
 
