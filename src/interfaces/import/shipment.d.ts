@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { TotalumShipment } from '../totalum/envio';
+import { ExtendedTotalumShipment, TotalumShipment } from '../totalum/envio';
 
 interface MakeMultipleShipmentsImportBody {
   body: MakeMultipleShipmentsImport;

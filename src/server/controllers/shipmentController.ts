@@ -25,7 +25,7 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
 
     res.status(200).json({ mergedLabelsBase64 });
   } catch (error) {
-    catchControllerError(error, 'Error making multiple shipments', req.body, next);
+    catchControllerError(error, `Error making multiple shipments ${error}`, req.body, next);
   }
 }
 

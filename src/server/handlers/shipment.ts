@@ -1,4 +1,9 @@
-import { autonomousCommunityMap, AutonomousCommunityValue, SENDCLOUD_SHIP_STATUS } from '../../interfaces/enums';
+import {
+  autonomousCommunityMap,
+  AutonomousCommunityValue,
+  SENDCLOUD_SHIP_STATUS,
+  TOrderState,
+} from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
 import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
@@ -27,6 +32,10 @@ export async function createSendcloudLabel({
 export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<string> {
   try {
     const shipmentReference = shipmentInfo.totalumShipment.referencia;
+    const order = shipmentInfo.totalumShipment.pedido[0];
+    
+    if (order.estado !== TOrderState.PendienteEnvioCliente)
+      throw new Error(`${shipmentReference} No está pendiente de envío cliente`);
 
     const parcel = await createSendcloudLabel(shipmentInfo);
     const parcelId = parcel.id;
