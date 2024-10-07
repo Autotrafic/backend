@@ -8,6 +8,8 @@ export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, re
     const { activeHeader } = req.body;
 
     sseClientManager.broadcast('totalum_active_header', { activeHeader });
+
+    res.status(200).json({ success: true });
   } catch (error) {
     catchControllerError(error, 'Error toggling totalum header content', req.body, next);
   }
