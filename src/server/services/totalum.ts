@@ -255,3 +255,9 @@ export async function getAllPendingTasks(): Promise<TTask[]> {
 
   return response.data.data;
 }
+
+export async function updateTaskById(id: string, update: Partial<TTask>) {
+  const response = await totalumSdk.crud.editItemById('tarea', id, update);
+
+  return response.data.data;
+}

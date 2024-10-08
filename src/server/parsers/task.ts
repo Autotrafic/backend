@@ -4,6 +4,7 @@ export function parseTaskFromTotalum(totalumTask: TTask): Task {
   const indications = totalumTask.descripcion.split('\n').filter((indication) => indication.trim() !== '');
 
   return {
+    id: totalumTask._id,
     state: totalumTask.estado,
     url: totalumTask.enlace,
     title: totalumTask.titulo,
@@ -16,6 +17,7 @@ export function parseTaskToTotalum(task: Task): TTask {
     const descripcion = task.indications.join('\n');
     
   return {
+    _id: task.id,
     estado: task.state,
     enlace: task.url,
     titulo: task.title,

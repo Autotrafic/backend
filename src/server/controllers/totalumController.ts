@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
-import { ToggleTotalumHeaderBody } from '../../interfaces/import/totalum';
-import { getAllPendingTasks } from '../services/totalum';
+import { ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
+import { getAllPendingTasks, updateTaskById } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 
 export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, res: Response, next: NextFunction) {
@@ -26,5 +26,17 @@ export async function getPendingTotalumTasks(req: Request, res: Response, next: 
     res.status(200).json(parsedTasks);
   } catch (error) {
     catchControllerError(error, 'Error fetching totalum tasks', req.body, next);
+  }
+}
+
+export async function updateTotalumTask(req: UpdateTaskBody, res: Response, next: NextFunction) {
+  try {
+    const { id, update } = req.body;
+
+    const updatedTask = await updateTaskById(id, update);
+
+    res.status(200).json(updatedTask);
+  } catch (error) {
+    catchControllerError(error, 'Error updating totalum task', req.body, next);
   }
 }
