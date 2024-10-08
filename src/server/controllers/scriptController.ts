@@ -3,6 +3,7 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import {
   getActualTrimesterExtendedOrders,
+  getAllPendingTasks,
   getExtendedOrders,
   getOrderById,
   getOrdersPendingToShip,
@@ -25,16 +26,9 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-   const WHATSAPP_API_URL = 'https://autotrafic-whatsapp-d396136eabe5.herokuapp.com/messages/send';
+   const tasks = await getAllPendingTasks();
 
-   const options = {
-    phoneNumber: "34674218987",
-    message: 'TEst'
-   }
-
-   const result = await axios.post(WHATSAPP_API_URL, options);
-
-    res.status(200).json(result.data);
+    res.status(200).json(tasks);
   } catch (error) {
     console.error(error);
   }

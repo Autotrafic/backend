@@ -118,9 +118,16 @@ export enum TOrderType {
 
 export enum THeaderType {
   Default = 1,
-  Shipment = 2
+  Shipment = 2,
 }
 
+export enum TTaskState {
+  Completed = 'Completada',
+  InProcess = 'En proceso',
+  Pending = 'Pendiente',
+  WaitingClient = 'En espera cliente',
+  PendingToCommunicateClient = 'Pendiente comunicar cliente',
+}
 
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,

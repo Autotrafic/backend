@@ -1,9 +1,10 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import { TOrderState, TOrderType } from '../../interfaces/enums';
+import { TOrderState, TOrderType, TTaskState } from '../../interfaces/enums';
 import { getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
+import { TTask } from '../../interfaces/totalum/tarea';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -241,4 +242,16 @@ export async function updateShipmentById(shipmentId: string, update: Partial<Ext
   } catch (error) {
     throw new Error(`Error updating Totalum shipment. ${error}`);
   }
+}
+
+export async function getAllPendingTasks(): Promise<TTask[]> {
+  const response = await totalumSdk.crud.getItems('tarea', {
+    filter: [
+      {
+        estado: { ne: TTaskState.Completed } as any,
+      },
+    ],
+  });
+
+  return response.data.data;
 }
