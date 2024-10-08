@@ -2,6 +2,7 @@ import { TTaskState } from '../enums';
 
 export interface TTask {
   estado: TTaskState;
+  titulo: string;
   descripcion: string;
   enlace: string;
   fecha: Date;
