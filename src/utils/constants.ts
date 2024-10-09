@@ -18,6 +18,17 @@ export const EXPEDIENTES_DRIVE_FOLDER_ID = '1qwTqsyVwSHezV4PlBtDNF_MhWm3hqAeW';
 
 export const ENVIOS_DRIVE_FOLDER_ID = '1hOlgna0fMPTfsKljzwicM6uVylq8Liy6';
 
+export const STRIPE_PRODUCTS = {
+  TRANSFERENCIA: 'prod_PbUwUKTHtDGawe',
+  BAJA_VEHICULO: 'prod_QxJbS9ZhjS8MbW',
+  ALTA_VEHICULO: 'prod_QXTxVliH7pShlZ',
+  DUPLICADO_PERMISO: 'prod_QJdov39DNu1bnG',
+  DISTINTIVO: 'prod_PcZsxLoFyxPfZV',
+  ITP: 'prod_QcnA1jirsrhGBy',
+  NOTA_SIMPLE: 'prod_QpOubhBiOQA483',
+  IMPUESTOS: 'prod_QNmXu00iWhm3iF',
+};
+
 export const WHITELIST_IPS = [
   '::1',
   '::ffff:127.0.0.1',

@@ -1,11 +1,9 @@
-import Stripe from "stripe";
-import "../../loadEnvironment";
+import Stripe from 'stripe';
+import '../../loadEnvironment';
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === 'production';
 
-const stripeKey = isProduction
-  ? process.env.STRIPE_SECRET_KEY
-  : process.env.STRIPE_TEST_SECRET_KEY;
+const stripeKey = isProduction ? process.env.STRIPE_SECRET_KEY : process.env.STRIPE_TEST_SECRET_KEY;
 
 const stripe = new Stripe(stripeKey, {});
 
@@ -34,7 +32,7 @@ interface PaymentIntent {
 export async function createStripePaymentIntent({
   automaticPaymentMethods,
   amount,
-  currency = "eur",
+  currency = 'eur',
   customer,
 }: PaymentIntent) {
   return stripe.paymentIntents.create({
@@ -51,20 +49,30 @@ export async function createStripeCustomer(user: StripeUser) {
     name: user.name,
     email: user.email,
     phone: user.phone,
-    preferred_locales: ["es"],
+    preferred_locales: ['es'],
   });
 }
 
-export async function updateStripeCustomer({
-  fullName,
-  phoneNumber,
-  email,
-  stripeId,
-}: StripeCustomer) {
+export async function updateStripeCustomer({ fullName, phoneNumber, email, stripeId }: StripeCustomer) {
   return stripe.customers.update(stripeId, {
     name: fullName,
     email,
     phone: phoneNumber,
-    preferred_locales: ["es"],
+    preferred_locales: ['es'],
+  });
+}
+
+export async function createStripePrice(productId: string, amount: number) {
+  return stripe.prices.create({
+    unit_amount: amount,
+    currency: 'eur',
+    product: productId,
+    tax_behavior: 'inclusive',
+  });
+}
+
+export async function createStripePaymentLink(priceId: string) {
+  return stripe.paymentLinks.create({
+    line_items: [{ price: priceId, quantity: 1 }],
   });
 }
