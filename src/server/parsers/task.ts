@@ -1,7 +1,13 @@
 import { Task, TTask } from '../../interfaces/totalum/tarea';
 
 export function parseTaskFromTotalum(totalumTask: TTask): Task {
-  const indications = totalumTask.descripcion.split('\n').filter((indication) => indication.trim() !== '');
+  let indications;
+
+  if (!totalumTask.descripcion) {
+    indications = [''];
+  } else {
+    indications = totalumTask.descripcion.split('\n').filter((indication) => indication.trim() !== '');
+  }
 
   return {
     id: totalumTask._id,
@@ -14,8 +20,8 @@ export function parseTaskFromTotalum(totalumTask: TTask): Task {
 }
 
 export function parseTaskToTotalum(task: Task): TTask {
-    const descripcion = task.indications.join('\n');
-    
+  const descripcion = task.indications.length > 0 ? task.indications.join('\n') : '';
+
   return {
     _id: task.id,
     estado: task.state,
