@@ -1,9 +1,7 @@
 import '../../loadEnvironment';
 import { NextFunction, Request, Response } from 'express';
 import CustomError from '../../errors/CustomError';
-import { ActivityLog, WebConsultCount, WhatsappCount } from '../../database/models/ActivityLog';
-import { SessionLog } from '../../database/models/SessionLog';
-import { UserLogs } from '../../database/models/UserLog';
+import { WebConsultCount, WhatsappCount } from '../../database/models/ActivityLog';
 
 export const getWhatsappLogs = async (req: Request, res: Response, next: NextFunction) => {
     try {
