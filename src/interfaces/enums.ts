@@ -129,6 +129,17 @@ export enum TTaskState {
   PendingToCommunicateClient = 'Pendiente comunicar cliente',
 }
 
+export enum TAccountingBusiness {
+  AutoTrafic = 'AutoTrafic',
+  TransfiereYa = 'TransfiereYa',
+}
+
+export enum TAccountingType {
+  PedidosAds = 'Pedidos Ads',
+  ConsultasWeb = 'Consultas Web',
+  ContactosWhatsapp = 'Contactos WhatsApp',
+}
+
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,
   Aragón: AutonomousCommunityValue.ARAGON,

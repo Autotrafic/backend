@@ -5,6 +5,8 @@ import { getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 import { TTask } from '../../interfaces/totalum/tarea';
+import { Accounting } from '../../interfaces/totalum/contabilidad';
+import { parseAccountingFromTotalum } from '../parsers/logger';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -258,6 +260,14 @@ export async function getAllPendingTasks(): Promise<TTask[]> {
 
 export async function updateTaskById(id: string, update: Partial<TTask>) {
   const response = await totalumSdk.crud.editItemById('tarea', id, update);
+
+  return response.data.data;
+}
+
+export async function createAccounting(accountingInfo: Accounting) {
+  const parsedAccounting = parseAccountingFromTotalum(accountingInfo);
+
+  const response = await totalumSdk.crud.createItem('contabilidad', parsedAccounting as any);
 
   return response.data.data;
 }

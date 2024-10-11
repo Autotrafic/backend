@@ -1,34 +1,21 @@
-/* eslint-disable guard-for-in */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable consistent-return */
-import { NextFunction, Request, Response } from "express";
-import CustomError from "../../errors/CustomError";
-import WebOrderModel from "../../database/models/Order/WebOrderSchema";
-import {
-  WebOrder,
-  WebOrderDetails,
-} from "../../database/models/Order/WebOrder";
+import { NextFunction, Request, Response } from 'express';
+import CustomError from '../../errors/CustomError';
+import WebOrderModel from '../../database/models/Order/WebOrderSchema';
+import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import {
   CreateTotalumOrderBody,
   UpdateDriveDocumentsOfTotalumOrderBody,
   UpdateOrderByDocumentsDetailsBody,
   UpdateTotalumOrderByDocumentsDetailsBody,
-} from "../../interfaces/import/order";
-import { TotalumApiSdk } from "totalum-api-sdk";
-import { totalumOptions } from "../../utils/constants";
-import {
-  parseOrderDetailsFromWebToTotalum,
-  parseOrderFromWebToTotalum,
-} from "../parsers/order";
-import { TotalumOrder } from "../../interfaces/totalum/pedido";
+} from '../../interfaces/import/order';
+import { TotalumApiSdk } from 'totalum-api-sdk';
+import { totalumOptions } from '../../utils/constants';
+import { parseOrderDetailsFromWebToTotalum, parseOrderFromWebToTotalum } from '../parsers/order';
+import { TotalumOrder } from '../../interfaces/totalum/pedido';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
-export const getOrderById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getOrderById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { orderId } = req.params;
 
@@ -39,7 +26,7 @@ export const getOrderById = async (
     console.log(error);
     const finalError = new CustomError(
       400,
-      "Error loading order.",
+      'Error loading order.',
       `Error loading order.
       ${error}.
 
@@ -49,11 +36,7 @@ export const getOrderById = async (
   }
 };
 
-export const registerOrder = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const registerOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const order: WebOrder = req.body;
 
@@ -73,7 +56,7 @@ export const registerOrder = async (
     console.log(error);
     const finalError = new CustomError(
       400,
-      "Error creating order.",
+      'Error creating order.',
       `Error creating order.
       ${error}.
 
@@ -83,11 +66,7 @@ export const registerOrder = async (
   }
 };
 
-export const updateOrder = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { orderId } = req.params;
     const { body: update } = req;
@@ -98,13 +77,13 @@ export const updateOrder = async (
 
     res.status(200).json({
       success: true,
-      message: "Order updated successfully",
+      message: 'Order updated successfully',
     });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
       400,
-      "Error updating order.",
+      'Error updating order.',
       `Error updating order.
       ${error}.
 
@@ -114,11 +93,7 @@ export const updateOrder = async (
   }
 };
 
-export async function createTotalumOrder(
-  req: CreateTotalumOrderBody,
-  res: Response,
-  next: NextFunction
-) {
+export async function createTotalumOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
   try {
     const { orderId } = req.body;
 
@@ -126,16 +101,13 @@ export async function createTotalumOrder(
 
     const newTotalumOrder = parseOrderFromWebToTotalum(order);
 
-    const response = await totalumSdk.crud.createItem(
-      "pedido",
-      newTotalumOrder
-    );
+    const response = await totalumSdk.crud.createItem('pedido', newTotalumOrder);
 
     const newTotalumOrderId = response.data.data.insertedId;
 
     res.status(201).json({
       success: true,
-      message: "Order created in Totalum successfully",
+      message: 'Order created in Totalum successfully',
       totalumOrderId: newTotalumOrderId,
     });
   } catch (error) {
@@ -162,7 +134,7 @@ export async function updateTotalumOrderByDocumentsDetails(
 
     const filter = { autotrafic_id: orderId };
 
-    const response = await totalumSdk.crud.getItems("pedido", {
+    const response = await totalumSdk.crud.getItems('pedido', {
       filter: [filter],
     });
 
@@ -170,21 +142,18 @@ export async function updateTotalumOrderByDocumentsDetails(
     const totalumOrderId = totalumOrder._id;
 
     const parsedOrderDetails = parseOrderDetailsFromWebToTotalum(req.body);
-    const notas = totalumOrder.notas.replace(
-      "Esperando documentación del cliente. ",
-      ""
-    );
+    const notas = totalumOrder.notas.replace('Esperando documentación del cliente. ', '');
     const update: TotalumOrder = {
       ...totalumOrder,
       ...parsedOrderDetails,
       notas,
     };
 
-    await totalumSdk.crud.editItemById("pedido", totalumOrderId, update);
+    await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
 
     res.status(200).json({
       success: true,
-      message: "Order updated in Totalum successfully",
+      message: 'Order updated in Totalum successfully',
       totalumOrderId,
     });
   } catch (error) {
@@ -211,7 +180,7 @@ export async function updateDriveDocumentsOfTotalumOrder(
 
     const filter = { autotrafic_id: orderId };
 
-    const response = await totalumSdk.crud.getItems("pedido", {
+    const response = await totalumSdk.crud.getItems('pedido', {
       filter: [filter],
     });
 
@@ -225,11 +194,11 @@ export async function updateDriveDocumentsOfTotalumOrder(
       documentos: driveFolderUrl,
     };
 
-    await totalumSdk.crud.editItemById("pedido", totalumOrderId, update);
+    await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
 
     res.status(200).json({
       success: true,
-      message: "Order updated in Totalum successfully",
+      message: 'Order updated in Totalum successfully',
       totalumOrderId,
     });
   } catch (error) {
@@ -261,11 +230,7 @@ export const updateOrderWithDocumentsDetails = async (
     const orderDocument = await WebOrderModel.findOne(filter);
 
     if (!orderDocument) {
-      const finalError = new CustomError(
-        404,
-        "Order not found.",
-        `Order not found in database.`
-      );
+      const finalError = new CustomError(404, 'Order not found.', `Order not found in database.`);
       return next(finalError);
     }
 
@@ -295,13 +260,13 @@ export const updateOrderWithDocumentsDetails = async (
 
     res.status(200).json({
       success: true,
-      message: "Order updated successfully",
+      message: 'Order updated successfully',
     });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
       400,
-      "Error updating order.",
+      'Error updating order.',
       `Error updating nested order.
       ${error}.
       
