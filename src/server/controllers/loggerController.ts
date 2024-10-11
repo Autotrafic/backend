@@ -1,7 +1,7 @@
 import '../../loadEnvironment';
 import { NextFunction, Request, Response } from 'express';
 import CustomError from '../../errors/CustomError';
-import { ActivityLog, WhatsappCount } from '../../database/models/ActivityLog';
+import { ActivityLog, WebConsultCount, WhatsappCount } from '../../database/models/ActivityLog';
 import { SessionLog } from '../../database/models/SessionLog';
 import { UserLogs } from '../../database/models/UserLog';
 
@@ -50,6 +50,39 @@ export const logWhatsappClick = async (req: Request, res: Response, next: NextFu
   } catch (error) {
     console.error(error);
     const finalError = new CustomError(500, 'Error logging whatsapp Click.', `Error logging whatsapp Click. ${error}.`);
+    next(finalError);
+  }
+};
+
+export const logWebConsult = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const today = new Date();
+    const dateString = today.getDate().toString();
+    const monthString = today.toLocaleString('default', { month: 'long' });
+
+    const monthLog = await WebConsultCount.findOne({ month: monthString });
+
+    if (monthLog) {
+      const dayLog = monthLog.days.find((day) => day.date === dateString);
+
+      if (dayLog) {
+        dayLog.count += 1;
+      } else {
+        monthLog.days.push({ date: dateString, count: 1 });
+      }
+      await monthLog.save();
+    } else {
+      const newLog = new WebConsultCount({
+        month: monthString,
+        days: [{ date: dateString, count: 1 }],
+      });
+      await newLog.save();
+    }
+
+    res.status(200).json({ message: 'Web consult logged successfully.' });
+  } catch (error) {
+    console.error(error);
+    const finalError = new CustomError(500, 'Error logging web consult.', `Error logging web consult. ${error}.`);
     next(finalError);
   }
 };

@@ -6,12 +6,15 @@ import {
   logActivity,
   logWhatsappClick,
   getWhatsappLogs,
+  logWebConsult,
 } from '../controllers/loggerController';
 import { checkIPWhitelist } from '../middleweares/checkIPWhitelist';
 
 const logRouter = express.Router();
 
 logRouter.get('/', getAllUserLogs);
+
+logRouter.post('/web-consult', logWebConsult);
 
 logRouter.post('/whatsapp-click', logWhatsappClick);
 logRouter.get('/whatsapp-click', getWhatsappLogs);

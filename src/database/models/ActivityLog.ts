@@ -36,3 +36,5 @@ const monthLogSchema = new Schema({
 });
 
 export const WhatsappCount = model('WhatsappCount', monthLogSchema, 'whatsapp-count');
+
+export const WebConsultCount = model('WebConsultCount', monthLogSchema, 'web-consult-count');
