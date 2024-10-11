@@ -13,7 +13,7 @@ export const logAccounting = async (req: LogAccountingBody, res: Response, next:
 
     await createAccounting(accounting);
 
-    res.status(200).json({ message: 'Web consult logged successfully.' });
+    res.status(200).json({ message: 'Accounting logged successfully on Totalum.' });
   } catch (error) {
     console.error(error);
     const finalError = new CustomError(500, 'Error logging web consult.', `Error logging web consult. ${error}.`);
