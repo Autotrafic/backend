@@ -9,6 +9,8 @@ export const logAccounting = async (req: LogAccountingBody, res: Response, next:
     const { business, accountingType } = req.body;
 
     const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+
     const accounting: Accounting = { date, business, accountingType };
 
     await createAccounting(accounting);

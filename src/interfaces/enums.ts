@@ -135,9 +135,9 @@ export enum TAccountingBusiness {
 }
 
 export enum TAccountingType {
-  PedidosAds = 'Pedido Ads',
-  ConsultasWeb = 'Consulta Web',
-  ContactosWhatsapp = 'Contacto WhatsApp',
+  PedidoAds = 'Pedido Ads',
+  ConsultaWeb = 'Consulta Web',
+  ContactoWhatsapp = 'Contacto WhatsApp',
 }
 
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
