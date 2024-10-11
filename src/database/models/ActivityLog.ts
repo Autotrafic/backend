@@ -17,8 +17,12 @@ const ActivityLogSchema = new Schema({
 export const ActivityLog = model<IActivityLog>('ActivityLog', ActivityLogSchema, 'activity-logs');
 
 const dayLogSchema = new Schema({
-  date: {
+  day: {
     type: String,
+    required: true,
+  },
+  timestamp: {
+    type: Date,
     required: true,
   },
   count: {

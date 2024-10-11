@@ -30,18 +30,18 @@ export const logWhatsappClick = async (req: Request, res: Response, next: NextFu
     const monthLog = await WhatsappCount.findOne({ month: monthString });
 
     if (monthLog) {
-      const dayLog = monthLog.days.find((day) => day.date === dateString);
+      const dayLog = monthLog.days.find((day) => day.day === dateString);
 
       if (dayLog) {
         dayLog.count += 1;
       } else {
-        monthLog.days.push({ date: dateString, count: 1 });
+        monthLog.days.push({ day: dateString, timestamp: today, count: 1 });
       }
       await monthLog.save();
     } else {
       const newLog = new WhatsappCount({
         month: monthString,
-        days: [{ date: dateString, count: 1 }],
+        days: [{ day: dateString, timestamp: today, count: 1 }],
       });
       await newLog.save();
     }
@@ -63,18 +63,18 @@ export const logWebConsult = async (req: Request, res: Response, next: NextFunct
     const monthLog = await WebConsultCount.findOne({ month: monthString });
 
     if (monthLog) {
-      const dayLog = monthLog.days.find((day) => day.date === dateString);
+      const dayLog = monthLog.days.find((day) => day.day === dateString);
 
       if (dayLog) {
         dayLog.count += 1;
       } else {
-        monthLog.days.push({ date: dateString, count: 1 });
+        monthLog.days.push({ day: dateString, timestamp: today, count: 1 });
       }
       await monthLog.save();
     } else {
       const newLog = new WebConsultCount({
         month: monthString,
-        days: [{ date: dateString, count: 1 }],
+        days: [{ day: dateString, timestamp: today, count: 1 }],
       });
       await newLog.save();
     }
