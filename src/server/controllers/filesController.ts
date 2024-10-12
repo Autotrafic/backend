@@ -12,10 +12,7 @@ import { createPdfFromStringLogic } from '../services/file';
 
 export async function uploadFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
   const files = req.files as Express.Multer.File[];
-  const paramsFolderName = req.params.folderName;
-  const bodyFolderName = req.body.folderName;
-
-  const folderName = paramsFolderName ?? bodyFolderName;
+  const { folderName } = req.body;
 
   if (!files || files.length === 0) {
     res.status(400).send(`No file uploaded. Files: ${files}`);
