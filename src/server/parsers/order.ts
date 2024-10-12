@@ -1,7 +1,7 @@
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
 import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import { autonomousCommunityMap, AutonomousCommunityValue, reverseAutonomousCommunityMap } from '../../interfaces/enums';
-import { OrderDetailsBody } from '../../interfaces/import/order';
+import { OrderDetailsBody, WhatsappOrder } from '../../interfaces/import/order';
 import { TAutonomousCommunity, TotalumOrder } from '../../interfaces/totalum/pedido';
 
 function parseAutonomousCommunityToTotalum(value: AutonomousCommunityValue): TAutonomousCommunity {
@@ -30,6 +30,15 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
     notas: `Esperando documentación del cliente. ${
       webOrder.crossSelling.etiquetaMedioambiental ? '❗️Pedido con Etiqueta Medioambiental❗️' : ''
     } ${webOrder.crossSelling.informeDgt ? '❗️Pedido con Informe DGT❗️' : ''} ${webOrder.user.phoneNumber}`,
+  };
+}
+
+export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
+  return {
+    matricula: whatsappOrder.vehiclePlate,
+    direccion_envio: whatsappOrder.shipmentAddress,
+    fecha_de_contacto: whatsappOrder.firstTouchDate,
+    total_facturado: whatsappOrder.totalInvoiced,
   };
 }
 

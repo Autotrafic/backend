@@ -1,4 +1,5 @@
 import Client from '../../database/models/Client/Client';
+import { WhatsappOrder } from '../../interfaces/import/order';
 
 export default function parseClientFromPrimitive(client: TClient): Client {
   if (!client) return null;
@@ -17,4 +18,12 @@ export default function parseClientFromPrimitive(client: TClient): Client {
     createdAt: client.createdAt,
     updatedAt: client.updatedAt,
   };
+}
+
+export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
+  return { telefono: whatsappOrder.buyerPhoneNumber };
+}
+
+export function parseRelatedPersonFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
+  return { telefono: whatsappOrder.sellerPhoneNumber };
 }

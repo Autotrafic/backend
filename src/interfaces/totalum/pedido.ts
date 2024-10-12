@@ -90,6 +90,7 @@ export type TState =
   | 'Pendiente recibir info cliente'
   | 'Pendiente recoger Correos'
   | 'Nuevo pedido web'
+  | 'Nuevo pedido WhatsApp'
   | 'Pendiente devolución Correos'
   | 'Pendiente entrega Correos';
 

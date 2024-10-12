@@ -14,7 +14,18 @@ export interface CreateTotalumOrderByIdBody extends Request {
 }
 
 export interface CreateTotalumOrderBody {
-  body: Partial<TotalumOrder>;
+  body: {
+    whatsappOrder: OrderTask;
+  };
+}
+
+export interface WhatsappOrder {
+  firstTouchDate: Date;
+  vehiclePlate: string;
+  buyerPhoneNumber: string;
+  sellerPhoneNumber: string;
+  shipmentAddress: string;
+  totalInvoiced: number;
 }
 
 export interface OrderDetailsBody {

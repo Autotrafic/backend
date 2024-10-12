@@ -11,8 +11,15 @@ import {
 } from '../../interfaces/import/order';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import { parseOrderDetailsFromWebToTotalum, parseOrderFromWebToTotalum } from '../parsers/order';
+import {
+  parseOrderDetailsFromWebToTotalum,
+  parseOrderFromWebToTotalum,
+  parseOrderFromWhatsappToTotalum,
+} from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
+import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
+import { TOrderState } from '../../interfaces/enums';
+import { createExtendedOrderByWhatsappOrder } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -94,18 +101,16 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export async function createTotalumOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
+export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
   try {
-    const order = req.body;
+    const { whatsappOrder } = req.body;
 
-    const response = await totalumSdk.crud.createItem('pedido', order);
-
-    const newTotalumOrderId = response.data.data.insertedId;
+    const newOrderId = await createExtendedOrderByWhatsappOrder(whatsappOrder);
 
     res.status(201).json({
       success: true,
       message: 'Order created in Totalum successfully',
-      totalumOrderId: newTotalumOrderId,
+      totalumOrderId: newOrderId,
     });
   } catch (error) {
     console.log(error);
