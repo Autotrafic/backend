@@ -12,7 +12,10 @@ import { createPdfFromStringLogic } from '../services/file';
 
 export async function uploadFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
   const files = req.files as Express.Multer.File[];
-  const { folderName } = req.body;
+  const paramsFolderName = req.params.folderName;
+  const bodyFolderName = req.body.folderName;
+
+  const folderName = paramsFolderName ?? bodyFolderName;
 
   if (!files || files.length === 0) {
     res.status(400).send(`No file uploaded. Files: ${files}`);
@@ -74,16 +77,16 @@ export async function createPdfFromString(req: Request, res: Response, next: Nex
   const { content } = req.body;
 
   if (!content) {
-      return res.status(400).json({ error: 'Content is required to create PDF.' });
+    return res.status(400).json({ error: 'Content is required to create PDF.' });
   }
 
   try {
-      const base64Pdf = createPdfFromStringLogic(content);
+    const base64Pdf = createPdfFromStringLogic(content);
 
-      res.status(200).json({ pdf: base64Pdf });
+    res.status(200).json({ pdf: base64Pdf });
   } catch (error) {
-      console.error("Error creating PDF:", error);
-      next(error);
+    console.error('Error creating PDF:', error);
+    next(error);
   }
 }
 
