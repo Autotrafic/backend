@@ -4,6 +4,7 @@ import WebOrderModel from '../../database/models/Order/WebOrderSchema';
 import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import {
   CreateTotalumOrderBody,
+  CreateTotalumOrderByIdBody,
   UpdateDriveDocumentsOfTotalumOrderBody,
   UpdateOrderByDocumentsDetailsBody,
   UpdateTotalumOrderByDocumentsDetailsBody,
@@ -94,6 +95,33 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
 };
 
 export async function createTotalumOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
+  try {
+    const order = req.body;
+
+    const response = await totalumSdk.crud.createItem('pedido', order);
+
+    const newTotalumOrderId = response.data.data.insertedId;
+
+    res.status(201).json({
+      success: true,
+      message: 'Order created in Totalum successfully',
+      totalumOrderId: newTotalumOrderId,
+    });
+  } catch (error) {
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      `Error creating totalum order. ${error}`,
+      `Error creating totalum order.
+      ${error}.
+
+      Body: ${JSON.stringify(req.body)}`
+    );
+    next(finalError);
+  }
+}
+
+export async function createTotalumOrderById(req: CreateTotalumOrderByIdBody, res: Response, next: NextFunction) {
   try {
     const { orderId } = req.body;
 
