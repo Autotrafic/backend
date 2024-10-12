@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { AutonomousCommunityValue } from '../enums';
+import { AutonomousCommunityValue, TOrderType } from '../enums';
 import { DatabaseOrder } from '../../database/models/Order/WebOrder';
 import { TotalumOrder } from '../totalum/pedido';
 
@@ -15,11 +15,12 @@ export interface CreateTotalumOrderByIdBody extends Request {
 
 export interface CreateTotalumOrderBody {
   body: {
-    whatsappOrder: OrderTask;
+    whatsappOrder: WhatsappOrder;
   };
 }
 
 export interface WhatsappOrder {
+  orderType: TOrderType;
   firstTouchDate: Date;
   vehiclePlate: string;
   buyerPhoneNumber: string;

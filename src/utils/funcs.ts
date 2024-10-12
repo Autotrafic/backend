@@ -47,3 +47,16 @@ export function getCurrentTrimesterDates() {
     end: new Date(end.setHours(23, 59, 59, 999)).toISOString(),
   };
 }
+
+export function getCurrentOrNextMonday(): number {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+
+  if (dayOfWeek === 0) {
+    today.setDate(today.getDate() + 1);
+  } else if (dayOfWeek === 6) {
+    today.setDate(today.getDate() + 2);
+  }
+
+  return today.setUTCHours(0, 0, 0, 0);
+}

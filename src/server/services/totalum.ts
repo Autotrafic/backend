@@ -1,7 +1,7 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { TOrderState, TOrderType, TTaskState } from '../../interfaces/enums';
-import { getCurrentTrimesterDates } from '../../utils/funcs';
+import { getCurrentOrNextMonday, getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 import { TTask } from '../../interfaces/totalum/tarea';
@@ -10,6 +10,7 @@ import { parseAccountingFromTotalum } from '../parsers/logger';
 import { WhatsappOrder } from '../../interfaces/import/order';
 import { parseOrderFromWhatsappToTotalum } from '../parsers/order';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
+import { TotalumOrder } from '../../database/models/Order/TotalumSchema';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -287,6 +288,8 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
     ...order,
     cliente: newClientId,
     estado: TOrderState.NuevoPedidoWhatsapp,
+    fecha_inicio: getCurrentOrNextMonday(),
+    tipo: whatsappOrder.orderType,
   });
   const relatedPersonClientResponse = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
 
