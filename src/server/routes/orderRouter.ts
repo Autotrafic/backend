@@ -9,12 +9,15 @@ import {
   updateDriveDocumentsOfTotalumOrder,
   registerWhatsappOrder,
 } from '../controllers/orderController';
+import multer from 'multer';
 
 const orderRouter = express.Router();
 
+const upload = multer({ limits: { fileSize: 25000000 }, dest: 'uploads/' });
+
 orderRouter.post('/register', registerOrder);
 
-orderRouter.post('/register-whatsapp', registerWhatsappOrder);
+orderRouter.post('/register-whatsapp', upload.any(), registerWhatsappOrder);
 orderRouter.post('/totalum/create', createTotalumOrderById);
 orderRouter.post('/totalum/update-with-documents-details', updateTotalumOrderByDocumentsDetails);
 

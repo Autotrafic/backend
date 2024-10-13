@@ -10,7 +10,7 @@ import {
   UpdateTotalumOrderByDocumentsDetailsBody,
 } from '../../interfaces/import/order';
 import { TotalumApiSdk } from 'totalum-api-sdk';
-import { totalumOptions } from '../../utils/constants';
+import { EXPEDIENTES_DRIVE_FOLDER_ID, totalumOptions } from '../../utils/constants';
 import {
   parseOrderDetailsFromWebToTotalum,
   parseOrderFromWebToTotalum,
@@ -19,7 +19,8 @@ import {
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
 import { TOrderState } from '../../interfaces/enums';
-import { createExtendedOrderByWhatsappOrder } from '../services/totalum';
+import { createExtendedOrderByWhatsappOrder, createTaskByWhatsappOrder } from '../services/totalum';
+import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -103,14 +104,28 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
 
 export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
   try {
-    const { whatsappOrder } = req.body;
+    const whatsappOrder = req.body;
+    const files = req.files as Express.Multer.File[];
 
-    const newOrderId = await createExtendedOrderByWhatsappOrder(whatsappOrder);
+    if (!files || files.length === 0) {
+      res.status(400).send(`No file uploaded. Files: ${files}`);
+      return;
+    }
+
+    const orderFolderId = await getOrderFolder(whatsappOrder.vehiclePlate, EXPEDIENTES_DRIVE_FOLDER_ID);
+    const folderUrl = `https://drive.google.com/drive/folders/${orderFolderId}`;
+
+    for (const file of files) {
+      await uploadStreamFileToDrive(file, orderFolderId);
+    }
+
+    await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
+
+    await createTaskByWhatsappOrder(whatsappOrder, folderUrl);
 
     res.status(201).json({
       success: true,
       message: 'Order created in Totalum successfully',
-      totalumOrderId: newOrderId,
     });
   } catch (error) {
     console.log(error);

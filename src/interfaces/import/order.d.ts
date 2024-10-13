@@ -13,10 +13,8 @@ export interface CreateTotalumOrderByIdBody extends Request {
   };
 }
 
-export interface CreateTotalumOrderBody {
-  body: {
-    whatsappOrder: WhatsappOrder;
-  };
+export interface CreateTotalumOrderBody extends Request {
+  body: WhatsappOrder;
 }
 
 export interface WhatsappOrder {
