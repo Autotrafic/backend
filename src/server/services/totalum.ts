@@ -316,7 +316,6 @@ export async function createTaskByWhatsappOrder(whatsappOrder: WhatsappOrder, fo
       descripcion: '- Completar Totalum\n- Enviar mandatos si no estan al Drive',
       enlace: folderUrl,
       titulo: whatsappOrder.vehiclePlate,
-      fecha: getCurrentOrNextMonday(),
     });
 
     return newTask.data.data.insertedId;
