@@ -23,7 +23,7 @@ export async function requestSendcloudLabel(shipment: ParsedTotalumShipment, isT
 
 export async function getSendcloudPdfLabel(parcelId: number): Promise<Buffer> {
   options = {
-    endpoint: `labels/normal_printer/${parcelId}?start_from=0`,
+    endpoint: `labels/normal_printer/${parcelId}`,
     method: 'get',
   };
 
