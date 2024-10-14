@@ -52,7 +52,7 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
     city: shipment.city,
     country: 'ES',
     country_state: null,
-    email: shipment.email,
+    email: shipment.email ?? 'gestoria.autotrafic@gmail.com',
     customs_invoice_nr: '',
     customs_shipment_type: 1,
     parcel_items: [
