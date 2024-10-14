@@ -4,6 +4,8 @@ interface ParcelResponseObject {
 
 interface ParcelRequest {
   reference: string;
+  order_number: string;
+  to_service_point: number;
   name: string;
   telephone: string;
   address: string;
