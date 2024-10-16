@@ -36,14 +36,14 @@ export function parseShipmentToTotalum(parsedShipment: ParsedTotalumShipment): T
 
 export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest: boolean): ParcelRequest {
   const carrier = {
-    id: isTest ? 8 : 2207,
-    name: isTest ? 'Unstamped Letter' : 'Correos Estandar Pudo Delivery 0-1kg',
+    id: isTest ? 8 : 2189,
+    name: isTest ? 'Unstamped Letter' : 'Correos Estandar Entrega a Domicilio 0-1kg',
   };
 
   return {
     reference: shipment.reference,
     order_number: shipment.reference,
-    to_service_point: 10571090,
+    // to_service_point: 10571090,
     name: shipment.customerName,
     telephone: shipment.phone,
     address: shipment.address,
