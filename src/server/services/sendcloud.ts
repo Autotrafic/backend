@@ -1,8 +1,6 @@
 import { Method } from 'axios';
-import { makeSendcloudRequest } from '.';
+import { makeSendcloudRequest, SendcloudRequestOptions } from '.';
 import { createParcelFromShipment } from '../parsers/shipment';
-
-let options: { endpoint: string; method: Method; body?: CreateLabelExportBody };
 
 export async function requestSendcloudLabel(shipment: ParsedTotalumShipment, isTest: boolean) {
   const parcel: CreateLabelExportBody = {
@@ -10,7 +8,7 @@ export async function requestSendcloudLabel(shipment: ParsedTotalumShipment, isT
     isTest,
   };
 
-  options = {
+  const options: SendcloudRequestOptions = {
     endpoint: 'parcels',
     method: 'post' as Method,
     body: parcel,
@@ -22,9 +20,10 @@ export async function requestSendcloudLabel(shipment: ParsedTotalumShipment, isT
 }
 
 export async function getSendcloudPdfLabel(parcelId: number): Promise<Buffer> {
-  options = {
+  const options: SendcloudRequestOptions = {
     endpoint: `labels/normal_printer/${parcelId}`,
     method: 'get',
+    isResponseBuffer: true,
   };
 
   const result = await makeSendcloudRequest(options);

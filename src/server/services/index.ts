@@ -3,10 +3,11 @@ import axios, { Method } from 'axios';
 import { SENDCLOUD_API, SHORT_URL_API } from '../../utils/constants';
 import notifySlack from './notifier';
 
-interface RequestOptions {
+export interface SendcloudRequestOptions {
   endpoint: string;
   method: Method;
   body?: CreateLabelExportBody;
+  isResponseBuffer?: boolean;
 }
 
 const username = process.env.SENDCLOUD_PUBLIC_KEY;
@@ -14,7 +15,7 @@ const password = process.env.SENDCLOUD_SECRET_KEY;
 
 const shortUrlApiKey = process.env.SHORT_URL_API_KEY;
 
-export async function makeSendcloudRequest({ endpoint, method, body }: RequestOptions) {
+export async function makeSendcloudRequest({ endpoint, method, body, isResponseBuffer }: SendcloudRequestOptions) {
   try {
     const response = await axios({
       url: `${SENDCLOUD_API}${endpoint}`,
@@ -27,6 +28,7 @@ export async function makeSendcloudRequest({ endpoint, method, body }: RequestOp
       headers: {
         'Content-Type': 'application/json',
       },
+      responseType: isResponseBuffer ? 'arraybuffer' : 'json',
     });
 
     return response.data;
