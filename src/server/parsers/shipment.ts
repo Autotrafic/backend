@@ -43,7 +43,6 @@ export function createParcelFromShipment(shipment: ParsedTotalumShipment, isTest
   return {
     reference: shipment.reference,
     order_number: shipment.reference,
-    // to_service_point: 10571090,
     name: shipment.customerName,
     telephone: shipment.phone,
     address: shipment.address,
