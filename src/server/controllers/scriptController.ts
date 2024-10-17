@@ -7,6 +7,7 @@ import {
   getExtendedOrders,
   getOrderById,
   getOrdersPendingToShip,
+  getShipmentByVehiclePlate,
 } from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import fetch from 'node-fetch';
@@ -17,6 +18,8 @@ import { checkShipmentAvailability } from '../handlers/checks';
 import sseClientManager from '../../sse/sseClientManager';
 import { shortUrl } from '../services/other';
 import axios from 'axios';
+import { makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
+import { mergePdfFromBase64Strings } from '../parsers/file';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -26,9 +29,18 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-   const tasks = await getAllPendingTasks();
+    const { vehiclePlates, isTest } = req.body;
 
-    res.status(200).json(tasks);
+    const shipmentsPromises = vehiclePlates.map((plate: any) => getShipmentByVehiclePlate(plate));
+    const shipments = await Promise.all(shipmentsPromises);
+
+    const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
+    const labelsBase64 = await Promise.all(labelsPromises);
+
+    const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
+    await uploadMergedLabelsToDrive(mergedLabelsBase64);
+
+    res.status(200).json({ mergedLabelsBase64 });
   } catch (error) {
     console.error(error);
   }
