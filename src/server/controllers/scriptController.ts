@@ -20,6 +20,7 @@ import { shortUrl } from '../services/other';
 import axios from 'axios';
 import { makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { mergePdfFromBase64Strings } from '../parsers/file';
+import { requestShortenUrl } from '../services';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -31,16 +32,11 @@ export async function runScript(req: Request, res: Response, next: NextFunction)
   try {
     const { vehiclePlates, isTest } = req.body;
 
-    const shipmentsPromises = vehiclePlates.map((plate: any) => getShipmentByVehiclePlate(plate));
-    const shipments = await Promise.all(shipmentsPromises);
+    const url = await requestShortenUrl(
+      'https://tracking.eu-central-1-0.sendcloud.sc/forward?carrier=correos&code=PQ6AA40716110570128530Q&destination=ES&lang=es-es&source=ES&type=parcel&verification=28530&servicepoint_verification=&shipping_product_code=correos%3Astandard&created_at=2024-10-17'
+    );
 
-    const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
-    const labelsBase64 = await Promise.all(labelsPromises);
-
-    const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
-    await uploadMergedLabelsToDrive(mergedLabelsBase64);
-
-    res.status(200).json({ mergedLabelsBase64 });
+    res.status(200).json({ url });
   } catch (error) {
     console.error(error);
   }

@@ -13,8 +13,6 @@ export interface SendcloudRequestOptions {
 const username = process.env.SENDCLOUD_PUBLIC_KEY;
 const password = process.env.SENDCLOUD_SECRET_KEY;
 
-const shortUrlApiKey = process.env.SHORT_URL_API_KEY;
-
 export async function makeSendcloudRequest({ endpoint, method, body, isResponseBuffer }: SendcloudRequestOptions) {
   try {
     const response = await axios({
@@ -51,14 +49,14 @@ export async function requestShortenUrl(urlToShorten: string): Promise<string> {
       },
       {
         headers: {
-          'api-key': shortUrlApiKey,
           'Content-Type': 'application/json',
         },
       }
     );
-    return response.data.shrtlnk;
+
+    return response.data.result_url;
   } catch (error) {
-    console.error(`Error shortening URL: ${error}`);
-    throw new Error('Failed to shorten URL');
+    console.error(`Error shortening URL: ${error.message}`);
+    throw new Error(`Error shortening URL: ${error.message}`);
   }
 }

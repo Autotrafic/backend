@@ -2,7 +2,7 @@ import '../loadEnvironment';
 
 export const SENDCLOUD_API = 'https://panel.sendcloud.sc/api/v2/';
 
-export const SHORT_URL_API = 'https://shrtlnk.dev/api/v2/link';
+export const SHORT_URL_API = 'https://cleanuri.com/api/v1/shorten';
 
 export const VEHICLE_TYPE = { CAR: 1, MOTORBIKE: 2, CARAVAN: 3 };
 
