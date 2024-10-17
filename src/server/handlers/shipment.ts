@@ -69,7 +69,7 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
 
     return labelBase64;
   } catch (error) {
-    throw new Error(`Error making shipment with shipment info. ${error}`);
+    throw new Error(`Error making shipment with shipment info. ${error.message}`);
   }
 }
 
