@@ -1,5 +1,6 @@
 import '../../loadEnvironment';
 import axios from 'axios';
+import { WWebChat, WWebMessage } from '../../interfaces/whatsapp';
 
 const slackWebhook = process.env.SLACK_WEBHOOK_URL;
 
@@ -13,6 +14,29 @@ export async function sendWhatsappMessage({ phoneNumber, message }: { phoneNumbe
     const response = await axios.post(endpoint, options);
 
     return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function getAllWhatsappChats(): Promise<WWebChat[]> {
+  const endpoint = `${whatsappApi}/messages/chats`;
+
+  try {
+    const response = await axios.get(endpoint);
+    return response.data.chats;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function getWhatsappChatMessages(chatId: string): Promise<WWebMessage[]> {
+  const endpoint = `${whatsappApi}/messages/chat-messages/${chatId}`;
+
+  try {
+    const response = await axios.get(endpoint);
+
+    return response.data.messages;
   } catch (error) {
     throw new Error(error);
   }
