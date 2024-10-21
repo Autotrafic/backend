@@ -2,7 +2,9 @@ import '../../loadEnvironment';
 import axios from 'axios';
 import { WWebChat, WWebMessage } from '../../interfaces/whatsapp';
 
-const slackWebhook = process.env.SLACK_WEBHOOK_URL;
+const backendNotifications = process.env.SLACK_BACKEND_NOTIFICATIONS_WEBHOOK_URL;
+const whatsMessagesWebhook = process.env.SLACK_WHATS_MESSAGES_WEBHOOK_URL;
+const ordersWebhook = process.env.SLACK_ORDERS_WEBHOOK_URL;
 
 const whatsappApi = process.env.AUTOTRAFIC_WHATSAPP_API;
 
@@ -42,14 +44,15 @@ export async function getWhatsappChatMessages(chatId: string): Promise<WWebMessa
   }
 }
 
-export default async function notifySlack(message: string) {
-  const notifyMessage = message ?? 'Unknown message error.';
+export default async function notifySlack(message: string, channel?: 'whatsapp_messages' | 'orders') {
+  let channelWebhook = backendNotifications;
+
+  if (channel === 'whatsapp_messages') channelWebhook = whatsMessagesWebhook;
+  if (channel === 'orders') channelWebhook = ordersWebhook;
 
   try {
-    await axios.post(slackWebhook, {
-      text: notifyMessage,
-    });
+    await axios.post(channelWebhook, { text: message });
   } catch (error) {
-    console.error('Error sending notification to Slack:', error);
+    console.error('Error sending notification to Slack:', error.message);
   }
 }

@@ -25,11 +25,15 @@ export async function sendWhatsapp(req: SendWhatsappBody, res: Response, next: N
   }
 }
 
-export async function sendSlackMessage(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { message } = req.body;
+interface SendSlackBody extends Request {
+  body: { message: string; channel?: 'whatsapp_messages' | 'orders' };
+}
 
-    notifySlack(message);
+export async function sendSlackMessage(req: SendSlackBody, res: Response, next: NextFunction) {
+  try {
+    const { message, channel } = req.body;
+
+    notifySlack(message, channel);
 
     res.status(200).json('Message sent successfully.');
   } catch (error) {
