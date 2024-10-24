@@ -8,6 +8,7 @@ import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByOrderId } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
 import { checkShipmentAvailability } from '../handlers/checks';
+import { sleep } from '../../utils/funcs';
 
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
@@ -19,8 +20,13 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
 
     checkShipmentsData(cleanedShipments);
 
-    const labelsPromises = cleanedShipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
-    const labelsBase64 = await Promise.all(labelsPromises);
+    let labelsBase64 = [];
+    for (let totalumShipment of cleanedShipments) {
+      const ones = await makeShipment({ totalumShipment, isTest });
+      labelsBase64.push(ones);
+
+      sleep(500)
+    }
 
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
     await uploadMergedLabelsToDrive(mergedLabelsBase64);

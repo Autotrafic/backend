@@ -1,5 +1,9 @@
 import { Check, TCheck } from '../interfaces/checks';
 
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function roundToTwoDecimals(value: number): number {
   return parseFloat(value.toFixed(2));
 }

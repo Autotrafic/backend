@@ -31,7 +31,7 @@ export async function makeSendcloudRequest({ endpoint, method, body, isResponseB
 
     return response.data;
   } catch (error) {
-    console.error('Error making sendcloud request:', error);
+    console.error('Error making sendcloud request:', error.message);
     notifySlack(`Error making sendcloud request:
       Endpoint: ${SENDCLOUD_API}${endpoint}
       Method: ${method},
