@@ -26,7 +26,13 @@ export async function getSendcloudPdfLabel(parcelId: number): Promise<Buffer> {
     isResponseBuffer: true,
   };
 
-  const result = await makeSendcloudRequest(options);
+  try {
+    const result = await makeSendcloudRequest(options);
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(
+      `Error requesting pdf label to sendcloud. \n Endpoint: ${options.endpoint} \n Method: ${options.endpoint}`
+    );
+  }
 }
