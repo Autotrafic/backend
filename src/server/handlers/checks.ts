@@ -53,7 +53,7 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
 
     const isComplete = checksConfig.every(({ filterProp }) => shipment[filterProp]);
     if (isComplete) {
-      addCheckToList(checks, shipment.referencia, '', TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
+      addCheckToList(checks, shipment.referencia, shipment.pedido[0]._id, TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
     }
   });
 

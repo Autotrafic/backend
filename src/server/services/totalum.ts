@@ -212,22 +212,48 @@ export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
 }
 
 export async function getShipmentByOrderId(orderId: string): Promise<ExtendedTotalumShipment> {
-  const nestedQuery = { envio: { pedido: {} } };
+  // const nestedQuery = { envio: { pedido: {} } };
+
+  // try {
+  //   const response = await totalumSdk.crud.getNestedData(nestedQuery);
+  //   const allShipments = response.data.data;
+
+  //   const shipmentsWithOrderId = allShipments.filter((shipment: ExtendedTotalumShipment) => {
+  //     if (shipment.pedido.length > 1) throw new Error(`Shipment with id: ${shipment._id} has multiple orders`);
+  //     return shipment.pedido[0]._id === orderId;
+  //   });
+
+  //   if (shipmentsWithOrderId.length > 1) throw new Error(`There are multiple shipments with order: ${orderId}`);
+
+  //   return shipmentsWithOrderId[0];
+  // } catch (error) {
+  //   throw new Error(`Error fetching Totalum shipments by vehicle plate. ${error}`);
+  // }
+
+  const nestedFilter = {
+    envio: {
+      pedido: {
+        tableFilter: [
+          {
+            _id: orderId,
+          },
+        ],
+      },
+    },
+  };
+
+  const tableNameToGet = 'envio';
 
   try {
-    const response = await totalumSdk.crud.getNestedData(nestedQuery);
-    const allShipments = response.data.data;
-
-    const shipmentsWithOrderId = allShipments.filter((shipment: ExtendedTotalumShipment) => {
-      if (shipment.pedido.length > 1) throw new Error(`Shipment with id: ${shipment._id} has multiple orders`);
-      return shipment.pedido[0]._id === orderId;
+    const result = await totalumSdk.filter.nestedFilter(nestedFilter, tableNameToGet, {
+      pagination: {},
+      // @ts-ignore
+      typeIdToGet: '66f63265cc6116292fde3f44',
     });
 
-    if (shipmentsWithOrderId.length > 1) throw new Error(`There are multiple shipments with order: ${orderId}`);
-
-    return shipmentsWithOrderId[0];
+    return result.data.data;
   } catch (error) {
-    throw new Error(`Error fetching Totalum shipments by vehicle plate. ${error}`);
+    console.log(error);
   }
 }
 
