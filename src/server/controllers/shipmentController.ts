@@ -3,7 +3,7 @@ import { CreateLabelImportBody, GetPdfLabelBody, MakeMultipleShipmentsImportBody
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
 import CustomError from '../../errors/CustomError';
-import { makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
+import { checkShipmentsData, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByOrderId } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
@@ -15,8 +15,11 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
 
     const shipmentsPromises = ordersId.map((plate) => getShipmentByOrderId(plate));
     const shipments = await Promise.all(shipmentsPromises);
+    const cleanedShipments = shipments.filter((shipment) => shipment !== undefined);
 
-    const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
+    checkShipmentsData(cleanedShipments);
+
+    const labelsPromises = cleanedShipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
     const labelsBase64 = await Promise.all(labelsPromises);
 
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);

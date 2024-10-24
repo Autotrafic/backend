@@ -70,6 +70,16 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
   }
 }
 
+export function checkShipmentsData(shipments: ExtendedTotalumShipment[]) {
+  try {
+    for (let shipment of shipments) {
+      if (!shipment?.referencia || !shipment?.pedido) throw new Error(`Éste envío no contiene datos: \n${shipment}`);
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 export async function uploadMergedLabelsToDrive(mergedLabelsBase64: string) {
   const actualMonthName = getMonthNameInSpanish().toUpperCase();
   const actualDayNumber = `${getActualDay()}`;
