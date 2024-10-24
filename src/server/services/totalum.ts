@@ -212,20 +212,27 @@ export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
 }
 
 export async function getShipmentByOrderId(orderId: string): Promise<ExtendedTotalumShipment> {
-  const nestedQuery = { envio: { pedido: {} } };
+  const nestedQuery = {
+    pedido: {
+      tableFilter: {
+        filter: [
+          {
+            _id: orderId,
+          },
+        ],
+      },
+      envio: { pedido: {} },
+    },
+  };
 
   try {
     const response = await totalumSdk.crud.getNestedData(nestedQuery);
-    const allShipments = response.data.data;
+    const shipments = response.data.data[0]?.envio;
 
-    const shipmentsWithOrderId = allShipments.filter((shipment: ExtendedTotalumShipment) => {
-      if (shipment.pedido.length > 1) throw new Error(`Shipment with id: ${shipment._id} has multiple orders`);
-      return shipment.pedido[0]._id === orderId;
-    });
+    if (shipments && shipments.length < 1) throw new Error(`El pedido ${orderId} no contiene envío relacionado`);
+    if (shipments && shipments.length > 1) throw new Error(`El pedido ${orderId} contiene múltiples envíos relacionados`);
 
-    if (shipmentsWithOrderId.length > 1) throw new Error(`There are multiple shipments with order: ${orderId}`);
-
-    return shipmentsWithOrderId[0];
+    return shipments[0];
   } catch (error) {
     throw new Error(`Error fetching Totalum shipments by order id. ${error}`);
   }
