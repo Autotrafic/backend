@@ -1,4 +1,5 @@
 export interface TCheck {
+  referenceId: string;
   reference: string;
   checks: Check[];
 }

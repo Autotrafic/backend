@@ -9,7 +9,7 @@ export function getMonthNameInSpanish(): string {
   return new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(date);
 }
 
-export function addCheckToList(list: TCheck[], reference: string, check: Check) {
+export function addCheckToList(list: TCheck[], reference: string, referenceId: string, check: Check) {
   const checkToUpdate = list.find((item) => item.reference === reference);
 
   if (checkToUpdate) {
@@ -21,6 +21,7 @@ export function addCheckToList(list: TCheck[], reference: string, check: Check) 
   } else {
     list.push({
       reference: reference,
+      referenceId,
       checks: [check],
     });
   }

@@ -1,5 +1,5 @@
 import { AutonomousCommunityValue } from '../enums';
-import { TotalumShipment } from './envio';
+import { ExtendedTotalumShipment } from './envio';
 
 export interface TotalumOrder {
   comunidad_autonoma: TAutonomousCommunity;
@@ -28,7 +28,7 @@ export interface TotalumOrder {
 
 export interface ExtendedTotalumOrder extends Omit<TotalumOrder, 'cliente'> {
   cliente: TClient;
-  envio: TotalumShipment[];
+  envio: ExtendedTotalumShipment[];
 }
 
 interface TotalumParsedOrder {

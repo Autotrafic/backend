@@ -9,7 +9,7 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
   const ordersPendingToShip = await getOrdersPendingToShip();
 
   if (ordersPendingToShip.length < 1) {
-    addCheckToList(checks, 'Envío', TOTALUM_CHECKS.ORDERS_WITHOUT_SHIPPING_ORDER);
+    addCheckToList(checks, 'Envío', '', TOTALUM_CHECKS.ORDERS_WITHOUT_SHIPPING_ORDER);
     return checks;
   }
 
@@ -20,7 +20,7 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
 
   if (ordersWithoutShipment.length > 0) {
     for (let order of ordersWithoutShipment) {
-      addCheckToList(checks, order.matricula, TOTALUM_CHECKS.ORDER_WITHOUT_ADDRESS);
+      addCheckToList(checks, order.matricula, order._id, TOTALUM_CHECKS.ORDER_WITHOUT_ADDRESS);
     }
   }
 
@@ -36,21 +36,24 @@ export async function checkShipmentAvailability(): Promise<TCheck[]> {
 
   checksConfig.forEach(({ filterProp, checkType }) => {
     const shipmentsWithoutProp = shipments.filter((shipment) => !shipment[filterProp]);
+
     shipmentsWithoutProp.forEach((shipment) => {
-      addCheckToList(checks, shipment.referencia, checkType);
+      if (shipment.pedido.length > 1) throw new Error(`Shipment ${shipment._id} has multiple orders`);
+      addCheckToList(checks, shipment.referencia, shipment.pedido[0]._id, checkType);
     });
   });
 
   shipments.forEach((shipment) => {
-    if (shipment.localidad && shipment.localidad.length > 30) {
-      addCheckToList(checks, shipment.referencia, TOTALUM_CHECKS.SHIPMENT_WITH_CITY_WITH_MORE_30_CHAR);
-    }
-  });
+    if (shipment.pedido.length > 1) throw new Error(`Shipment ${shipment._id} has multiple orders`);
 
-  shipments.forEach((shipment) => {
+    if (shipment.localidad && shipment.localidad.length > 30) {
+      const { referencia, pedido } = shipment;
+      addCheckToList(checks, referencia, pedido[0]._id, TOTALUM_CHECKS.SHIPMENT_WITH_CITY_WITH_MORE_30_CHAR);
+    }
+
     const isComplete = checksConfig.every(({ filterProp }) => shipment[filterProp]);
     if (isComplete) {
-      addCheckToList(checks, shipment.referencia, TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
+      addCheckToList(checks, shipment.referencia, '', TOTALUM_CHECKS.ORDER_AVAILABLE_FOR_SHIP);
     }
   });
 

@@ -166,7 +166,7 @@ export async function getActualTrimesterExtendedOrders() {
 export async function getOrdersPendingToShip(): Promise<ExtendedTotalumOrder[]> {
   const nestedTreeStructure = {
     pedido: {
-      envio: {},
+      envio: { pedido: {} },
       persona_relacionada: {},
       cliente: {},
       tableFilter: {
