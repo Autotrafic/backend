@@ -62,7 +62,7 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
 
     await Promise.all(uploadLabelPromises);
 
-    if (!isTest) await notifyShipmentClient(totalumShipment);
+    // if (!isTest) await notifyShipmentClient(totalumShipment);
 
     return labelBase64;
   } catch (error) {
