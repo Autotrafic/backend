@@ -7,7 +7,7 @@ import {
   getExtendedOrders,
   getOrderById,
   getOrdersPendingToShip,
-  getShipmentByVehiclePlate,
+  getShipmentByOrderId,
 } from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import fetch from 'node-fetch';
@@ -30,15 +30,12 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const { vehiclePlates, isTest } = req.body;
+    const shipment = await getShipmentByOrderId('66d878aeda4ce6eed929dbaa');
 
-    const url = await requestShortenUrl(
-      'https://tracking.eu-central-1-0.sendcloud.sc/forward?carrier=correos&code=PQ6AA40716110570128530Q&destination=ES&lang=es-es&source=ES&type=parcel&verification=28530&servicepoint_verification=&shipping_product_code=correos%3Astandard&created_at=2024-10-17'
-    );
-
-    res.status(200).json({ url });
+    res.status(200).json({ shipment });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error });
   }
 }
 

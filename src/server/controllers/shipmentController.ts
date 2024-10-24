@@ -5,15 +5,15 @@ import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendclo
 import CustomError from '../../errors/CustomError';
 import { makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
-import { getShipmentByVehiclePlate } from '../services/totalum';
+import { getShipmentByOrderId } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
 import { checkShipmentAvailability } from '../handlers/checks';
 
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
   try {
-    const { vehiclePlates, isTest } = req.body;
+    const { ordersId, isTest } = req.body;
 
-    const shipmentsPromises = vehiclePlates.map((plate) => getShipmentByVehiclePlate(plate));
+    const shipmentsPromises = ordersId.map((plate) => getShipmentByOrderId(plate));
     const shipments = await Promise.all(shipmentsPromises);
 
     const labelsPromises = shipments.map((totalumShipment) => makeShipment({ totalumShipment, isTest }));
@@ -33,7 +33,9 @@ export async function checkShipmentsAvailability(req: Request, res: Response, ne
     const checks = await checkShipmentAvailability();
 
     if (checks.length > 0) {
-      res.status(200).json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.', checks });
+      res
+        .status(200)
+        .json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.', checks });
       return;
     }
 

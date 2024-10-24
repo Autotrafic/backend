@@ -10,7 +10,6 @@ import { parseAccountingFromTotalum } from '../parsers/logger';
 import { WhatsappOrder } from '../../interfaces/import/order';
 import { parseOrderFromWhatsappToTotalum } from '../parsers/order';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
-import { TotalumOrder } from '../../database/models/Order/TotalumSchema';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -212,23 +211,21 @@ export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
   }
 }
 
-export async function getShipmentByVehiclePlate(vehiclePlate: string): Promise<ExtendedTotalumShipment> {
-  const nestedQuery = {
-    envio: {
-      tableFilter: {
-        filter: [
-          {
-            referencia: vehiclePlate,
-          },
-        ],
-      },
-      pedido: {},
-    },
-  };
+export async function getShipmentByOrderId(orderId: string): Promise<ExtendedTotalumShipment> {
+  const nestedQuery = { envio: { pedido: {} } };
 
   try {
     const response = await totalumSdk.crud.getNestedData(nestedQuery);
-    return response.data.data[0];
+    const allShipments = response.data.data;
+
+    const shipmentsWithOrderId = allShipments.filter((shipment: ExtendedTotalumShipment) => {
+      if (shipment.pedido.length > 1) throw new Error(`Shipment with id: ${shipment._id} has multiple orders`);
+      return shipment.pedido[0]._id === orderId;
+    });
+
+    if (shipmentsWithOrderId.length > 1) throw new Error(`There are multiple shipments with order: ${orderId}`);
+
+    return shipmentsWithOrderId[0];
   } catch (error) {
     throw new Error(`Error fetching Totalum shipments by vehicle plate. ${error}`);
   }

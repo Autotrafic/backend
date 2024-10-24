@@ -18,10 +18,7 @@ import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendclo
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
 import { getExtendedShipmentById } from '../services/totalum';
 
-export async function createSendcloudLabel({
-  totalumShipment: totalumShipment,
-  isTest,
-}: CreateLabelImport): Promise<ParcelResponse> {
+export async function createSendcloudLabel({ totalumShipment, isTest }: CreateLabelImport): Promise<ParcelResponse> {
   const shipment = parseTotalumShipment(totalumShipment);
 
   const parcel: ParcelResponseObject = await requestSendcloudLabel(shipment, isTest);
@@ -29,21 +26,21 @@ export async function createSendcloudLabel({
   return parcel.parcel;
 }
 
-export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<string> {
+export async function makeShipment({ totalumShipment, isTest }: CreateLabelImport): Promise<string> {
   try {
-    const shipmentReference = shipmentInfo.totalumShipment.referencia;
-    const order = shipmentInfo.totalumShipment.pedido[0];
-    
+    const shipmentReference = totalumShipment.referencia;
+    const order = totalumShipment.pedido[0];
+
     if (order.estado !== TOrderState.PendienteEnvioCliente)
       throw new Error(`${shipmentReference} No está pendiente de envío cliente`);
 
-    const parcel = await createSendcloudLabel(shipmentInfo);
+    const parcel = await createSendcloudLabel({ totalumShipment, isTest });
     const parcelId = parcel.id;
 
     const trackingNumber = parcel.tracking_number;
     const trackingUrl = await shortUrl(parcel?.tracking_url);
 
-    await updateTotalumOrderWhenShipped(shipmentInfo.totalumShipment, { trackingNumber, trackingUrl });
+    await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl });
 
     if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
       throw new Error(
@@ -55,7 +52,7 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
 
     const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
 
-    const extendedShipment = await getExtendedShipmentById(shipmentInfo.totalumShipment._id);
+    const extendedShipment = await getExtendedShipmentById(totalumShipment._id);
     const shipmentOrders = extendedShipment.pedido;
 
     const uploadLabelPromises = shipmentOrders.map((order) => {
@@ -65,7 +62,7 @@ export async function makeShipment(shipmentInfo: CreateLabelImport): Promise<str
 
     await Promise.all(uploadLabelPromises);
 
-    if (!shipmentInfo.isTest) await notifyShipmentClient(shipmentInfo.totalumShipment);
+    if (!isTest) await notifyShipmentClient(totalumShipment);
 
     return labelBase64;
   } catch (error) {
