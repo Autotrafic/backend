@@ -30,7 +30,7 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const shipment = await getShipmentByOrderId('66b63d9e025a5d969988157f');
+    const shipment = await getShipmentByOrderId('670802314b116068a0664a27');
 
     res.status(200).json(shipment);
   } catch (error) {

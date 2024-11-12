@@ -313,13 +313,23 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
   }
 }
 
-export async function createTaskByWhatsappOrder(whatsappOrder: WhatsappOrder, folderUrl: string): Promise<string> {
+export async function createTask({
+  state,
+  description,
+  url,
+  title,
+}: {
+  state: TTaskState;
+  description: string;
+  url: string;
+  title: string;
+}): Promise<string> {
   try {
     const newTask = await totalumSdk.crud.createItem('tarea', {
-      estado: TTaskState.Pending,
-      descripcion: '- Completar Totalum\n- Enviar mandatos si no estan al Drive',
-      enlace: folderUrl,
-      titulo: whatsappOrder.vehiclePlate,
+      estado: state,
+      descripcion: description,
+      enlace: url,
+      titulo: title,
     });
 
     return newTask.data.data.insertedId;

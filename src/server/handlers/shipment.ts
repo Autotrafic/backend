@@ -1,7 +1,7 @@
 import {
   autonomousCommunityMap,
   AutonomousCommunityValue,
-  SENDCLOUD_SHIP_STATUS,
+  SENDCLOUD_SHIP_STATUSES,
   TOrderState,
 } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
@@ -42,7 +42,7 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
 
     await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl });
 
-    if (parcel.status.id !== SENDCLOUD_SHIP_STATUS.READY_TO_SEND.id) {
+    if (parcel.status.id !== SENDCLOUD_SHIP_STATUSES.READY_TO_SEND.id) {
       throw new Error(
         `Sendcloud no reconoce el envío de ${shipmentReference} como listo para enviar. Contacta con soporte.`
       );

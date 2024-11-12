@@ -161,7 +161,7 @@ export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, Autonom
   Valencia: AutonomousCommunityValue.VALENCIA,
 };
 
-export const SENDCLOUD_SHIP_STATUS = {
+export const SENDCLOUD_SHIP_STATUSES = {
   NOT_SORTED: { id: 6, message: 'Not sorted' },
   ERROR_COLLECTING: { id: 15, message: 'Error collecting' },
   PARCEL_CANCELLATION_FAILED: { id: 94, message: 'Parcel cancellation failed.' },

@@ -11,15 +11,10 @@ import {
 } from '../../interfaces/import/order';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { EXPEDIENTES_DRIVE_FOLDER_ID, totalumOptions } from '../../utils/constants';
-import {
-  parseOrderDetailsFromWebToTotalum,
-  parseOrderFromWebToTotalum,
-  parseOrderFromWhatsappToTotalum,
-} from '../parsers/order';
+import { parseOrderDetailsFromWebToTotalum, parseOrderFromWebToTotalum } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
-import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
-import { TOrderState } from '../../interfaces/enums';
-import { createExtendedOrderByWhatsappOrder, createTaskByWhatsappOrder } from '../services/totalum';
+import { TTaskState } from '../../interfaces/enums';
+import { createExtendedOrderByWhatsappOrder, createTask } from '../services/totalum';
 import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
@@ -121,7 +116,13 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
 
     await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
 
-    await createTaskByWhatsappOrder(whatsappOrder, folderUrl);
+    const createTaskOptions = {
+      state: TTaskState.Pending,
+      description: 'Completar Totalum',
+      url: folderUrl,
+      title: whatsappOrder.vehiclePlate,
+    };
+    await createTask(createTaskOptions);
 
     res.status(201).json({
       success: true,
@@ -243,6 +244,14 @@ export async function updateDriveDocumentsOfTotalumOrder(
     };
 
     await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
+
+    const createTaskOptions = {
+      state: TTaskState.Pending,
+      description: 'Completar Totalum',
+      url: driveFolderUrl,
+      title: totalumOrder.matricula,
+    };
+    await createTask(createTaskOptions);
 
     res.status(200).json({
       success: true,

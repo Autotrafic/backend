@@ -12,9 +12,9 @@ export async function sendMessage(req: SendWhatsappBody, res: Response, next: Ne
   } catch (error) {
     const finalError = new CustomError(
       500,
-      `Error sending WhatsApp message. ${error}`,
+      `Error sending WhatsApp message. ${error.message}`,
       `Error sending WhatsApp message.
-              ${error}.
+              ${error.message}.
               
         Body: ${JSON.stringify(req.body)}`
     );
