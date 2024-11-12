@@ -1,26 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import {
-  getActualTrimesterExtendedOrders,
-  getAllPendingTasks,
-  getExtendedOrders,
-  getOrderById,
-  getOrdersPendingToShip,
-  getShipmentByOrderId,
-} from '../services/totalum';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
-import fetch from 'node-fetch';
 import CustomError from '../../errors/CustomError';
-import { TCheck, TOTALUM_CHECKS } from '../../interfaces/checks';
-import { addCheckToList } from '../../utils/funcs';
-import { checkShipmentAvailability } from '../handlers/checks';
 import sseClientManager from '../../sse/sseClientManager';
-import { shortUrl } from '../services/other';
-import axios from 'axios';
-import { makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
-import { mergePdfFromBase64Strings } from '../parsers/file';
-import { requestShortenUrl } from '../services';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -30,9 +13,10 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const shipment = await getShipmentByOrderId('670802314b116068a0664a27');
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    console.log(req.body);
 
-    res.status(200).json(shipment);
+    res.status(200).json(req.body);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });
