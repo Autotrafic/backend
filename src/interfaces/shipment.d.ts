@@ -11,6 +11,7 @@ interface ParsedTotalumShipment {
   value: number;
   trackingCode: string;
   trackingUrl: string;
+  sendcloudParcelId: number
 }
 
 interface CheckForShipmentSuccess {

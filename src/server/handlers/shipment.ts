@@ -16,7 +16,7 @@ import notifySlack, { sendWhatsappMessage } from '../services/notifier';
 import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
-import { getExtendedShipmentById } from '../services/totalum';
+import { getExtendedShipmentById, getExtendedShipmentsByParcelId } from '../services/totalum';
 
 export async function createSendcloudLabel({ totalumShipment, isTest }: CreateLabelImport): Promise<ParcelResponse> {
   const shipment = parseTotalumShipment(totalumShipment);
@@ -31,22 +31,23 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
     const shipmentReference = totalumShipment.referencia;
     const order = totalumShipment.pedido[0];
 
-    if (order.estado !== TOrderState.PendienteEnvioCliente)
-      throw new Error(`${shipmentReference} No está pendiente de envío cliente`);
-
     const parcel = await createSendcloudLabel({ totalumShipment, isTest });
     const parcelId = parcel.id;
 
-    const trackingNumber = parcel.tracking_number;
-    const trackingUrl = await shortUrl(parcel?.tracking_url);
-
-    await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl });
+    if (order.estado !== TOrderState.PendienteEnvioCliente)
+      throw new Error(`${shipmentReference} No está pendiente de envío cliente`);
 
     if (parcel.status.id !== SENDCLOUD_SHIP_STATUSES.READY_TO_SEND.id) {
       throw new Error(
         `Sendcloud no reconoce el envío de ${shipmentReference} como listo para enviar. Contacta con soporte.`
       );
     }
+
+    const trackingNumber = parcel.tracking_number;
+    const trackingUrl = await shortUrl(parcel?.tracking_url);
+    const sendcloudParcelId = parcel.id;
+
+    await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl, sendcloudParcelId });
 
     const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
 
@@ -66,7 +67,7 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
 
     return labelBase64;
   } catch (error) {
-    throw new Error(`Error making shipment with shipment info. ${error.message}`);
+    throw new Error(`Couldn't make shipment of ${totalumShipment.referencia}. ${error.message}`);
   }
 }
 
@@ -121,4 +122,22 @@ function getShipmentNotifyMessage(shipmentInfo: ExtendedTotalumShipment): string
 ☀️ Le deseamos un buen día`;
 
   return message;
+}
+
+export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
+  const parcelId = updatedParcel.id;
+
+  const extendedShipments = await getExtendedShipmentsByParcelId(parcelId);
+
+  let ordersId: string[] = [];
+
+  for (let shipment of extendedShipments) {
+    shipment.pedido.forEach((order) => ordersId.push(order._id));
+  }
+
+  for (let orderId of ordersId) {
+    if (updatedParcel.status === SENDCLOUD_SHIP_STATUSES.AT_SORTING_CENTRE) {
+      // await notifyShipmentClient(totalumShipment);
+    }
+  }
 }

@@ -83,5 +83,7 @@ export function parseWebOrderToTotalum(webOrder: WebOrder): Partial<TotalumOrder
 }
 
 export function getDriveFolderIdFromLink(driveLink: string): string {
-  return driveLink.split('/').pop();
+  const url = new URL(driveLink);
+  const pathSegments = url.pathname.split('/');
+  return pathSegments.pop() || '';
 }

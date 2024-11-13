@@ -4,6 +4,8 @@ import { totalumOptions } from '../../utils/constants';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
+import { handleParcelUpdate } from '../handlers/shipment';
+import { getExtendedShipmentsByParcelId } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -13,10 +15,9 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-    console.log(req.body);
+    const extendedShipment = await getExtendedShipmentsByParcelId(431260174);
 
-    res.status(200).json(req.body);
+    res.status(200).json(extendedShipment);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });

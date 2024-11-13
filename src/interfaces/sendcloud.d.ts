@@ -142,3 +142,10 @@ interface ParcelStatus {
 interface Document {
   // Unknown
 }
+
+interface ParcelStatusChangeEvent {
+  action: "parcel_status_changed";
+  timestamp: number;
+  carrier_status_change_timestamp: number;
+  parcel: ParcelResponse;
+}

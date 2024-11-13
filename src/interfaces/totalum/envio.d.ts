@@ -13,6 +13,7 @@ export interface TotalumShipment {
   valor: number;
   codigo_seguimiento: string;
   enlace_seguimiento: string;
+  sendcloud_parcel_id: number;
 }
 
 export interface ExtendedTotalumShipment extends TotalumShipment {

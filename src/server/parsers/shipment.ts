@@ -14,6 +14,7 @@ export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumSh
     value: shipment.valor,
     trackingCode: shipment.codigo_seguimiento,
     trackingUrl: shipment.enlace_seguimiento,
+    sendcloudParcelId: shipment.sendcloud_parcel_id,
   };
 }
 
@@ -31,6 +32,7 @@ export function parseShipmentToTotalum(parsedShipment: ParsedTotalumShipment): T
     valor: parsedShipment.value,
     codigo_seguimiento: parsedShipment.trackingCode,
     enlace_seguimiento: parsedShipment.trackingUrl,
+    sendcloud_parcel_id: parsedShipment.sendcloudParcelId,
   };
 }
 

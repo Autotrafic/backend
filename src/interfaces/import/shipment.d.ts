@@ -22,3 +22,7 @@ interface CreateLabelImport {
   totalumShipment: ExtendedTotalumShipment;
   isTest: boolean;
 }
+
+interface HandleSendcloudWebhookBody {
+  body: ParcelStatusChangeEvent
+}

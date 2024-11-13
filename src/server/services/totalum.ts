@@ -337,3 +337,25 @@ export async function createTask({
     throw new Error(`Error creating task by whatsapp order. ${error}`);
   }
 }
+
+export async function getExtendedShipmentsByParcelId(parcelId: number): Promise<ExtendedTotalumShipment[]> {
+  const nestedQuery = {
+    envio: {
+      tableFilter: {
+        filter: [
+          {
+            sendcloud_parcel_id: parcelId,
+          },
+        ],
+      },
+      pedido: {},
+    },
+  };
+
+  try {
+    const shipmentResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return shipmentResponse.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching Totalum shipment by sendcloud parcel id. ${error.message}`);
+  }
+}
