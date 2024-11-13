@@ -16,7 +16,9 @@ import notifySlack, { sendWhatsappMessage } from '../services/notifier';
 import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
-import { getExtendedShipmentById, getExtendedShipmentsByParcelId } from '../services/totalum';
+import { getExtendedShipmentById, getExtendedShipmentsByParcelId, updateOrderById } from '../services/totalum';
+
+type NotifyMessageType = 'sent' | 'driver_in_route' | 'pickup';
 
 export async function createSendcloudLabel({ totalumShipment, isTest }: CreateLabelImport): Promise<ParcelResponse> {
   const shipment = parseTotalumShipment(totalumShipment);
@@ -91,9 +93,9 @@ export async function uploadMergedLabelsToDrive(mergedLabelsBase64: string) {
   await uploadBase64FileToDrive(mergedLabelsBase64, dayFolderId, 'Etiquetas_envio');
 }
 
-async function notifyShipmentClient(shipmentInfo: ExtendedTotalumShipment) {
+async function notifyShipmentClient(shipmentInfo: ExtendedTotalumShipment, notifyMessageType: NotifyMessageType) {
   try {
-    const message = getShipmentNotifyMessage(shipmentInfo);
+    const message = getShipmentNotifyMessage(shipmentInfo, notifyMessageType);
     const phoneNumber = parsePhoneNumberForWhatsApp(shipmentInfo.telefono);
 
     await sendWhatsappMessage({ phoneNumber, message });
@@ -102,14 +104,15 @@ async function notifyShipmentClient(shipmentInfo: ExtendedTotalumShipment) {
   }
 }
 
-function getShipmentNotifyMessage(shipmentInfo: ExtendedTotalumShipment): string {
+function getShipmentNotifyMessage(shipmentInfo: ExtendedTotalumShipment, type: NotifyMessageType): string {
   const { nombre_cliente, referencia, enlace_seguimiento, pedido } = shipmentInfo;
   const { comunidad_autonoma } = pedido[0];
 
   const isFastShipment = comunidad_autonoma === autonomousCommunityMap[AutonomousCommunityValue.CATALUNA];
   const address = parseAddressFromTotalumToRedeable(shipmentInfo);
 
-  const message = `👋 Muy buenas, *${nombre_cliente}*
+  if (type === 'sent') {
+    return `👋 Muy buenas, *${nombre_cliente}*
 
 🚚 Le informamos que su nuevo permiso de circulación del vehículo con matrícula *${referencia}* está en camino
 
@@ -117,11 +120,30 @@ function getShipmentNotifyMessage(shipmentInfo: ExtendedTotalumShipment): string
 
 ⏱ Llegará en un plazo de *${isFastShipment ? '3/5' : '5/7'}* días 
 
-🔍 Puedes conocer el estado del envío mediante éste enlace: ${enlace_seguimiento}
+🔍 Puedes conocer el estado del envío mediante éste enlace:
+${enlace_seguimiento}
 
 ☀️ Le deseamos un buen día`;
+  }
 
-  return message;
+  if (type === 'driver_in_route') {
+    return `👋 Muy buenas, *${nombre_cliente}*
+
+👨‍✈️ El mensajero ya está de camino a su domicilio
+
+🏡 En las próximas horas tocará a su puerta`;
+  }
+
+  if (type === 'pickup') {
+    return `👋 Muy buenas, *${nombre_cliente}*
+
+❌ Se ha hecho un intento de entrega del nuevo permiso de circulación, pero no había nadie en el domicilio
+
+🏤 Ahora se encuentra en la oficina de Correos esperando a ser recogido
+
+🔍 Puedes conocer su estado desde aquí:
+${enlace_seguimiento}`;
+  }
 }
 
 export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
@@ -129,15 +151,34 @@ export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
 
   const extendedShipments = await getExtendedShipmentsByParcelId(parcelId);
 
-  let ordersId: string[] = [];
-
   for (let shipment of extendedShipments) {
-    shipment.pedido.forEach((order) => ordersId.push(order._id));
-  }
+    if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.AT_SORTING_CENTRE.id) {
+      await notifyShipmentClient(shipment, 'sent');
+    }
 
-  for (let orderId of ordersId) {
-    if (updatedParcel.status === SENDCLOUD_SHIP_STATUSES.AT_SORTING_CENTRE) {
-      // await notifyShipmentClient(totalumShipment);
+    if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.DRIVER_EN_ROUTE.id) {
+      await notifyShipmentClient(shipment, 'driver_in_route');
+    }
+
+    if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.AWAITING_CUSTOMER_PICKUP.id) {
+      await notifyShipmentClient(shipment, 'pickup');
+    }
+
+    for (let order of shipment.pedido) {
+      if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.AT_SORTING_CENTRE.id) {
+        const update = { estado: TOrderState.EnviadoCliente };
+        await updateOrderById(order._id, update);
+      }
+
+      if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.RETURNED_TO_SENDER.id) {
+        const update = { estado: TOrderState.PendienteDevolucionCorreos };
+        await updateOrderById(order._id, update);
+      }
+
+      if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.DELIVERED.id) {
+        const update = { estado: TOrderState.EntregadoCliente };
+        await updateOrderById(order._id, update);
+      }
     }
   }
 }

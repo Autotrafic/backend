@@ -15,9 +15,18 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const extendedShipment = await getExtendedShipmentsByParcelId(431260174);
+    const updatedParcel = req.body;
 
-    res.status(200).json(extendedShipment);
+    if (updatedParcel.action !== 'parcel_status_changed') {
+      res.status(200).send('Webhook action type is not: parcel_status_changed');
+      return;
+    }
+
+    const parcel = updatedParcel.parcel;
+
+    await handleParcelUpdate(parcel);
+
+    res.status(200).json({ message: 'Sendcloud webhook processed successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });

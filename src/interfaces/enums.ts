@@ -100,7 +100,7 @@ export enum TOrderState {
   PendienteRecogerCorreos = 'Pendiente recoger Correos',
   NuevoPedidoWeb = 'Nuevo pedido web',
   NuevoPedidoWhatsapp = 'Nuevo pedido WhatsApp',
-  PendienteRecibirCorreos = 'Pendiente devolución Correos',
+  PendienteDevolucionCorreos = 'Pendiente devolución Correos',
   PendienteEntregarCorreos = 'Pendiente entrega Correos',
 }
 

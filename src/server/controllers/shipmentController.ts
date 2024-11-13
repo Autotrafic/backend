@@ -8,7 +8,7 @@ import {
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
 import CustomError from '../../errors/CustomError';
-import { checkShipmentsData, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
+import { checkShipmentsData, handleParcelUpdate, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByOrderId } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
@@ -118,6 +118,12 @@ export async function handleSendcloudWebhook(req: HandleSendcloudWebhookBody, re
       res.status(200).send('Webhook action type is not: parcel_status_changed');
       return;
     }
+
+    const parcel = updatedParcel.parcel;
+
+    await handleParcelUpdate(parcel);
+
+    res.status(200).json({ message: 'Sendcloud webhook processed successfully' });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
