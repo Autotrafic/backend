@@ -16,7 +16,12 @@ import notifySlack, { sendWhatsappMessage } from '../services/notifier';
 import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
-import { getExtendedShipmentById, getExtendedShipmentsByParcelId, updateOrderById } from '../services/totalum';
+import {
+  getExtendedShipmentById,
+  getExtendedShipmentsByParcelId,
+  updateOrderById,
+  updateShipmentById,
+} from '../services/totalum';
 
 type NotifyMessageType = 'sent' | 'driver_in_route' | 'pickup';
 
@@ -164,6 +169,11 @@ export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
       await notifyShipmentClient(shipment, 'pickup');
     }
 
+    if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.RETURNED_TO_SENDER.id) {
+      const update = { direccion: 'Devuelto. Pedir al cliente nueva dirección', numero_domicilio: '' };
+      await updateShipmentById(shipment._id, update);
+    }
+
     for (let order of shipment.pedido) {
       if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.AT_SORTING_CENTRE.id) {
         const update = { estado: TOrderState.EnviadoCliente };
@@ -171,7 +181,10 @@ export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
       }
 
       if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.RETURNED_TO_SENDER.id) {
-        const update = { estado: TOrderState.PendienteDevolucionCorreos };
+        const update = {
+          estado: TOrderState.PendienteDevolucionCorreos,
+          direccion_envio: 'Devuelto. Pedir al cliente nueva dirección',
+        };
         await updateOrderById(order._id, update);
       }
 
