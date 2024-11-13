@@ -170,7 +170,7 @@ export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
     }
 
     if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.RETURNED_TO_SENDER.id) {
-      const update = { direccion: 'Devuelto. Pedir al cliente nueva dirección', numero_domicilio: '' };
+      const update = { referencia: `${shipment.referencia} Cobrar reenvio o pedir nueva direccion` };
       await updateShipmentById(shipment._id, update);
     }
 
@@ -181,10 +181,7 @@ export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
       }
 
       if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.RETURNED_TO_SENDER.id) {
-        const update = {
-          estado: TOrderState.PendienteDevolucionCorreos,
-          direccion_envio: 'Devuelto. Pedir al cliente nueva dirección',
-        };
+        const update = { estado: TOrderState.PendienteDevolucionCorreos };
         await updateOrderById(order._id, update);
       }
 
