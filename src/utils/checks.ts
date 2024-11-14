@@ -65,7 +65,7 @@ export const FIELD_CONDITIONS = {
       checkInfo: { title: 'El envío no contiene localidad', type: CheckType.BAD },
     },
     {
-      check: (value: string) => value.length <= 30,
+      check: (value: string) => value?.length <= 30,
       checkInfo: { title: 'La localidad debe contener como máximo 30 carácteres', type: CheckType.BAD },
     },
   ],
