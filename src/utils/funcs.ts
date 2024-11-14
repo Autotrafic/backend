@@ -13,26 +13,6 @@ export function getMonthNameInSpanish(): string {
   return new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(date);
 }
 
-export function addCheckToList(list: TCheck[], reference: string, referenceId: string, check: Check) {
-  const checkToUpdate = list.find((item) => item.reference === reference);
-
-  if (checkToUpdate) {
-    const checkExists = checkToUpdate.checks.some((existingCheck) => existingCheck.id === check.id);
-
-    if (!checkExists) {
-      checkToUpdate.checks.push(check);
-    }
-  } else {
-    list.push({
-      reference: reference,
-      referenceId,
-      checks: [check],
-    });
-  }
-
-  return list;
-}
-
 export function getActualDay(): number {
   const today = new Date();
   return today.getDate();

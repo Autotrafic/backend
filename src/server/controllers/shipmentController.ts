@@ -51,14 +51,9 @@ export async function checkShipmentsAvailability(req: Request, res: Response, ne
   try {
     const checks = await checkShipmentAvailability();
 
-    if (checks.length > 0) {
-      res
-        .status(200)
-        .json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.', checks });
-      return;
-    }
-
-    res.status(200).json(checks);
+    res
+      .status(200)
+      .json({ success: false, message: 'Hay información pendiente de completar, revisa el Encabezado.', checks });
   } catch (error) {
     catchControllerError(error, 'Error checking shipments availability', req.body, next);
   }
