@@ -183,7 +183,7 @@ ${enlace_seguimiento}
 
 📦 Se entregará el nuevo permiso de circulación con matrícula *${referencia}*
 
-👨‍✈️ El mensajero ya está de camino a su domicilio
+👨🏻‍✈️ El mensajero ya está de camino a su domicilio
 
 🏡 En las próximas horas tocará a su puerta`;
   }

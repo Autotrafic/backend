@@ -63,10 +63,19 @@ export function parseRelatedPersonClientFromDatabaseToTotalum(orderDetails: Orde
   return { telefono: orderDetails.sellerPhone };
 }
 
-export function parseShipmentFromDatabaseToTotalum(orderDetails: OrderDetailsBody): Partial<TotalumShipment> {
+export function parseShipmentFromDatabaseToTotalum(
+  orderDetails: OrderDetailsBody,
+  databaseOrder: DatabaseOrder
+): Partial<TotalumShipment> {
   const { address, postalCode, city } = orderDetails.shipmentAddress;
 
-  return { direccion: address, codigo_postal: postalCode, localidad: city };
+  return {
+    direccion: address,
+    codigo_postal: postalCode,
+    localidad: city,
+    telefono: orderDetails.buyerPhone,
+    email: databaseOrder.user.email,
+  };
 }
 
 export function parseOrderFromTotalumToWeb(order: TotalumOrder): TotalumParsedOrder {

@@ -23,7 +23,7 @@ export async function updateTotalumOrderFromDocumentsDetails(
   const orderUpdate = parseOrderDetailsFromDatabaseToTotalum(orderDetails);
   const client = parseClientFromDatabaseToTotalum(orderDetails, databaseOrder);
   const relatedPersonClient = parseRelatedPersonClientFromDatabaseToTotalum(orderDetails);
-  const shipment = parseShipmentFromDatabaseToTotalum(orderDetails);
+  const shipment = parseShipmentFromDatabaseToTotalum(orderDetails, databaseOrder);
 
   const totalumOrder = await getTotalumOrderFromDatabaseOrderId(orderId);
 
