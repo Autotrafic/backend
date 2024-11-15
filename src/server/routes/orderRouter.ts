@@ -5,7 +5,7 @@ import {
   updateOrderWithDocumentsDetails,
   updateOrder,
   createTotalumOrderById,
-  updateTotalumOrderByDocumentsDetails,
+  extendTotalumOrderByDocumentsDetails,
   updateDriveDocumentsOfTotalumOrder,
   registerWhatsappOrder,
 } from '../controllers/orderController';
@@ -19,7 +19,7 @@ orderRouter.post('/register', registerOrder);
 
 orderRouter.post('/register-whatsapp', upload.any(), registerWhatsappOrder);
 orderRouter.post('/totalum/create', createTotalumOrderById);
-orderRouter.post('/totalum/update-with-documents-details', updateTotalumOrderByDocumentsDetails);
+orderRouter.post('/totalum/update-with-documents-details', extendTotalumOrderByDocumentsDetails);
 
 orderRouter.post('/totalum/update-documents-url', updateDriveDocumentsOfTotalumOrder);
 

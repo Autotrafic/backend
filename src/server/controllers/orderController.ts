@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import CustomError from '../../errors/CustomError';
 import WebOrderModel from '../../database/models/Order/WebOrderSchema';
-import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
+import { DatabaseOrder, WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import {
   CreateTotalumOrderBody,
   CreateTotalumOrderByIdBody,
@@ -11,11 +11,12 @@ import {
 } from '../../interfaces/import/order';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { EXPEDIENTES_DRIVE_FOLDER_ID, totalumOptions } from '../../utils/constants';
-import { parseOrderDetailsFromWebToTotalum, parseOrderFromWebToTotalum } from '../parsers/order';
+import { parseOrderFromWebToTotalum } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
 import { createExtendedOrderByWhatsappOrder, createTask } from '../services/totalum';
 import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
+import { updateTotalumOrderFromDocumentsDetails } from '../handlers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -173,38 +174,19 @@ export async function createTotalumOrderById(req: CreateTotalumOrderByIdBody, re
   }
 }
 
-export async function updateTotalumOrderByDocumentsDetails(
+export async function extendTotalumOrderByDocumentsDetails(
   req: UpdateTotalumOrderByDocumentsDetailsBody,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { orderId } = req.body;
+    const orderDetails = req.body;
 
-    const filter = { autotrafic_id: orderId };
+    const databaseOrder: DatabaseOrder = await WebOrderModel.findOne({ orderId: orderDetails.orderId });
 
-    const response = await totalumSdk.crud.getItems('pedido', {
-      filter: [filter],
-    });
+    await updateTotalumOrderFromDocumentsDetails(databaseOrder, orderDetails);
 
-    const totalumOrder: TotalumOrder = response.data.data[0];
-    const totalumOrderId = totalumOrder._id;
-
-    const parsedOrderDetails = parseOrderDetailsFromWebToTotalum(req.body);
-    const notas = totalumOrder.notas.replace('Esperando documentación del cliente. ', '');
-    const update: TotalumOrder = {
-      ...totalumOrder,
-      ...parsedOrderDetails,
-      notas,
-    };
-
-    await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
-
-    res.status(200).json({
-      success: true,
-      message: 'Order updated in Totalum successfully',
-      totalumOrderId,
-    });
+    res.status(200).json({ success: true, message: 'Order updated in Totalum successfully' });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(

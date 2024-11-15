@@ -2,7 +2,7 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { TOrderState, TOrderType, TTaskState } from '../../interfaces/enums';
 import { getCurrentOrNextMonday, getCurrentTrimesterDates } from '../../utils/funcs';
-import { ExtendedTotalumOrder } from '../../interfaces/totalum/pedido';
+import { ExtendedTotalumOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 import { TTask } from '../../interfaces/totalum/tarea';
 import { Accounting } from '../../interfaces/totalum/contabilidad';
@@ -12,6 +12,16 @@ import { parseOrderFromWhatsappToTotalum } from '../parsers/order';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
+
+export async function getTotalumOrderFromDatabaseOrderId(databaseOrderId: string): Promise<TotalumOrder> {
+  const filter = { autotrafic_id: databaseOrderId };
+  const response = await totalumSdk.crud.getItems('pedido', {
+    filter: [filter],
+  });
+  const totalumOrder: TotalumOrder = response.data.data[0];
+
+  return totalumOrder;
+}
 
 export async function getClientById(clientId: string) {
   try {
@@ -297,9 +307,9 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
       tipo: whatsappOrder.orderType,
       documentos: folderUrl,
     });
-    const relatedPersonClientResponse = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
-
     const newOrderId = orderResponse.data.data.insertedId;
+
+    const relatedPersonClientResponse = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
     const newRelatedPersonClientId = relatedPersonClientResponse.data.data.insertedId;
 
     await totalumSdk.crud.createItem('persona_relacionada', {

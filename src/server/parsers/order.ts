@@ -1,7 +1,8 @@
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
-import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
+import { DatabaseOrder, WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import { autonomousCommunityMap, AutonomousCommunityValue, reverseAutonomousCommunityMap } from '../../interfaces/enums';
 import { OrderDetailsBody, WhatsappOrder } from '../../interfaces/import/order';
+import { TotalumShipment } from '../../interfaces/totalum/envio';
 import { TAutonomousCommunity, TotalumOrder } from '../../interfaces/totalum/pedido';
 
 function parseAutonomousCommunityToTotalum(value: AutonomousCommunityValue): TAutonomousCommunity {
@@ -42,13 +43,30 @@ export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): P
   };
 }
 
-export function parseOrderDetailsFromWebToTotalum(orderDetails: OrderDetailsBody): Partial<TotalumOrder> {
+export function parseOrderDetailsFromDatabaseToTotalum(orderDetails: OrderDetailsBody): Partial<TotalumOrder> {
   const { vehiclePlate, shipmentAddress } = orderDetails;
 
   return {
     matricula: vehiclePlate,
     direccion_envio: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
   };
+}
+
+export function parseClientFromDatabaseToTotalum(
+  orderDetails: OrderDetailsBody,
+  databaseOrder: DatabaseOrder
+): Partial<TClient> {
+  return { telefono: orderDetails.buyerPhone, email: databaseOrder.user.email };
+}
+
+export function parseRelatedPersonClientFromDatabaseToTotalum(orderDetails: OrderDetailsBody): Partial<TClient> {
+  return { telefono: orderDetails.sellerPhone };
+}
+
+export function parseShipmentFromDatabaseToTotalum(orderDetails: OrderDetailsBody): Partial<TotalumShipment> {
+  const { address, postalCode, city } = orderDetails.shipmentAddress;
+
+  return { direccion: address, codigo_postal: postalCode, localidad: city };
 }
 
 export function parseOrderFromTotalumToWeb(order: TotalumOrder): TotalumParsedOrder {
