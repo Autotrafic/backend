@@ -185,7 +185,7 @@ ${enlace_seguimiento}
 
 👨🏻‍✈️ El mensajero ya está de camino a su domicilio
 
-🏡 En las próximas horas tocará a su puerta`;
+🏠 Entre hoy y mañana tocará a su puerta`;
   }
 
   if (type === 'pickup') {
