@@ -1,3 +1,4 @@
+import { Check, CheckType, TCheck } from '../../interfaces/checks';
 import {
   autonomousCommunityMap,
   AutonomousCommunityValue,
@@ -5,7 +6,8 @@ import {
   TOrderState,
 } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
-import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
+import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
+import { FIELD_CONDITIONS, handleOrdersWithWrongNumberOfShipments } from '../../utils/checks';
 import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
 import { getActualDay, getMonthNameInSpanish } from '../../utils/funcs';
 import { getDriveFolderIdFromLink } from '../parsers/order';
@@ -19,11 +21,61 @@ import { updateTotalumOrderWhenShipped } from '../services/shipments';
 import {
   getExtendedShipmentById,
   getExtendedShipmentsByParcelId,
+  getOrdersPendingToShip,
   updateOrderById,
   updateShipmentById,
 } from '../services/totalum';
 
 type NotifyMessageType = 'sent' | 'driver_in_route' | 'pickup';
+
+export async function checkShipmentAvailability(): Promise<{ passedChecks: TCheck[]; failedChecks: TCheck[] }> {
+  const passedChecks: TCheck[] = [];
+  const failedChecks: TCheck[] = [];
+
+  const ordersPendingToShip = await getOrdersPendingToShip();
+
+  const ordersWithoutShipment = ordersPendingToShip.filter((order) => !order.envio || order.envio.length < 1);
+  const ordersWithMultipleShipments = ordersPendingToShip.filter((order) => order.envio && order.envio.length > 1);
+  const ordersWithOneShipment = ordersPendingToShip.filter((order) => order.envio && order.envio.length === 1);
+
+  handleOrdersWithWrongNumberOfShipments(failedChecks, ordersWithoutShipment, ordersWithMultipleShipments);
+
+  const shipments = ordersWithOneShipment
+    .map((order) => order.envio[0])
+    .filter((shipment, index, self) => index === self.findIndex((s) => s._id === shipment._id));
+
+  shipments.forEach((shipment) => {
+    const shipmentChecks: Check[] = [];
+    let hasError = false;
+
+    for (const [field, conditions] of Object.entries(FIELD_CONDITIONS)) {
+      const fieldValue = shipment[field as keyof TotalumShipment];
+
+      conditions.forEach(({ check, checkInfo }) => {
+        if (!check(fieldValue as string)) {
+          shipmentChecks.push(checkInfo);
+          hasError = true;
+        }
+      });
+    }
+
+    if (!hasError) {
+      shipmentChecks.push({ title: 'El pedido está listo para enviar', type: CheckType.GOOD });
+    }
+
+    const passed = shipmentChecks.filter((check) => check.type === CheckType.GOOD);
+    const failed = shipmentChecks.filter((check) => check.type !== CheckType.GOOD);
+
+    if (passed.length > 0) {
+      passedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: passed });
+    }
+    if (failed.length > 0) {
+      failedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: failed });
+    }
+  });
+
+  return { passedChecks, failedChecks };
+}
 
 export async function createSendcloudLabel({ totalumShipment, isTest }: CreateLabelImport): Promise<ParcelResponse> {
   const shipment = parseTotalumShipment(totalumShipment);
@@ -36,13 +88,8 @@ export async function createSendcloudLabel({ totalumShipment, isTest }: CreateLa
 export async function makeShipment({ totalumShipment, isTest }: CreateLabelImport): Promise<string> {
   try {
     const shipmentReference = totalumShipment.referencia;
-    const order = totalumShipment.pedido[0];
 
     const parcel = await createSendcloudLabel({ totalumShipment, isTest });
-    const parcelId = parcel.id;
-
-    if (order.estado !== TOrderState.PendienteEnvioCliente)
-      throw new Error(`${shipmentReference} No está pendiente de envío cliente`);
 
     if (parcel.status.id !== SENDCLOUD_SHIP_STATUSES.READY_TO_SEND.id) {
       throw new Error(
@@ -50,11 +97,11 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
       );
     }
 
+    const parcelId = parcel.id;
     const trackingNumber = parcel.tracking_number;
     const trackingUrl = await shortUrl(parcel?.tracking_url);
-    const sendcloudParcelId = parcel.id;
 
-    await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl, sendcloudParcelId });
+    await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl, sendcloudParcelId: parcelId });
 
     const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
 
@@ -70,15 +117,13 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
 
     await Promise.all(uploadLabelPromises);
 
-    // if (!isTest) await notifyShipmentClient(totalumShipment);
-
     return labelBase64;
   } catch (error) {
     throw new Error(`Couldn't make shipment of ${totalumShipment.referencia}. ${error.message}`);
   }
 }
 
-export function checkShipmentsData(shipments: ExtendedTotalumShipment[]) {
+export function checkEmptyShipments(shipments: ExtendedTotalumShipment[]) {
   try {
     for (let shipment of shipments) {
       if (!shipment?.referencia || !shipment?.pedido) throw new Error(`Éste envío no contiene datos: \n${shipment}`);

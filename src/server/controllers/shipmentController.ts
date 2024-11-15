@@ -8,11 +8,10 @@ import {
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
 import CustomError from '../../errors/CustomError';
-import { checkShipmentsData, handleParcelUpdate, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
+import { checkEmptyShipments, checkShipmentAvailability, handleParcelUpdate, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByOrderId } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
-import { checkShipmentAvailability } from '../handlers/checks';
 import { sleep } from '../../utils/funcs';
 
 export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
@@ -23,7 +22,7 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
     const shipments = await Promise.all(shipmentsPromises);
     const cleanedShipments = shipments.filter((shipment) => shipment !== undefined);
 
-    checkShipmentsData(cleanedShipments);
+    checkEmptyShipments(cleanedShipments);
 
     let labelsBase64 = [];
     let message = '';
