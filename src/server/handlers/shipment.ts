@@ -14,7 +14,7 @@ import { getDriveFolderIdFromLink } from '../parsers/order';
 import { parsePhoneNumberForWhatsApp } from '../parsers/other';
 import { parseAddressFromTotalumToRedeable, parseTotalumShipment } from '../parsers/shipment';
 import { ensureFolderExists, uploadBase64FileToDrive } from '../services/googleDrive';
-import notifySlack, { sendWhatsappMessage } from '../services/notifier';
+import notifySlack, { searchRegexInWhatsappChat, sendWhatsappMessage } from '../services/notifier';
 import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
@@ -148,7 +148,9 @@ async function notifyShipmentClient(shipmentInfo: ExtendedTotalumShipment, notif
     const message = getShipmentNotifyMessage(shipmentInfo, notifyMessageType);
     const phoneNumber = parsePhoneNumberForWhatsApp(shipmentInfo.telefono);
 
-    await sendWhatsappMessage({ phoneNumber, message });
+    const alreadySent = await searchRegexInWhatsappChat(shipmentInfo.telefono, message);
+
+    if (!alreadySent) await sendWhatsappMessage({ phoneNumber, message });
   } catch (error) {
     notifySlack(`Error sending shipment notify whatsapp message: ${error}`);
   }
@@ -179,6 +181,8 @@ ${enlace_seguimiento}
   if (type === 'driver_in_route') {
     return `👋 Muy buenas, *${nombre_cliente}*
 
+📦 Se entregará el nuevo permiso de circulación con matrícula *${referencia}*
+
 👨‍✈️ El mensajero ya está de camino a su domicilio
 
 🏡 En las próximas horas tocará a su puerta`;
@@ -187,7 +191,7 @@ ${enlace_seguimiento}
   if (type === 'pickup') {
     return `👋 Muy buenas, *${nombre_cliente}*
 
-❌ Se ha hecho un intento de entrega del nuevo permiso de circulación, pero no había nadie en el domicilio
+❌ Se ha hecho un intento de entrega del nuevo permiso de circulación con matrícula *${referencia}*, pero no había nadie en el domicilio
 
 🏤 Ahora se encuentra en la oficina de Correos esperando a ser recogido
 

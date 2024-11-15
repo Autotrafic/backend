@@ -1,6 +1,7 @@
 import '../../loadEnvironment';
 import axios from 'axios';
 import { WWebChat, WWebMessage } from '../../interfaces/whatsapp';
+import { parsePhoneNumberForWhatsApp } from '../parsers/other';
 
 const backendNotifications = process.env.SLACK_BACKEND_NOTIFICATIONS_WEBHOOK_URL;
 const whatsMessagesWebhook = process.env.SLACK_WHATS_MESSAGES_WEBHOOK_URL;
@@ -39,6 +40,21 @@ export async function getWhatsappChatMessages(chatId: string): Promise<WWebMessa
     const response = await axios.get(endpoint);
 
     return response.data.messages;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function searchRegexInWhatsappChat(phoneNumber: string, searchString: string) {
+  const parsedPhoneNumber = parsePhoneNumberForWhatsApp(phoneNumber);
+
+  const endpoint = `${whatsappApi}/messages/search-regex`;
+  const options = { phoneNumber: parsedPhoneNumber, searchString };
+
+  try {
+    const response = await axios.post(endpoint, options);
+
+    return response.data?.existsEquivalences;
   } catch (error) {
     throw new Error(error);
   }
