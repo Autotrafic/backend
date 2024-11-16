@@ -13,8 +13,24 @@ import { catchControllerError } from '../../errors/generalError';
 import { getShipmentByOrderId } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
 import { sleep } from '../../utils/funcs';
+import { v4 as uuidv4 } from 'uuid';
 
-export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody, res: Response, next: NextFunction) {
+interface Progress {
+  progress: number;
+  total: number;
+  message: string;
+}
+
+const progressMap: Record<string, Progress> = {};
+
+export async function makeMultipleShipments(
+  req: MakeMultipleShipmentsImportBody,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const requestId = uuidv4(); // Unique identifier for progress tracking
+  progressMap[requestId] = { progress: 0, total: 0, message: '' };
+
   try {
     const { ordersId, isTest } = req.body;
 
@@ -22,29 +38,49 @@ export async function makeMultipleShipments(req: MakeMultipleShipmentsImportBody
     const shipments = await Promise.all(shipmentsPromises);
     const cleanedShipments = shipments.filter((shipment) => shipment !== undefined);
 
+    progressMap[requestId].total = cleanedShipments.length;
+
     checkEmptyShipments(cleanedShipments);
 
-    let labelsBase64 = [];
-    let message = '';
-    for (let totalumShipment of cleanedShipments) {
-      try {
-        const ones = await makeShipment({ totalumShipment, isTest });
-        labelsBase64.push(ones);
+    const labelsBase64: string[] = [];
 
-        sleep(500);
-      } catch (error) {
-        message = `${error.message}. Body: ${JSON.stringify(req.body)}`;
+    for (let i = 0; i < cleanedShipments.length; i++) {
+      const totalumShipment = cleanedShipments[i];
+
+      try {
+        const label = await makeShipment({ totalumShipment, isTest });
+        labelsBase64.push(label);
+
+        progressMap[requestId].progress = Math.round(((i + 1) / cleanedShipments.length) * 100);
+
+        await sleep(500);
+      } catch (error: any) {
+        progressMap[requestId].message = `${error.message}. Body: ${JSON.stringify(req.body)}`;
       }
     }
 
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
     await uploadMergedLabelsToDrive(mergedLabelsBase64);
 
-    res.status(200).json({ mergedLabelsBase64, message });
-  } catch (error) {
-    catchControllerError(error.message, `Error making multiple shipments ${error.message}`, req.body, next);
+    res.status(200).json({ requestId, mergedLabelsBase64, message: progressMap[requestId].message });
+  } catch (error: any) {
+    progressMap[requestId].message = `Error making multiple shipments: ${error.message}`;
+    catchControllerError(error.message, progressMap[requestId].message, req.body, next);
+  } finally {
+    delete progressMap[requestId];
   }
 }
+
+export const getProgress = (req: Request, res: Response): void => {
+  const { requestId } = req.query as { requestId: string };
+  if (progressMap[requestId]) {
+    res.json(progressMap[requestId]);
+  } else {
+    res.status(404).json({ message: 'Progress not found' });
+  }
+};
+
+
 
 export async function checkShipmentsAvailability(req: Request, res: Response, next: NextFunction) {
   try {

@@ -1,5 +1,3 @@
-import { Check, TCheck } from '../interfaces/checks';
-
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
