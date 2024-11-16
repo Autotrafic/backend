@@ -55,7 +55,7 @@ export const FIELD_CONDITIONS = {
       checkInfo: { title: 'El envío no contiene nº de teléfono', type: CheckType.BAD },
     },
     {
-      check: (value: string) => (value ? value.length <= 15 : true),
+      check: (value: string) => (value ? value.replace(/\s+/g, '').length <= 15 : true),
       checkInfo: { title: 'El nº de teléfono debe contener como máximo 15 caracteres', type: CheckType.BAD },
     },
     {
