@@ -40,6 +40,7 @@ export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): P
     direccion_envio: whatsappOrder.shipmentAddress,
     fecha_de_contacto: whatsappOrder.firstTouchDate,
     total_facturado: whatsappOrder.totalInvoiced,
+    mandatos: 'No enviados',
   };
 }
 
