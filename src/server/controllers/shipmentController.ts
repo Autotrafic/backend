@@ -8,7 +8,13 @@ import {
 import { parseTotalumShipment } from '../parsers/shipment';
 import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendcloud';
 import CustomError from '../../errors/CustomError';
-import { checkEmptyShipments, checkShipmentAvailability, handleParcelUpdate, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
+import {
+  checkEmptyShipments,
+  checkShipmentsAvailability as checkTShipmentsAvailability,
+  handleParcelUpdate,
+  makeShipment,
+  uploadMergedLabelsToDrive,
+} from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
 import { getExtendedShipmentById } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
@@ -21,6 +27,16 @@ interface Progress {
 }
 
 const progressMap: Record<string, Progress> = {};
+
+export const getProgress = (req: Request, res: Response): void => {
+  const { requestId } = req.query as { requestId: string };
+
+  if (progressMap[requestId]) {
+    res.json(progressMap[requestId]);
+  } else {
+    res.status(404).json({ message: 'Progress not found' });
+  }
+};
 
 export async function makeMultipleShipments(
   req: MakeMultipleShipmentsImportBody,
@@ -70,19 +86,9 @@ export async function makeMultipleShipments(
   }
 }
 
-export const getProgress = (req: Request, res: Response): void => {
-  const { requestId } = req.query as { requestId: string };
-  console.log(progressMap);
-  if (progressMap[requestId]) {
-    res.json(progressMap[requestId]);
-  } else {
-    res.status(404).json({ message: 'Progress not found' });
-  }
-};
-
 export async function checkShipmentsAvailability(req: Request, res: Response, next: NextFunction) {
   try {
-    const checks = await checkShipmentAvailability();
+    const checks = await checkTShipmentsAvailability();
 
     res
       .status(200)

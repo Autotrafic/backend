@@ -29,6 +29,7 @@ export interface TotalumOrder {
 export interface ExtendedTotalumOrder extends Omit<TotalumOrder, 'cliente'> {
   cliente: TClient;
   envio: ExtendedTotalumShipment[];
+  persona_relacionada: TRelatedPersonRelation[];
 }
 
 interface TotalumParsedOrder {

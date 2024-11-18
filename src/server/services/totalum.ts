@@ -23,8 +23,9 @@ export async function getTotalumOrderFromDatabaseOrderId(databaseOrderId: string
   return totalumOrder;
 }
 
-export async function getClientById(clientId: string) {
+export async function getClientById(clientId: string): Promise<TClient> {
   try {
+    if (!clientId) return;
     const clientResponse = await totalumSdk.crud.getItemById('cliente', clientId);
     return clientResponse.data.data;
   } catch (error) {
@@ -38,6 +39,30 @@ export async function getOrderById(orderId: string) {
     return clientResponse.data.data;
   } catch (error) {
     throw new Error(`Error fetching Totalum order by id. ${error}`);
+  }
+}
+
+export async function getExtendedOrderById(orderId: string): Promise<ExtendedTotalumOrder> {
+  const nestedQuery = {
+    pedido: {
+      tableFilter: {
+        filter: [
+          {
+            _id: orderId,
+          },
+        ],
+      },
+      cliente: {},
+      envio: {},
+      persona_relacionada: { cliente: {} },
+    },
+  };
+
+  try {
+    const response = await totalumSdk.crud.getNestedData(nestedQuery);
+    return response.data.data[0];
+  } catch (error) {
+    throw new Error(`Error fetching Totalum shipment by id. ${error}`);
   }
 }
 

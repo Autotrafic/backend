@@ -4,8 +4,8 @@ import { totalumOptions } from '../../utils/constants';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
-import { handleParcelUpdate } from '../handlers/shipment';
-import { getExtendedShipmentsByParcelId } from '../services/totalum';
+import { getExtendedOrderById } from '../services/totalum';
+import { createTaskByOrderFailedChecks } from '../handlers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -15,18 +15,9 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const updatedParcel = req.body;
+    const order = await createTaskByOrderFailedChecks('673b18cf4596c1b026f657f5');
 
-    if (updatedParcel.action !== 'parcel_status_changed') {
-      res.status(200).send('Webhook action type is not: parcel_status_changed');
-      return;
-    }
-
-    const parcel = updatedParcel.parcel;
-
-    await handleParcelUpdate(parcel);
-
-    res.status(200).json({ message: 'Sendcloud webhook processed successfully' });
+    res.status(200).json({ order });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });

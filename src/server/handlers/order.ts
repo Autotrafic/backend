@@ -2,17 +2,74 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { DatabaseOrder } from '../../database/models/Order/WebOrder';
 import { totalumOptions } from '../../utils/constants';
 import { OrderDetailsBodyWithId } from '../../interfaces/import/order';
-import { TotalumOrder } from '../../interfaces/totalum/pedido';
+import { ExtendedTotalumOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
 import {
   parseClientFromDatabaseToTotalum,
   parseOrderDetailsFromDatabaseToTotalum,
   parseRelatedPersonClientFromDatabaseToTotalum,
   parseShipmentFromDatabaseToTotalum,
 } from '../parsers/order';
-import { getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
+import { createTask, getClientById, getExtendedOrderById, getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
+import {
+  CLIENT_FIELD_CONDITIONS,
+  generateChecks,
+  ORDER_FIELD_CONDITIONS,
+  SHIPMENT_FIELD_CONDITIONS,
+} from '../../utils/checks';
+import { Check } from '../../interfaces/checks';
+import { TTaskState } from '../../interfaces/enums';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
+
+export async function checkTOrderCompletion(orderId: string) {
+  const extendedOrder = await getExtendedOrderById(orderId);
+  const relatedPersonClient = await getClientById(extendedOrder.persona_relacionada?.[0]?.cliente?._id);
+  const client = extendedOrder.cliente;
+  const shipment = extendedOrder.envio[0];
+
+  const orderChecks = generateChecks(extendedOrder, ORDER_FIELD_CONDITIONS);
+  const clientChecks = generateChecks(client, CLIENT_FIELD_CONDITIONS);
+  const shipmentChecks = generateChecks(shipment, SHIPMENT_FIELD_CONDITIONS);
+  const relatedPersonChecks = generateChecks(relatedPersonClient, CLIENT_FIELD_CONDITIONS);
+
+  return { extendedOrder, orderChecks, clientChecks, shipmentChecks, relatedPersonChecks };
+}
+
+export async function createTaskByOrderFailedChecks(orderId: string) {
+  const { extendedOrder, orderChecks, clientChecks, shipmentChecks, relatedPersonChecks } = await checkTOrderCompletion(
+    orderId
+  );
+
+  const formatFailedChecks = (entityName: string, checks: { failedChecks: Check[] }): string => {
+    if (checks.failedChecks.length === 0) {
+      return '';
+    }
+
+    const failedProps = checks.failedChecks
+      .map((check) => check.propertyChecked)
+      .filter(Boolean)
+      .join(', ');
+
+    return `- ${entityName} (${failedProps})`;
+  };
+
+  const formattedOrder = formatFailedChecks('Pedido', orderChecks);
+  const formattedClient = formatFailedChecks('Cliente', clientChecks);
+  const formattedRelatedPerson = formatFailedChecks('Persona relacionada', relatedPersonChecks);
+  const formattedShipment = formatFailedChecks('Envio', shipmentChecks);
+
+  const checksText = [formattedOrder, formattedClient, formattedRelatedPerson, formattedShipment].filter(Boolean).join('\n');
+  const taskDescription = `Completar Totalum:\n${checksText}`;
+
+  const taskOptions = {
+    state: TTaskState.Pending,
+    description: taskDescription,
+    url: extendedOrder.documentos,
+    title: extendedOrder.matricula,
+  };
+  await createTask(taskOptions);
+}
 
 export async function updateTotalumOrderFromDocumentsDetails(
   databaseOrder: DatabaseOrder,

@@ -1,4 +1,4 @@
-import { Check, CheckType, TCheck } from '../../interfaces/checks';
+import { TCheck } from '../../interfaces/checks';
 import {
   autonomousCommunityMap,
   AutonomousCommunityValue,
@@ -7,7 +7,7 @@ import {
 } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
 import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
-import { FIELD_CONDITIONS, handleOrdersWithWrongNumberOfShipments } from '../../utils/checks';
+import { SHIPMENT_FIELD_CONDITIONS, handleOrdersWithWrongNumberOfShipments, generateChecks } from '../../utils/checks';
 import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
 import { getActualDay, getMonthNameInSpanish } from '../../utils/funcs';
 import { getDriveFolderIdFromLink } from '../parsers/order';
@@ -19,7 +19,6 @@ import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
 import {
-  getExtendedShipmentById,
   getExtendedShipmentsByParcelId,
   getOrdersPendingToShip,
   updateOrderById,
@@ -28,7 +27,7 @@ import {
 
 type NotifyMessageType = 'sent' | 'driver_in_route' | 'pickup';
 
-export async function checkShipmentAvailability(): Promise<{ passedChecks: TCheck[]; failedChecks: TCheck[] }> {
+export async function checkShipmentsAvailability(): Promise<{ passedChecks: TCheck[]; failedChecks: TCheck[] }> {
   const passedChecks: TCheck[] = [];
   const failedChecks: TCheck[] = [];
 
@@ -45,26 +44,7 @@ export async function checkShipmentAvailability(): Promise<{ passedChecks: TChec
     .filter((shipment, index, self) => index === self.findIndex((s) => s._id === shipment._id));
 
   shipments.forEach((shipment) => {
-    const shipmentChecks: Check[] = [];
-    let hasError = false;
-
-    for (const [field, conditions] of Object.entries(FIELD_CONDITIONS)) {
-      const fieldValue = shipment[field as keyof TotalumShipment];
-
-      conditions.forEach(({ check, checkInfo }) => {
-        if (!check(fieldValue as string)) {
-          shipmentChecks.push(checkInfo);
-          hasError = true;
-        }
-      });
-    }
-
-    if (!hasError) {
-      shipmentChecks.push({ title: 'El pedido está listo para enviar', type: CheckType.GOOD });
-    }
-
-    const passed = shipmentChecks.filter((check) => check.type === CheckType.GOOD);
-    const failed = shipmentChecks.filter((check) => check.type !== CheckType.GOOD);
+    const { passedChecks: passed, failedChecks: failed } = generateChecks(shipment, SHIPMENT_FIELD_CONDITIONS);
 
     if (passed.length > 0) {
       passedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: passed });

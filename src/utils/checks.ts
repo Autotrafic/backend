@@ -1,5 +1,34 @@
-import { CheckType, TCheck } from '../interfaces/checks';
 import { ExtendedTotalumOrder } from '../interfaces/totalum/pedido';
+import { Check, CheckCondition, CheckType, TCheck } from '../interfaces/checks';
+
+
+export function generateChecks<T>(
+  entity: T,
+  fieldConditions: Record<string, CheckCondition[]>
+): { hasError: boolean; passedChecks: Check[]; failedChecks: Check[] } {
+  const checks: Check[] = [];
+  let hasError = false;
+
+  for (const [field, conditions] of Object.entries(fieldConditions)) {
+    const fieldValue = entity[field as keyof T];
+
+    conditions.forEach(({ check, checkInfo }) => {
+      if (!check(fieldValue as string)) {
+        checks.push({ ...checkInfo, propertyChecked: field });
+        hasError = true;
+      }
+    });
+  }
+
+  if (!hasError) {
+    checks.push({ title: `Ha pasado todas las revisiones correctamente`, type: CheckType.GOOD });
+  }
+
+  const passedChecks = checks.filter((check) => check.type === CheckType.GOOD);
+  const failedChecks = checks.filter((check) => check.type !== CheckType.GOOD);
+
+  return { hasError, passedChecks, failedChecks };
+}
 
 export function handleOrdersWithWrongNumberOfShipments(
   failedChecks: TCheck[],
@@ -23,7 +52,97 @@ export function handleOrdersWithWrongNumberOfShipments(
   }
 }
 
-export const FIELD_CONDITIONS = {
+export const ORDER_FIELD_CONDITIONS = {
+  comunidad_autonoma: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Comunidad Autónoma', type: CheckType.BAD },
+    },
+  ],
+  estado: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Estado', type: CheckType.BAD },
+    },
+  ],
+  tipo: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Tipo de trámite', type: CheckType.BAD },
+    },
+  ],
+  fecha_inicio: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Fecha Inicio', type: CheckType.BAD },
+    },
+  ],
+  matricula: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Matricula', type: CheckType.BAD },
+    },
+  ],
+  documentos: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Documentos', type: CheckType.BAD },
+    },
+  ],
+  fecha_de_contacto: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Fecha de Contacto', type: CheckType.BAD },
+    },
+  ],
+  total_facturado: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Total Facturado', type: CheckType.BAD },
+    },
+  ],
+  mandatos: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El pedido no contiene Mandatos', type: CheckType.BAD },
+    },
+  ],
+};
+
+export const CLIENT_FIELD_CONDITIONS = {
+  nif: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El cliente no contiene NIF', type: CheckType.BAD },
+    },
+  ],
+  tipo: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El cliente no contiene Tipo', type: CheckType.BAD },
+    },
+  ],
+  nombre_o_razon_social: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El cliente no contiene Nombre o Razón Social', type: CheckType.BAD },
+    },
+  ],
+  primer_apellido: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El cliente no contiene Primer Apellido', type: CheckType.BAD },
+    },
+  ],
+  telefono: [
+    {
+      check: (value: string) => !!value,
+      checkInfo: { title: 'El cliente no contiene Telefono', type: CheckType.BAD },
+    },
+  ],
+};
+
+export const SHIPMENT_FIELD_CONDITIONS = {
   nombre_cliente: [
     {
       check: (value: string) => !!value,
