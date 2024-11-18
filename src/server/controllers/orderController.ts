@@ -220,13 +220,7 @@ export async function updateDriveDocumentsOfTotalumOrder(
 
     await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
 
-    const createTaskOptions = {
-      state: TTaskState.Pending,
-      description: 'Completar Totalum',
-      url: driveFolderUrl,
-      title: totalumOrder.matricula,
-    };
-    await createTask(createTaskOptions);
+    await createTaskByOrderFailedChecks(totalumOrderId);
 
     res.status(200).json({
       success: true,
