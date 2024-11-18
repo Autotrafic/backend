@@ -1,6 +1,6 @@
 import { ExtendedTotalumOrder } from '../interfaces/totalum/pedido';
 import { Check, CheckCondition, CheckType, TCheck } from '../interfaces/checks';
-
+import { TOrderState } from '../interfaces/enums';
 
 export function generateChecks<T>(
   entity: T | null | undefined,
@@ -47,7 +47,6 @@ export function generateChecks<T>(
   return { hasError, passedChecks, failedChecks };
 }
 
-
 export function handleOrdersWithWrongNumberOfShipments(
   failedChecks: TCheck[],
   ordersWithoutShipment: ExtendedTotalumOrder[],
@@ -81,6 +80,11 @@ export const ORDER_FIELD_CONDITIONS = {
     {
       check: (value: string) => !!value,
       checkInfo: { title: 'El pedido no contiene Estado', type: CheckType.BAD },
+    },
+    {
+      check: (value: string) =>
+        value ? value !== TOrderState.NuevoPedidoWeb && value !== TOrderState.NuevoPedidoWhatsapp : true,
+      checkInfo: { title: 'El estado del pedido debe actualizarse', type: CheckType.BAD },
     },
   ],
   tipo: [
