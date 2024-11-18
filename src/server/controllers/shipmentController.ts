@@ -10,10 +10,9 @@ import { requestSendcloudLabel, getSendcloudPdfLabel } from '../services/sendclo
 import CustomError from '../../errors/CustomError';
 import { checkEmptyShipments, checkShipmentAvailability, handleParcelUpdate, makeShipment, uploadMergedLabelsToDrive } from '../handlers/shipment';
 import { catchControllerError } from '../../errors/generalError';
-import { getShipmentByOrderId } from '../services/totalum';
+import { getExtendedShipmentById } from '../services/totalum';
 import { mergePdfFromBase64Strings } from '../parsers/file';
 import { sleep } from '../../utils/funcs';
-import { v4 as uuidv4 } from 'uuid';
 
 interface Progress {
   progress: number;
@@ -28,13 +27,13 @@ export async function makeMultipleShipments(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const requestId = uuidv4(); // Unique identifier for progress tracking
+  const requestId = 'make_multiple_shipments';
   progressMap[requestId] = { progress: 0, total: 0, message: '' };
 
   try {
-    const { ordersId, isTest } = req.body;
+    const { shipmentsId, isTest } = req.body;
 
-    const shipmentsPromises = ordersId.map((plate) => getShipmentByOrderId(plate));
+    const shipmentsPromises = shipmentsId.map((shipmentId) => getExtendedShipmentById(shipmentId));
     const shipments = await Promise.all(shipmentsPromises);
     const cleanedShipments = shipments.filter((shipment) => shipment !== undefined);
 
@@ -73,14 +72,13 @@ export async function makeMultipleShipments(
 
 export const getProgress = (req: Request, res: Response): void => {
   const { requestId } = req.query as { requestId: string };
+  console.log(progressMap);
   if (progressMap[requestId]) {
     res.json(progressMap[requestId]);
   } else {
     res.status(404).json({ message: 'Progress not found' });
   }
 };
-
-
 
 export async function checkShipmentsAvailability(req: Request, res: Response, next: NextFunction) {
   try {

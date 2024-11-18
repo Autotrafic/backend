@@ -101,13 +101,12 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
     const trackingNumber = parcel.tracking_number;
     const trackingUrl = await shortUrl(parcel?.tracking_url);
 
-    // await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl, sendcloudParcelId: parcelId });
+    await updateTotalumOrderWhenShipped(totalumShipment, { trackingNumber, trackingUrl, sendcloudParcelId: parcelId });
 
     const pdfLabelBuffer = await getSendcloudPdfLabel(parcelId);
     const labelBase64 = Buffer.from(pdfLabelBuffer).toString('base64');
 
-    const extendedShipment = await getExtendedShipmentById(totalumShipment._id);
-    const shipmentOrders = extendedShipment.pedido;
+    const shipmentOrders = totalumShipment.pedido;
 
     const uploadLabelPromises = shipmentOrders.map((order) => {
       const folderId = getDriveFolderIdFromLink(order.documentos);

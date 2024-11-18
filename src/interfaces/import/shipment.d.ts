@@ -14,7 +14,7 @@ export interface GetPdfLabelBody extends Request {
 }
 
 interface MakeMultipleShipmentsImport {
-  ordersId: string[];
+  shipmentsId: string[];
   isTest: boolean;
 }
 
