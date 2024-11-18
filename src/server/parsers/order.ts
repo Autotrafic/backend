@@ -70,6 +70,7 @@ export function parseShipmentFromDatabaseToTotalum(
   const { address, postalCode, city } = orderDetails.shipmentAddress;
 
   return {
+    referencia: orderDetails.vehiclePlate,
     direccion: address,
     codigo_postal: postalCode,
     localidad: city,
