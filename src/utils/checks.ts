@@ -3,11 +3,28 @@ import { Check, CheckCondition, CheckType, TCheck } from '../interfaces/checks';
 
 
 export function generateChecks<T>(
-  entity: T,
+  entity: T | null | undefined,
   fieldConditions: Record<string, CheckCondition[]>
 ): { hasError: boolean; passedChecks: Check[]; failedChecks: Check[] } {
   const checks: Check[] = [];
   let hasError = false;
+
+  if (!entity) {
+    Object.keys(fieldConditions).forEach((field) => {
+      checks.push({
+        propertyChecked: field,
+        title: `El campo ${field} no está disponible`,
+        type: CheckType.BAD,
+      });
+    });
+    hasError = true;
+
+    return {
+      hasError,
+      passedChecks: [],
+      failedChecks: checks,
+    };
+  }
 
   for (const [field, conditions] of Object.entries(fieldConditions)) {
     const fieldValue = entity[field as keyof T];
@@ -29,6 +46,7 @@ export function generateChecks<T>(
 
   return { hasError, passedChecks, failedChecks };
 }
+
 
 export function handleOrdersWithWrongNumberOfShipments(
   failedChecks: TCheck[],
