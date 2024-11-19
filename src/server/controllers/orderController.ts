@@ -16,7 +16,7 @@ import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
 import { createExtendedOrderByWhatsappOrder, createTask } from '../services/totalum';
 import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
-import { createTaskByOrderFailedChecks, updateTotalumOrderFromDocumentsDetails } from '../handlers/order';
+import { updateTotalumOrderFromDocumentsDetails } from '../handlers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -115,8 +115,15 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
       await uploadStreamFileToDrive(file, orderFolderId);
     }
 
-    const newOrderId = await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
-    await createTaskByOrderFailedChecks(newOrderId);
+    await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
+
+    const createTaskOptions = {
+      state: TTaskState.Pending,
+      description: 'Completar Totalum',
+      url: folderUrl,
+      title: whatsappOrder.vehiclePlate,
+    };
+    await createTask(createTaskOptions);
 
     res.status(201).json({
       success: true,
@@ -220,7 +227,13 @@ export async function updateDriveDocumentsOfTotalumOrder(
 
     await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
 
-    await createTaskByOrderFailedChecks(totalumOrderId);
+    const createTaskOptions = {
+      state: TTaskState.Pending,
+      description: 'Completar Totalum',
+      url: driveFolderUrl,
+      title: totalumOrder.matricula,
+    };
+    await createTask(createTaskOptions);
 
     res.status(200).json({
       success: true,
