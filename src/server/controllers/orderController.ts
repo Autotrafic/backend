@@ -11,7 +11,7 @@ import {
 } from '../../interfaces/import/order';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import { parseOrderFromWebToTotalum } from '../parsers/order';
+import { parseOrderFromWebToTotalum, parseRegisterWhatsappOrderBody } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
 import { createTask } from '../services/totalum';
@@ -103,8 +103,9 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
 
 export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
   try {
-    const whatsappOrder = JSON.parse(JSON.stringify(req.body));
+    const whatsappOrder = { ...req.body };
     const files = req.files as Express.Multer.File[];
+    parseRegisterWhatsappOrderBody(whatsappOrder);
 
     const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
     await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);

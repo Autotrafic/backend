@@ -115,3 +115,18 @@ export function getDriveFolderIdFromLink(driveLink: string): string {
   const pathSegments = url.pathname.split('/');
   return pathSegments.pop() || '';
 }
+
+export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
+  if (typeof whatsappOrder.firstTouchDate === 'string') {
+    whatsappOrder.firstTouchDate = new Date(whatsappOrder.firstTouchDate);
+  }
+  if (typeof whatsappOrder.shipmentAddress === 'string') {
+    whatsappOrder.shipmentAddress = JSON.parse(whatsappOrder.shipmentAddress);
+  }
+  if (typeof whatsappOrder.buyer === 'string') {
+    whatsappOrder.buyer = JSON.parse(whatsappOrder.buyer);
+  }
+  if (typeof whatsappOrder.seller === 'string') {
+    whatsappOrder.seller = JSON.parse(whatsappOrder.seller);
+  }
+}
