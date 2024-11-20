@@ -1,6 +1,11 @@
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
 import { DatabaseOrder, WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
-import { autonomousCommunityMap, AutonomousCommunityValue, reverseAutonomousCommunityMap } from '../../interfaces/enums';
+import {
+  autonomousCommunityMap,
+  AutonomousCommunityValue,
+  reverseAutonomousCommunityMap,
+  TOrderState,
+} from '../../interfaces/enums';
 import { OrderDetailsBody, WhatsappOrder } from '../../interfaces/import/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import { TAutonomousCommunity, TotalumOrder } from '../../interfaces/totalum/pedido';
@@ -35,10 +40,15 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
 }
 
 export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
+  const { orderType, totalInvoiced, autonomousCommunity, vehiclePlate, firstTouchDate } = whatsappOrder;
+  
   return {
-    matricula: whatsappOrder.vehiclePlate,
-    fecha_de_contacto: whatsappOrder.firstTouchDate,
-    total_facturado: whatsappOrder.totalInvoiced,
+    tipo: orderType,
+    estado: totalInvoiced === 129.95 ? TOrderState.PendienteTramitarA9 : TOrderState.PendientePagoITP,
+    comunidad_autonoma: autonomousCommunity,
+    matricula: vehiclePlate,
+    fecha_de_contacto: firstTouchDate,
+    total_facturado: totalInvoiced,
     mandatos: 'No enviados',
   };
 }

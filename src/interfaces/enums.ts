@@ -84,6 +84,26 @@ export const autonomousCommunityMap: Record<AutonomousCommunityValue, TAutonomou
   [AutonomousCommunityValue.VALENCIA]: 'Valencia',
 };
 
+export enum AutonomousCommunity {
+  Andalucia = 'Andalucía',
+  Aragon = 'Aragón',
+  Asturias = 'Asturias',
+  Canarias = 'Canarias',
+  Cantabria = 'Cantabria',
+  CastillaLaMancha = 'Castilla la Mancha',
+  CastillaLeon = 'Castilla y León',
+  Cataluna = 'Cataluña',
+  Extremadura = 'Extremadura',
+  Galicia = 'Galicia',
+  IslasBaleares = 'Baleares',
+  LaRioja = 'La Rioja',
+  Madrid = 'Madrid',
+  Murcia = 'Murcia',
+  Navarra = 'Navarra',
+  PaisVasco = 'País Vasco',
+  Valencia = 'Valencia',
+}
+
 export enum TOrderState {
   PendienteTramitarA9 = 'Pendiente Tramitar A9',
   PendienteEntregaTrafic = 'Pendiente Entrega Tráfico',

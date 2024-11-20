@@ -179,7 +179,6 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
       cliente: newClientId,
       estado: TOrderState.NuevoPedidoWhatsapp,
       fecha_inicio: getCurrentOrNextMonday(),
-      tipo: whatsappOrder.orderType,
       documentos: folderUrl,
     });
     const newOrderId = orderResponse.data.data.insertedId;
@@ -193,14 +192,6 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
       cliente: newRelatedPersonClientId,
       pedido: newOrderId,
     });
-
-    const createTaskOptions = {
-      state: TTaskState.Pending,
-      description: 'Completar Totalum',
-      url: folderUrl,
-      title: whatsappOrder.vehiclePlate,
-    };
-    await createTask(createTaskOptions);
 
     return newOrderId;
   } catch (error) {

@@ -118,8 +118,8 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
     console.log(error);
     const finalError = new CustomError(
       400,
-      `Error creating totalum order. ${error}`,
-      `Error creating totalum order.
+      `Error registering whatsapp order. ${error}`,
+      `Error registering whatsapp order.
       ${error}.
 
       Body: ${JSON.stringify(req.body)}`
