@@ -166,7 +166,6 @@ export async function uploadWhatsappOrderFilesToDrive(
 
 export async function createExtendedOrderByWhatsappOrder(whatsappOrder: WhatsappOrder, folderUrl: string): Promise<string> {
   try {
-    console.log('one', whatsappOrder);
     const order = parseOrderFromWhatsappToTotalum(whatsappOrder);
     const client = parseClientFromWhatsappToTotalum(whatsappOrder);
     const relatedPersonClient = parseRelatedPersonFromWhatsappToTotalum(whatsappOrder);

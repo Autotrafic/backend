@@ -35,7 +35,6 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
 }
 
 export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
-  console.log('tow', whatsappOrder);
   return {
     matricula: whatsappOrder.vehiclePlate,
     fecha_de_contacto: whatsappOrder.firstTouchDate,
