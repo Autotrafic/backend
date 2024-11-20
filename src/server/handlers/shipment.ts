@@ -25,7 +25,7 @@ import {
   updateShipmentById,
 } from '../services/totalum';
 
-type NotifyMessageType = 'sent' | 'driver_in_route' | 'pickup';
+type NotifyMessageType = 'sent' | 'pickup';
 
 export async function checkShipmentsAvailability(): Promise<{ passedChecks: TCheck[]; failedChecks: TCheck[] }> {
   const passedChecks: TCheck[] = [];
@@ -156,16 +156,6 @@ ${enlace_seguimiento}
 ☀️ Le deseamos un buen día`;
   }
 
-  if (type === 'driver_in_route') {
-    return `👋 Muy buenas, *${nombre_cliente}*
-
-📦 Se entregará el nuevo permiso de circulación con matrícula *${referencia}*
-
-👨🏻‍✈️ El mensajero ya está de camino a su domicilio
-
-🏠 Entre hoy y mañana tocará a su puerta`;
-  }
-
   if (type === 'pickup') {
     return `👋 Muy buenas, *${nombre_cliente}*
 
@@ -186,10 +176,6 @@ export async function handleParcelUpdate(updatedParcel: ParcelResponse) {
   for (let shipment of extendedShipments) {
     if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.AT_SORTING_CENTRE.id) {
       await notifyShipmentClient(shipment, 'sent');
-    }
-
-    if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.DRIVER_EN_ROUTE.id) {
-      await notifyShipmentClient(shipment, 'driver_in_route');
     }
 
     if (updatedParcel.status.id === SENDCLOUD_SHIP_STATUSES.AWAITING_CUSTOMER_PICKUP.id) {

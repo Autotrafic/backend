@@ -342,6 +342,14 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
       pedido: newOrderId,
     });
 
+    const createTaskOptions = {
+      state: TTaskState.Pending,
+      description: 'Completar Totalum',
+      url: folderUrl,
+      title: whatsappOrder.vehiclePlate,
+    };
+    await createTask(createTaskOptions);
+
     return newOrderId;
   } catch (error) {
     throw new Error(`Error creating extended order by whatsapp order. ${error}`);

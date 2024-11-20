@@ -10,13 +10,12 @@ import {
   UpdateTotalumOrderByDocumentsDetailsBody,
 } from '../../interfaces/import/order';
 import { TotalumApiSdk } from 'totalum-api-sdk';
-import { EXPEDIENTES_DRIVE_FOLDER_ID, totalumOptions } from '../../utils/constants';
+import { totalumOptions } from '../../utils/constants';
 import { parseOrderFromWebToTotalum } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
 import { createExtendedOrderByWhatsappOrder, createTask } from '../services/totalum';
-import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
-import { updateTotalumOrderFromDocumentsDetails } from '../handlers/order';
+import { updateTotalumOrderFromDocumentsDetails, uploadWhatsappOrderFilesToDrive } from '../handlers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -103,27 +102,8 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
     const whatsappOrder = req.body;
     const files = req.files as Express.Multer.File[];
 
-    if (!files || files.length === 0) {
-      res.status(400).send(`No file uploaded. Files: ${files}`);
-      return;
-    }
-
-    const orderFolderId = await getOrderFolder(whatsappOrder.vehiclePlate, EXPEDIENTES_DRIVE_FOLDER_ID);
-    const folderUrl = `https://drive.google.com/drive/folders/${orderFolderId}`;
-
-    for (const file of files) {
-      await uploadStreamFileToDrive(file, orderFolderId);
-    }
-
+    const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
     await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
-
-    const createTaskOptions = {
-      state: TTaskState.Pending,
-      description: 'Completar Totalum',
-      url: folderUrl,
-      title: whatsappOrder.vehiclePlate,
-    };
-    await createTask(createTaskOptions);
 
     res.status(201).json({
       success: true,

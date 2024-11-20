@@ -1,15 +1,15 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { DatabaseOrder } from '../../database/models/Order/WebOrder';
-import { totalumOptions } from '../../utils/constants';
-import { OrderDetailsBodyWithId } from '../../interfaces/import/order';
-import { ExtendedTotalumOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
+import { EXPEDIENTES_DRIVE_FOLDER_ID, totalumOptions } from '../../utils/constants';
+import { OrderDetailsBodyWithId, WhatsappOrder } from '../../interfaces/import/order';
+import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import {
   parseClientFromDatabaseToTotalum,
   parseOrderDetailsFromDatabaseToTotalum,
   parseRelatedPersonClientFromDatabaseToTotalum,
   parseShipmentFromDatabaseToTotalum,
 } from '../parsers/order';
-import { createTask, getClientById, getExtendedOrderById, getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
+import { getClientById, getExtendedOrderById, getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import {
   CLIENT_FIELD_CONDITIONS,
@@ -18,33 +18,14 @@ import {
   SHIPMENT_FIELD_CONDITIONS,
 } from '../../utils/checks';
 import { Check } from '../../interfaces/checks';
-import { TTaskState } from '../../interfaces/enums';
+import { getOrderFolder, uploadAdditionalInformationFile, uploadStreamFileToDrive } from '../services/googleDrive';
+import { createTextFile } from '../../utils/file';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
-export async function checkTOrderCompletion(orderId: string) {
+export async function generateTextByOrderFailedChecks(orderId: string): Promise<string> {
   try {
-    const extendedOrder = await getExtendedOrderById(orderId);
-    const relatedPersonClient = await getClientById(extendedOrder.persona_relacionada?.[0]?.cliente?._id);
-    const client = extendedOrder.cliente;
-    const shipment = extendedOrder?.envio?.[0];
-
-    const orderChecks = generateChecks(extendedOrder, ORDER_FIELD_CONDITIONS);
-    const clientChecks = generateChecks(client, CLIENT_FIELD_CONDITIONS);
-    const shipmentChecks = generateChecks(shipment, SHIPMENT_FIELD_CONDITIONS);
-    const relatedPersonChecks = generateChecks(relatedPersonClient, CLIENT_FIELD_CONDITIONS);
-
-    return { extendedOrder, orderChecks, clientChecks, shipmentChecks, relatedPersonChecks };
-  } catch (error) {
-    throw new Error(`Error while getting checks for Totalum order completion. ${error.message}`);
-  }
-}
-
-export async function createTaskByOrderFailedChecks(orderId: string) {
-  try {
-    const { extendedOrder, orderChecks, clientChecks, shipmentChecks, relatedPersonChecks } = await checkTOrderCompletion(
-      orderId
-    );
+    const { orderChecks, clientChecks, shipmentChecks, relatedPersonChecks } = await checkTOrderCompletion(orderId);
 
     const formatFailedChecks = (entityName: string, checks: { failedChecks: Check[] }): string => {
       if (checks?.failedChecks?.length > 0) {
@@ -66,18 +47,30 @@ export async function createTaskByOrderFailedChecks(orderId: string) {
 
     const checksText = [formattedOrder, formattedClient, formattedRelatedPerson, formattedShipment]
       .filter(Boolean)
-      .join('\n');
-    const taskDescription = `Completar Totalum:\n${checksText}`;
+      .join('\n\n');
+    const result = `Completar Totalum:\n\n${checksText}`;
 
-    const taskOptions = {
-      state: TTaskState.Pending,
-      description: taskDescription,
-      url: extendedOrder.documentos,
-      title: extendedOrder.matricula,
-    };
-    await createTask(taskOptions);
+    return result;
   } catch (error) {
     throw new Error(`Error creating task by order failed checks. ${error.message}`);
+  }
+}
+
+async function checkTOrderCompletion(orderId: string) {
+  try {
+    const extendedOrder = await getExtendedOrderById(orderId);
+    const relatedPersonClient = await getClientById(extendedOrder.persona_relacionada?.[0]?.cliente?._id);
+    const client = extendedOrder.cliente;
+    const shipment = extendedOrder?.envio?.[0];
+
+    const orderChecks = generateChecks(extendedOrder, ORDER_FIELD_CONDITIONS);
+    const clientChecks = generateChecks(client, CLIENT_FIELD_CONDITIONS);
+    const shipmentChecks = generateChecks(shipment, SHIPMENT_FIELD_CONDITIONS);
+    const relatedPersonChecks = generateChecks(relatedPersonClient, CLIENT_FIELD_CONDITIONS);
+
+    return { extendedOrder, orderChecks, clientChecks, shipmentChecks, relatedPersonChecks };
+  } catch (error) {
+    throw new Error(`Error while getting checks for Totalum order completion. ${error.message}`);
   }
 }
 
@@ -150,4 +143,30 @@ async function updateTotalumOrderByDocumentsDetails(
   };
 
   await totalumSdk.crud.editItemById('pedido', totalumOrder._id, update);
+}
+
+export async function uploadWhatsappOrderFilesToDrive(
+  whatsappOrder: WhatsappOrder,
+  files: Express.Multer.File[]
+): Promise<string> {
+  if (!files || files.length === 0) {
+    return null;
+  }
+
+  const orderFolderId = await getOrderFolder(whatsappOrder.vehiclePlate, EXPEDIENTES_DRIVE_FOLDER_ID);
+  const folderUrl = `https://drive.google.com/drive/folders/${orderFolderId}`;
+
+  for (const file of files) {
+    await uploadStreamFileToDrive(file, orderFolderId);
+  }
+
+  const textFileString = `Teléfono comprador: ${whatsappOrder.buyerPhoneNumber}
+
+  Teléfono vendedor: ${whatsappOrder.sellerPhoneNumber}
+  `;
+
+  const textFile = await createTextFile(textFileString);
+  await uploadStreamFileToDrive(textFile as Express.Multer.File, orderFolderId);
+
+  return folderUrl;
 }

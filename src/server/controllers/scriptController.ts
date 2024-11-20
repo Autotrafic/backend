@@ -5,7 +5,8 @@ import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
 import { getExtendedOrderById } from '../services/totalum';
-import { createTaskByOrderFailedChecks } from '../handlers/order';
+import { generateTextByOrderFailedChecks } from '../handlers/order';
+import { searchRegexInWhatsappChat } from '../services/notifier';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -15,9 +16,17 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const order = await createTaskByOrderFailedChecks('673b18cf4596c1b026f657f5');
+    const message = `👋 Muy buenas, *Fernando Gabriel Gauna*
 
-    res.status(200).json({ order });
+📦 Se entregará el nuevo permiso de circulación con matrícula *0361HSZ*
+
+👨🏻‍✈️ El mensajero ya está de camino a su domicilio
+
+🏠 Entre hoy y mañana tocará a su puerta`;
+
+    const alreadySent = await searchRegexInWhatsappChat('34622599876', message);
+
+    res.status(200).json({ alreadySent });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });
