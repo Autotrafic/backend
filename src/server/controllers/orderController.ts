@@ -103,7 +103,7 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
 
 export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Response, next: NextFunction) {
   try {
-    const whatsappOrder = req.body;
+    const whatsappOrder = JSON.parse(JSON.stringify(req.body));
     const files = req.files as Express.Multer.File[];
 
     const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
