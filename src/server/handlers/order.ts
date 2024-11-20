@@ -6,10 +6,11 @@ import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import {
   parseClientFromDatabaseToTotalum,
   parseOrderDetailsFromDatabaseToTotalum,
+  parseOrderFromWhatsappToTotalum,
   parseRelatedPersonClientFromDatabaseToTotalum,
   parseShipmentFromDatabaseToTotalum,
 } from '../parsers/order';
-import { getClientById, getExtendedOrderById, getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
+import { createTask, createTotalumShipmentAndLinkToOrder, getClientById, getExtendedOrderById, getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import {
   CLIENT_FIELD_CONDITIONS,
@@ -20,6 +21,10 @@ import {
 import { Check } from '../../interfaces/checks';
 import { getOrderFolder, uploadAdditionalInformationFile, uploadStreamFileToDrive } from '../services/googleDrive';
 import { createTextFile } from '../../utils/file';
+import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
+import { parseShipmentFromWhatsappToTotalum } from '../parsers/shipment';
+import { TOrderState, TTaskState } from '../../interfaces/enums';
+import { getCurrentOrNextMonday } from '../../utils/funcs';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -89,7 +94,7 @@ export async function updateTotalumOrderFromDocumentsDetails(
 
   const newClientId = await createTotalumClientByDocumentsDetails(client);
   await createTotalumRelatedPersonByDocumentsDetails(relatedPersonClient, totalumOrder);
-  await createTotalumShipmentByDocumentsDetails(shipment, totalumOrder);
+  await createTotalumShipmentAndLinkToOrder(shipment, totalumOrder._id);
 
   await updateTotalumOrderByDocumentsDetails(totalumOrder, orderUpdate, newClientId);
 }
@@ -115,18 +120,6 @@ async function createTotalumRelatedPersonByDocumentsDetails(
   const newRelatedPersonId = relatedPersonResponse.data.data.insertedId;
 
   return newRelatedPersonId;
-}
-
-async function createTotalumShipmentByDocumentsDetails(
-  shipment: Partial<TotalumShipment>,
-  totalumOrder: TotalumOrder
-): Promise<string> {
-  const shipmentResponse = await totalumSdk.crud.createItem('envio', shipment);
-  const newShipmentId = shipmentResponse.data.data.insertedId;
-
-  await totalumSdk.crud.addManyToManyReferenceItem('envio', newShipmentId, 'pedido', totalumOrder._id);
-
-  return newShipmentId;
 }
 
 async function updateTotalumOrderByDocumentsDetails(
@@ -160,13 +153,57 @@ export async function uploadWhatsappOrderFilesToDrive(
     await uploadStreamFileToDrive(file, orderFolderId);
   }
 
-  const textFileString = `Teléfono comprador: ${whatsappOrder.buyerPhoneNumber}
+  const textFileString = `Teléfono comprador: ${whatsappOrder.buyer.phoneNumber}
 
-  Teléfono vendedor: ${whatsappOrder.sellerPhoneNumber}
+  Teléfono vendedor: ${whatsappOrder.seller.phoneNumber}
   `;
 
   const textFile = await createTextFile(textFileString);
   await uploadStreamFileToDrive(textFile as Express.Multer.File, orderFolderId);
 
   return folderUrl;
+}
+
+export async function createExtendedOrderByWhatsappOrder(whatsappOrder: WhatsappOrder, folderUrl: string): Promise<string> {
+  try {
+    const order = parseOrderFromWhatsappToTotalum(whatsappOrder);
+    const client = parseClientFromWhatsappToTotalum(whatsappOrder);
+    const relatedPersonClient = parseRelatedPersonFromWhatsappToTotalum(whatsappOrder);
+    const shipment = parseShipmentFromWhatsappToTotalum(whatsappOrder);
+
+    const clientResponse = await totalumSdk.crud.createItem('cliente', client);
+    const newClientId = clientResponse.data.data.insertedId;
+
+    const orderResponse = await totalumSdk.crud.createItem('pedido', {
+      ...order,
+      cliente: newClientId,
+      estado: TOrderState.NuevoPedidoWhatsapp,
+      fecha_inicio: getCurrentOrNextMonday(),
+      tipo: whatsappOrder.orderType,
+      documentos: folderUrl,
+    });
+    const newOrderId = orderResponse.data.data.insertedId;
+
+    await createTotalumShipmentAndLinkToOrder(shipment, newOrderId);
+
+    const relatedPersonClientResponse = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
+    const newRelatedPersonClientId = relatedPersonClientResponse.data.data.insertedId;
+
+    await totalumSdk.crud.createItem('persona_relacionada', {
+      cliente: newRelatedPersonClientId,
+      pedido: newOrderId,
+    });
+
+    const createTaskOptions = {
+      state: TTaskState.Pending,
+      description: 'Completar Totalum',
+      url: folderUrl,
+      title: whatsappOrder.vehiclePlate,
+    };
+    await createTask(createTaskOptions);
+
+    return newOrderId;
+  } catch (error) {
+    throw new Error(`Error creating extended order by whatsapp order. ${error}`);
+  }
 }

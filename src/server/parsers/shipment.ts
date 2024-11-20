@@ -1,3 +1,4 @@
+import { WhatsappOrder } from '../../interfaces/import/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 
 export function parseTotalumShipment(shipment: TotalumShipment): ParsedTotalumShipment {
@@ -87,4 +88,20 @@ export function parseAddressFromTotalumToRedeable(shipmentInfo: TotalumShipment)
   const { direccion, numero_domicilio, codigo_postal, localidad } = shipmentInfo;
 
   return `${direccion}, ${numero_domicilio}, ${codigo_postal}, ${localidad}`;
+}
+
+export function parseShipmentFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumShipment> {
+  const { name, firstSurname, secondSurname, phoneNumber } = whatsappOrder.buyer;
+  const { street, houseNumber, postalCode, city } = whatsappOrder.shipmentAddress;
+
+  return {
+    referencia: whatsappOrder.vehiclePlate,
+    valor: whatsappOrder.totalInvoiced,
+    nombre_cliente: `${name} ${firstSurname} ${secondSurname}`,
+    telefono: phoneNumber,
+    direccion: street,
+    numero_domicilio: houseNumber,
+    codigo_postal: postalCode,
+    localidad: city,
+  };
 }

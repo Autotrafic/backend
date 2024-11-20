@@ -21,10 +21,24 @@ export interface WhatsappOrder {
   orderType: TOrderType;
   firstTouchDate: Date;
   vehiclePlate: string;
-  buyerPhoneNumber: string;
-  sellerPhoneNumber: string;
-  shipmentAddress: string;
   totalInvoiced: number;
+  shipmentAddress: {
+    street: string;
+    houseNumber: string;
+    postalCode: string;
+    city: string;
+  };
+  buyer: WhatsappClient;
+  seller: WhatsappClient;
+}
+
+interface WhatsappClient {
+  clientType: TClientType;
+  name: string;
+  firstSurname: string;
+  secondSurname: string;
+  nif: string;
+  phoneNumber: string;
 }
 
 export interface OrderDetailsBody {

@@ -14,8 +14,12 @@ import { totalumOptions } from '../../utils/constants';
 import { parseOrderFromWebToTotalum } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
-import { createExtendedOrderByWhatsappOrder, createTask } from '../services/totalum';
-import { updateTotalumOrderFromDocumentsDetails, uploadWhatsappOrderFilesToDrive } from '../handlers/order';
+import { createTask } from '../services/totalum';
+import {
+  createExtendedOrderByWhatsappOrder,
+  updateTotalumOrderFromDocumentsDetails,
+  uploadWhatsappOrderFilesToDrive,
+} from '../handlers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
