@@ -177,7 +177,6 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
     const orderResponse = await totalumSdk.crud.createItem('pedido', {
       ...order,
       cliente: newClientId,
-      estado: TOrderState.NuevoPedidoWhatsapp,
       fecha_inicio: getCurrentOrNextMonday(),
       documentos: folderUrl,
     });
