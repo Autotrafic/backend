@@ -27,8 +27,6 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
     fecha_inicio: new Date(),
     matricula: null,
     documentos: null,
-    direccion_envio: null,
-    codigo_envio: null,
     fecha_de_contacto: null,
     total_facturado: Number(webOrder.prices.totalPrice),
     mandatos: 'No enviados',
@@ -41,7 +39,7 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
 
 export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
   const { orderType, totalInvoiced, autonomousCommunity, vehiclePlate, firstTouchDate } = whatsappOrder;
-  
+
   return {
     tipo: orderType,
     estado: totalInvoiced === 129.95 ? TOrderState.PendienteTramitarA9 : TOrderState.PendientePagoITP,
@@ -54,11 +52,10 @@ export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): P
 }
 
 export function parseOrderDetailsFromDatabaseToTotalum(orderDetails: OrderDetailsBody): Partial<TotalumOrder> {
-  const { vehiclePlate, shipmentAddress } = orderDetails;
+  const { vehiclePlate } = orderDetails;
 
   return {
     matricula: vehiclePlate,
-    direccion_envio: `${shipmentAddress.address}, ${shipmentAddress.postalCode} ${shipmentAddress.city}`,
   };
 }
 
@@ -101,8 +98,6 @@ export function parseOrderFromTotalumToWeb(order: TotalumOrder): TotalumParsedOr
     invoice: order.factura,
     vehiclePlate: order.matricula,
     documentsLink: order.documentos,
-    shipmentAddress: order.direccion_envio,
-    shipmentCode: order.codigo_envio,
     notes: order.notas,
     itpPaid: order.itp_pagado,
     totalInvoiced: order.total_facturado,

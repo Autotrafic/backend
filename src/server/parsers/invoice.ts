@@ -30,7 +30,7 @@ export default function parseInvoiceData(
     firstSurname: client.firstSurname,
     secondSurname: client.secondSurname,
     nif: client.nif,
-    address: client.address ?? order.shipmentAddress,
+    address: client.address,
     phoneNumber: client.phoneNumber,
     email: client.email,
   };

@@ -162,7 +162,7 @@ export async function createInvoiceDataLogic(options: InvoicePrimitiveOptions) {
     throw new Error(`${order.vehiclePlate} no contiene cliente o socio profesional para generar la factura.`);
   }
 
-  if (!client.address && !order.shipmentAddress) {
+  if (!clientData.direccion) {
     throw new Error(`${order.vehiclePlate} no contiene direccion para generar la factura.`);
   }
 

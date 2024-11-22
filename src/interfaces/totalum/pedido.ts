@@ -10,8 +10,6 @@ export interface TotalumOrder {
   factura: object;
   matricula: string;
   documentos: string;
-  direccion_envio: string;
-  codigo_envio: string;
   notas: string;
   itp_pagado: number;
   fecha_de_contacto: Date;

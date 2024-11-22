@@ -9,8 +9,6 @@ export interface TotalumParsedOrder {
   invoice: object;
   vehiclePlate: string;
   documentsLink: string;
-  shipmentAddress: string;
-  shipmentCode: string;
   notes: string;
   itpPaid: number;
   totalInvoiced: number;

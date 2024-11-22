@@ -16,17 +16,11 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const message = `👋 Muy buenas, *Fernando Gabriel Gauna*
+    const response = await totalumSdk.crud.getItemById('cliente', '673ef347d0463eb19af3e501');
 
-📦 Se entregará el nuevo permiso de circulación con matrícula *0361HSZ*
+  const client = response.data.data;
 
-👨🏻‍✈️ El mensajero ya está de camino a su domicilio
-
-🏠 Entre hoy y mañana tocará a su puerta`;
-
-    const alreadySent = await searchRegexInWhatsappChat('34622599876', message);
-
-    res.status(200).json({ alreadySent });
+    res.status(200).json({ client });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });
