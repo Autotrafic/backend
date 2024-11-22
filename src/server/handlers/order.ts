@@ -10,7 +10,13 @@ import {
   parseRelatedPersonClientFromDatabaseToTotalum,
   parseShipmentFromDatabaseToTotalum,
 } from '../parsers/order';
-import { createTask, createTotalumShipmentAndLinkToOrder, getClientById, getExtendedOrderById, getTotalumOrderFromDatabaseOrderId } from '../services/totalum';
+import {
+  createTask,
+  createTotalumShipmentAndLinkToOrder,
+  getClientById,
+  getExtendedOrderById,
+  getTotalumOrderFromDatabaseOrderId,
+} from '../services/totalum';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import {
   CLIENT_FIELD_CONDITIONS,
@@ -194,6 +200,8 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
 
     return newOrderId;
   } catch (error) {
+    if (error?.response?.data?.errors)
+      throw new Error(`Error creating extended order by whatsapp order. ${error.response.data.errors}`);
     throw new Error(`Error creating extended order by whatsapp order. ${error}`);
   }
 }

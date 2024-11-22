@@ -16,11 +16,12 @@ interface Order extends TotalumOrder {
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const response = await totalumSdk.crud.getItemById('cliente', '673ef347d0463eb19af3e501');
+    const options = { filter: [{ nif: 'X5738759Y' }] };
 
-  const client = response.data.data;
+    const response = await totalumSdk.crud.getItems('cliente', options);
 
-    res.status(200).json({ client });
+
+    res.status(200).json({ client: response.data.data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error });
