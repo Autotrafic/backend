@@ -64,8 +64,4 @@ app.use('/script', scriptRouter);
 app.use(notFoundError);
 app.use(generalError);
 
-const server = app.listen(process.env.PORT || 3000, () => {});
-
-server.setTimeout(10 * 60 * 1000);
-
 export default app;
