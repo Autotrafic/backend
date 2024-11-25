@@ -21,9 +21,14 @@ import whatsappRouter from './routes/whatsappRouter';
 
 const app = express();
 
+const server = app.listen(3000, () => {});
+
+server.timeout = 600000;
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 150,
+  message: 'too many requests sent by this ip, please try again later',
 });
 
 app.use(limiter);

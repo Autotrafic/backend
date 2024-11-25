@@ -17,7 +17,7 @@ interface Order extends TotalumOrder {
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
     
-    await new Promise((resolve) => setTimeout(resolve, 90 * 1000));
+    await new Promise((resolve) => setTimeout(resolve, 10 * 1000));
 
     res.status(200).json({ result: 'finish' });
   } catch (error) {
