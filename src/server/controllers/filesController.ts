@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+import { degrees, PDFDocument } from 'pdf-lib';
 import {
   uploadStreamFileToDrive as uploadToGoogleDrive,
   getOrderFolder,
@@ -7,7 +9,6 @@ import {
 import { EXPEDIENTES_DRIVE_FOLDER_ID } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import { CreateInformationFileBody } from '../../interfaces/import/file';
-import { PDFDocument } from 'pdf-lib';
 import { createPdfFromStringLogic } from '../services/file';
 
 export async function uploadFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -119,5 +120,57 @@ export async function mergePdfBlobFiles(req: Request, res: Response, next: NextF
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
+  }
+}
+
+export async function parseA6PdfToA4(req: Request, res: Response, next: NextFunction) {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded');
+  }
+
+  try {
+    const fileBuffer = fs.readFileSync(req.file.path);
+
+    const pdfDoc = await PDFDocument.load(fileBuffer);
+
+    const newPdf = await PDFDocument.create();
+
+    const A4_WIDTH = 595.28;
+    const A4_HEIGHT = 841.89;
+
+    for (const page of pdfDoc.getPages()) {
+      const { width, height } = page.getSize();
+
+      const a4Page = newPdf.addPage([A4_WIDTH, A4_HEIGHT]);
+
+      const embeddedPage = await newPdf.embedPage(page);
+
+      const rotation = degrees(90);
+
+      const x = height;
+      const y = A4_HEIGHT - width;
+
+      a4Page.drawPage(embeddedPage, {
+        x,
+        y,
+        width,
+        height,
+        rotate: rotation,
+      });
+    }
+
+    const pdfBytes = await newPdf.save();
+
+    fs.unlinkSync(req.file.path);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=converted.pdf',
+    });
+
+    res.send(Buffer.from(pdfBytes));
+  } catch (error) {
+    console.error('Error processing the file:', error);
+    res.status(500).send('Error processing the file');
   }
 }
