@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import '../../loadEnvironment';
+import { handleStripeError } from '../../errors/generalError';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -35,44 +36,64 @@ export async function createStripePaymentIntent({
   currency = 'eur',
   customer,
 }: PaymentIntent) {
-  return stripe.paymentIntents.create({
-    // payment_method_types: paymentMethods,
-    automatic_payment_methods: automaticPaymentMethods,
-    amount,
-    currency,
-    customer,
-  });
+  try {
+    return await stripe.paymentIntents.create({
+      // payment_method_types: paymentMethods,
+      automatic_payment_methods: automaticPaymentMethods,
+      amount,
+      currency,
+      customer,
+    });
+  } catch (error) {
+    handleStripeError(error);
+  }
 }
 
 export async function createStripeCustomer(user: StripeUser) {
-  return stripe.customers.create({
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    preferred_locales: ['es'],
-  });
+  try {
+    return await stripe.customers.create({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      preferred_locales: ['es'],
+    });
+  } catch (error) {
+    handleStripeError(error);
+  }
 }
 
 export async function updateStripeCustomer({ fullName, phoneNumber, email, stripeId }: StripeCustomer) {
-  return stripe.customers.update(stripeId, {
-    name: fullName,
-    email,
-    phone: phoneNumber,
-    preferred_locales: ['es'],
-  });
+  try {
+    return await stripe.customers.update(stripeId, {
+      name: fullName,
+      email,
+      phone: phoneNumber,
+      preferred_locales: ['es'],
+    });
+  } catch (error) {
+    handleStripeError(error);
+  }
 }
 
 export async function createStripePrice(productId: string, amount: number) {
-  return stripe.prices.create({
-    unit_amount: amount,
-    currency: 'eur',
-    product: productId,
-    tax_behavior: 'inclusive',
-  });
+  try {
+    return await stripe.prices.create({
+      unit_amount: amount,
+      currency: 'eur',
+      product: productId,
+      tax_behavior: 'inclusive',
+    });
+  } catch (error) {
+    handleStripeError(error);
+  }
 }
 
 export async function createStripePaymentLink(priceId: string) {
-  return stripe.paymentLinks.create({
-    line_items: [{ price: priceId, quantity: 1 }],
-  });
+  try {
+    return await stripe.paymentLinks.create({
+      line_items: [{ price: priceId, quantity: 1 }],
+    });
+  } catch (error) {
+    handleStripeError(error);
+  }
 }

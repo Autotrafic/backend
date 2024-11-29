@@ -8,7 +8,7 @@ class CustomError extends Error implements ErrorWithCode {
     constructor(
         public statusCode: number,
         public publicMessage: string,
-        public privateMessage: string
+        public privateMessage: string,
     ) {
         super(publicMessage);
     }

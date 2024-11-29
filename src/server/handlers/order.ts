@@ -11,13 +11,11 @@ import {
   parseShipmentFromDatabaseToTotalum,
 } from '../parsers/order';
 import {
-  createTask,
   createTotalumShipmentAndLinkToOrder,
   getClientById,
   getExtendedOrderById,
   getTotalumOrderFromDatabaseOrderId,
 } from '../services/totalum';
-import { TotalumShipment } from '../../interfaces/totalum/envio';
 import {
   CLIENT_FIELD_CONDITIONS,
   generateChecks,
@@ -25,11 +23,10 @@ import {
   SHIPMENT_FIELD_CONDITIONS,
 } from '../../utils/checks';
 import { Check } from '../../interfaces/checks';
-import { getOrderFolder, uploadAdditionalInformationFile, uploadStreamFileToDrive } from '../services/googleDrive';
+import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
 import { createTextFile } from '../../utils/file';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
 import { parseShipmentFromWhatsappToTotalum } from '../parsers/shipment';
-import { TOrderState, TTaskState } from '../../interfaces/enums';
 import { getCurrentOrNextMonday } from '../../utils/funcs';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);

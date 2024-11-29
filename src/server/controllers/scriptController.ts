@@ -4,66 +4,47 @@ import { totalumOptions } from '../../utils/constants';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
-import { getExtendedOrderById } from '../services/totalum';
-import { generateTextByOrderFailedChecks } from '../handlers/order';
-import { searchRegexInWhatsappChat } from '../services/notifier';
-import fs from 'fs';
-import { degrees, PDFDocument } from 'pdf-lib';
+import { createUser, getUserByPhoneNumber, updateUserByPhoneNumber } from '../../database/repository/user';
+import { createStripePaymentIntent } from '../services/stripe';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
-interface Order extends TotalumOrder {
-  socio_profesional: string;
-}
-
 export async function runScript(req: Request, res: Response, next: NextFunction) {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded');
-  }
+  const CURRENCY = 'eur';
+
+  const amount = 14675;
+  const userData = { fullName: '1', email: '1', phoneNumber: '1' };
+
+  const { fullName, phoneNumber, email } = userData;
 
   try {
-    const fileBuffer = fs.readFileSync(req.file.path);
+    let user = await getUserByPhoneNumber(phoneNumber);
 
-    const pdfDoc = await PDFDocument.load(fileBuffer);
-
-    const newPdf = await PDFDocument.create();
-
-    const A4_WIDTH = 595.28;
-    const A4_HEIGHT = 841.89;
-
-    for (const page of pdfDoc.getPages()) {
-      const { width, height } = page.getSize();
-
-      const a4Page = newPdf.addPage([A4_WIDTH, A4_HEIGHT]);
-
-      const embeddedPage = await newPdf.embedPage(page);
-
-      const rotation = degrees(90);
-
-      const x = height;
-      const y = A4_HEIGHT - width;
-
-      a4Page.drawPage(embeddedPage, {
-        x,
-        y,
-        width,
-        height,
-        rotate: rotation,
-      });
+    if (!user) {
+      user = await createUser(fullName, phoneNumber, email);
+    } else {
+      const updatedUser = {
+        fullName,
+        phoneNumber,
+        email: user.email,
+        stripeId: user.stripeId,
+      };
+      await updateUserByPhoneNumber(updatedUser);
     }
 
-    const pdfBytes = await newPdf.save();
-
-    fs.unlinkSync(req.file.path);
-
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename=converted.pdf',
+    const paymentIntent = await createStripePaymentIntent({
+      paymentMethods: ['card', 'link'],
+      automaticPaymentMethods: { enabled: true },
+      amount,
+      currency: CURRENCY,
+      customer: user.stripeId,
     });
 
-    res.send(Buffer.from(pdfBytes));
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+    });
   } catch (error) {
-    console.error('Error processing the file:', error);
+    console.error('Error processing the file:', error.message);
     res.status(500).send('Error processing the file');
   }
 }
