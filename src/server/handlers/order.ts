@@ -14,7 +14,7 @@ import {
   createTotalumShipmentAndLinkToOrder,
   getClientById,
   getExtendedOrderById,
-  getTotalumOrderFromDatabaseOrderId,
+  getOrderFromDatabaseOrderId,
 } from '../services/totalum';
 import {
   CLIENT_FIELD_CONDITIONS,
@@ -93,7 +93,7 @@ export async function updateTotalumOrderFromDocumentsDetails(
   const relatedPersonClient = parseRelatedPersonClientFromDatabaseToTotalum(orderDetails);
   const shipment = parseShipmentFromDatabaseToTotalum(orderDetails, databaseOrder);
 
-  const totalumOrder = await getTotalumOrderFromDatabaseOrderId(orderId);
+  const totalumOrder = await getOrderFromDatabaseOrderId(orderId);
 
   const newClientId = await createTotalumClientByDocumentsDetails(client);
   await createTotalumRelatedPersonByDocumentsDetails(relatedPersonClient, totalumOrder);

@@ -52,7 +52,7 @@ export function catchControllerError(
   console.log(error);
   const finalError = new CustomError(
     errorCode,
-    message,
+    `${message}: ${error.message}`,
     `${message}
       ${error}.
 

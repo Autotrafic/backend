@@ -1,7 +1,7 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { TOrderState, TOrderType, TTaskState } from '../../interfaces/enums';
-import {  getCurrentTrimesterDates } from '../../utils/funcs';
+import { getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
 import { TTask } from '../../interfaces/totalum/tarea';
@@ -10,7 +10,8 @@ import { parseAccountingFromTotalum } from '../parsers/logger';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
-export async function getTotalumOrderFromDatabaseOrderId(databaseOrderId: string): Promise<TotalumOrder> {
+// ------ order ------
+export async function getOrderFromDatabaseOrderId(databaseOrderId: string): Promise<TotalumOrder> {
   const filter = { autotrafic_id: databaseOrderId };
   const response = await totalumSdk.crud.getItems('pedido', {
     filter: [filter],
@@ -18,16 +19,6 @@ export async function getTotalumOrderFromDatabaseOrderId(databaseOrderId: string
   const totalumOrder: TotalumOrder = response.data.data[0];
 
   return totalumOrder;
-}
-
-export async function getClientById(clientId: string): Promise<TClient> {
-  try {
-    if (!clientId) return;
-    const clientResponse = await totalumSdk.crud.getItemById('cliente', clientId);
-    return clientResponse.data.data;
-  } catch (error) {
-    throw new Error(`Error fetching Totalum client by id. ${error}`);
-  }
 }
 
 export async function getOrderById(orderId: string) {
@@ -60,83 +51,6 @@ export async function getExtendedOrderById(orderId: string): Promise<ExtendedTot
     return response.data.data[0];
   } catch (error) {
     throw new Error(`Error fetching Totalum shipment by id. ${error}`);
-  }
-}
-
-export async function getOrdersByVehiclePlateAndOrderType(
-  vehiclePlate: string,
-  orderType: TOrderType
-): Promise<ExtendedTotalumOrder[]> {
-  const nestedQuery = {
-    pedido: {
-      tableFilter: {
-        filter: [
-          {
-            matricula: vehiclePlate,
-          },
-          {
-            tipo: orderType,
-          },
-        ],
-      },
-      envio: {},
-    },
-  };
-
-  try {
-    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
-    return clientResponse.data.data;
-  } catch (error) {
-    throw new Error(`Error fetching Totalum order by id. ${error}`);
-  }
-}
-
-export async function getExtendedShipmentById(shipmentId: string): Promise<ExtendedTotalumShipment> {
-  const nestedQuery = {
-    envio: {
-      tableFilter: {
-        filter: [
-          {
-            _id: shipmentId,
-          },
-        ],
-      },
-      pedido: {},
-    },
-  };
-
-  try {
-    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
-    return clientResponse.data.data[0];
-  } catch (error) {
-    throw new Error(`Error fetching Totalum shipment by id. ${error}`);
-  }
-}
-
-export async function getProfessionalPartnerById(partnerId: string) {
-  try {
-    const clientResponse = await totalumSdk.crud.getItemById('socio_profesional', partnerId);
-    return clientResponse.data.data;
-  } catch (error) {
-    throw new Error(`Error fetching Totalum professional partner by id. ${error}`);
-  }
-}
-
-export async function getShipmentsNestedData() {
-  const nestedTreeStructure = {
-    envio: {
-      pedido: {
-        tarea: {},
-        persona_relacionada: {},
-      },
-    },
-  };
-
-  try {
-    const response = await totalumSdk.crud.getNestedData(nestedTreeStructure);
-    return response.data.data;
-  } catch (error) {
-    throw new Error(`Error fetching shipment nested data from Totalum. ${error}`);
   }
 }
 
@@ -195,6 +109,34 @@ export async function getActualTrimesterExtendedOrders() {
   }
 }
 
+export async function getOrdersByVehiclePlateAndOrderType(
+  vehiclePlate: string,
+  orderType: TOrderType
+): Promise<ExtendedTotalumOrder[]> {
+  const nestedQuery = {
+    pedido: {
+      tableFilter: {
+        filter: [
+          {
+            matricula: vehiclePlate,
+          },
+          {
+            tipo: orderType,
+          },
+        ],
+      },
+      envio: {},
+    },
+  };
+
+  try {
+    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return clientResponse.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching Totalum order by id. ${error}`);
+  }
+}
+
 export async function getOrdersPendingToShip(): Promise<ExtendedTotalumOrder[]> {
   const nestedTreeStructure = {
     pedido: {
@@ -216,6 +158,80 @@ export async function getOrdersPendingToShip(): Promise<ExtendedTotalumOrder[]> 
     return response.data.data;
   } catch (error) {
     throw new Error(`Error fetching orders pending to ship from Totalum. ${error}`);
+  }
+}
+
+export async function updateOrderById(orderId: string, update: Partial<ExtendedTotalumOrder>) {
+  try {
+    await totalumSdk.crud.editItemById('pedido', orderId, update);
+  } catch (error) {
+    throw new Error(`Error updating Totalum order. ${error}`);
+  }
+}
+
+// ------ client ------
+export async function getClientById(clientId: string): Promise<TClient> {
+  try {
+    if (!clientId) return;
+    const clientResponse = await totalumSdk.crud.getItemById('cliente', clientId);
+    return clientResponse.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching Totalum client by id. ${error}`);
+  }
+}
+
+// ------ professional partner ------
+export async function getProfessionalPartnerById(partnerId: string) {
+  try {
+    const clientResponse = await totalumSdk.crud.getItemById('socio_profesional', partnerId);
+    return clientResponse.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching Totalum professional partner by id. ${error}`);
+  }
+}
+
+// ------ shipment ------
+export async function getExtendedShipmentById(shipmentId: string): Promise<ExtendedTotalumShipment> {
+  const nestedQuery = {
+    envio: {
+      tableFilter: {
+        filter: [
+          {
+            _id: shipmentId,
+          },
+        ],
+      },
+      pedido: {},
+    },
+  };
+
+  try {
+    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return clientResponse.data.data[0];
+  } catch (error) {
+    throw new Error(`Error fetching Totalum shipment by id. ${error}`);
+  }
+}
+
+export async function getExtendedShipmentsByParcelId(parcelId: number): Promise<ExtendedTotalumShipment[]> {
+  const nestedQuery = {
+    envio: {
+      tableFilter: {
+        filter: [
+          {
+            sendcloud_parcel_id: parcelId,
+          },
+        ],
+      },
+      pedido: {},
+    },
+  };
+
+  try {
+    const shipmentResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return shipmentResponse.data.data;
+  } catch (error) {
+    throw new Error(`Error fetching Totalum shipment by sendcloud parcel id. ${error.message}`);
   }
 }
 
@@ -282,14 +298,6 @@ export async function createTotalumShipmentAndLinkToOrder(
   return newShipmentId;
 }
 
-export async function updateOrderById(orderId: string, update: Partial<ExtendedTotalumOrder>) {
-  try {
-    await totalumSdk.crud.editItemById('pedido', orderId, update);
-  } catch (error) {
-    throw new Error(`Error updating Totalum order. ${error}`);
-  }
-}
-
 export async function updateShipmentById(shipmentId: string, update: Partial<ExtendedTotalumShipment>) {
   try {
     await totalumSdk.crud.editItemById('envio', shipmentId, update);
@@ -298,6 +306,7 @@ export async function updateShipmentById(shipmentId: string, update: Partial<Ext
   }
 }
 
+// ------ task ------
 export async function getAllPendingTasks(): Promise<TTask[]> {
   const response = await totalumSdk.crud.getItems('tarea', {
     filter: [
@@ -306,20 +315,6 @@ export async function getAllPendingTasks(): Promise<TTask[]> {
       },
     ],
   });
-
-  return response.data.data;
-}
-
-export async function updateTaskById(id: string, update: Partial<TTask>) {
-  const response = await totalumSdk.crud.editItemById('tarea', id, update);
-
-  return response.data.data;
-}
-
-export async function createAccounting(accountingInfo: Accounting) {
-  const parsedAccounting = parseAccountingFromTotalum(accountingInfo);
-
-  const response = await totalumSdk.crud.createItem('contabilidad', parsedAccounting as any);
 
   return response.data.data;
 }
@@ -349,24 +344,17 @@ export async function createTask({
   }
 }
 
-export async function getExtendedShipmentsByParcelId(parcelId: number): Promise<ExtendedTotalumShipment[]> {
-  const nestedQuery = {
-    envio: {
-      tableFilter: {
-        filter: [
-          {
-            sendcloud_parcel_id: parcelId,
-          },
-        ],
-      },
-      pedido: {},
-    },
-  };
+export async function updateTaskById(id: string, update: Partial<TTask>) {
+  const response = await totalumSdk.crud.editItemById('tarea', id, update);
 
-  try {
-    const shipmentResponse = await totalumSdk.crud.getNestedData(nestedQuery);
-    return shipmentResponse.data.data;
-  } catch (error) {
-    throw new Error(`Error fetching Totalum shipment by sendcloud parcel id. ${error.message}`);
-  }
+  return response.data.data;
+}
+
+// ------ accounting ------
+export async function createAccounting(accountingInfo: Accounting) {
+  const parsedAccounting = parseAccountingFromTotalum(accountingInfo);
+
+  const response = await totalumSdk.crud.createItem('contabilidad', parsedAccounting as any);
+
+  return response.data.data;
 }
