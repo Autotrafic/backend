@@ -23,7 +23,7 @@ import {
   SHIPMENT_FIELD_CONDITIONS,
 } from '../../utils/checks';
 import { Check } from '../../interfaces/checks';
-import { getOrderFolder, uploadStreamFileToDrive } from '../services/googleDrive';
+import { getOrderFolder, uploadGoogleDocToDrive, uploadStreamFileToDrive } from '../services/googleDrive';
 import { createTextFile } from '../../utils/file';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
 import { parseShipmentFromWhatsappToTotalum } from '../parsers/shipment';
@@ -145,7 +145,7 @@ export async function uploadWhatsappOrderFilesToDrive(
   whatsappOrder: WhatsappOrder,
   files: Express.Multer.File[]
 ): Promise<string> {
-  if (!files || files.length === 0) {
+  if ((!files || files.length === 0) && !whatsappOrder.buyer.phoneNumber && !whatsappOrder.seller.phoneNumber) {
     return null;
   }
 
@@ -160,9 +160,7 @@ export async function uploadWhatsappOrderFilesToDrive(
 
   Teléfono vendedor: ${whatsappOrder.seller.phoneNumber}
   `;
-
-  const textFile = await createTextFile(textFileString);
-  await uploadStreamFileToDrive(textFile as Express.Multer.File, orderFolderId);
+  await uploadGoogleDocToDrive(textFileString, 'Info adicional', orderFolderId);
 
   return folderUrl;
 }

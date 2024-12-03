@@ -51,6 +51,29 @@ export async function uploadStreamFileToDrive(file: Express.Multer.File, parentF
   }
 }
 
+export async function uploadGoogleDocToDrive(content: string, docName: string, parentFolderId: string) {
+  try {
+    const fileMetadata: drive_v3.Params$Resource$Files$Create = {
+      requestBody: {
+        name: docName,
+        mimeType: 'application/vnd.google-apps.document',
+        parents: [parentFolderId],
+      },
+      media: {
+        mimeType: 'text/plain',
+        body: content,
+      },
+      fields: 'id',
+    };
+
+    const response = await drive.files.create(fileMetadata);
+    console.log('Uploaded Google Doc with ID:', response.data.id);
+    return response.data.id;
+  } catch (error) {
+    throw new Error(`Failed to upload Google Doc to Drive: ${error}`);
+  }
+}
+
 async function createFolder(folderName: string, parentFolderId?: string): Promise<string> {
   const fileMetadata: drive_v3.Params$Resource$Files$Create = {
     requestBody: {
