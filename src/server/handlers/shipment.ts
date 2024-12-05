@@ -19,6 +19,7 @@ import { shortUrl } from '../services/other';
 import { getSendcloudPdfLabel, requestSendcloudLabel } from '../services/sendcloud';
 import { updateTotalumOrderWhenShipped } from '../services/shipments';
 import {
+  getExtendedShipmentById,
   getExtendedShipmentsByParcelId,
   getOrdersPendingToShip,
   updateOrderById,

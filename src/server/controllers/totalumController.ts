@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
-import { askShipmentAddressToClientBody, ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
+import { ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
 import { getAllPendingTasks, updateTaskById } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 
@@ -38,13 +38,5 @@ export async function updateTotalumTask(req: UpdateTaskBody, res: Response, next
     res.status(200).json(updatedTask);
   } catch (error) {
     catchControllerError(error, 'Error updating totalum task', req.body, next);
-  }
-}
-
-export async function askShipmentAddressToClient(req: askShipmentAddressToClientBody, res: Response, next: NextFunction) {
-  try {
-    
-  } catch (error) {
-    catchControllerError(error, `No se ha podido avisar al cliente`, req.body, next);
   }
 }

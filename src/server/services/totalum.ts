@@ -201,7 +201,7 @@ export async function getExtendedShipmentById(shipmentId: string): Promise<Exten
           },
         ],
       },
-      pedido: {},
+      pedido: { cliente: {}, socios_profesionales: { cliente: {} } },
     },
   };
 
@@ -209,7 +209,11 @@ export async function getExtendedShipmentById(shipmentId: string): Promise<Exten
     const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
     return clientResponse.data.data[0];
   } catch (error) {
-    throw new Error(`Error fetching Totalum shipment by id. ${error}`);
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum shipment by id. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum shipment by id. Unknown error`);
+    }
   }
 }
 

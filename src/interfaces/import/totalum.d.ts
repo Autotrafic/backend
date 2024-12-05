@@ -30,9 +30,3 @@ export interface LogAccountingBody extends Request {
     accountingType: TAccountingType;
   };
 }
-
-export interface askShipmentAddressToClientBody extends Request {
-  body: {
-    shipment: TotalumShipment;
-  };
-}

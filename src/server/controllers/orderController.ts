@@ -194,6 +194,7 @@ export async function updateDriveDocumentsOfTotalumOrder(
   try {
     const { orderId, driveFolderId } = req.body;
 
+    const order = (await WebOrderModel.findOne({ orderId })) as (WebOrder & WebOrderDetails) | null;
     const filter = { autotrafic_id: orderId };
 
     const response = await totalumSdk.crud.getItems('pedido', {
@@ -212,13 +213,22 @@ export async function updateDriveDocumentsOfTotalumOrder(
 
     await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
 
-    const createTaskOptions = {
+    const firstTaskOptions = {
       state: TTaskState.Pending,
       description: 'Completar Totalum',
       url: driveFolderUrl,
       title: totalumOrder.matricula,
     };
-    await createTask(createTaskOptions);
+    if (order && order.buyer) {
+    }
+    const secondTaskOptions = {
+      state: TTaskState.Pending,
+      description: `Enviar provisional\n\n${order.buyer.phoneNumber}`,
+      url: driveFolderUrl,
+      title: `${totalumOrder.matricula} - Nuevo pedido web`,
+    };
+    await createTask(firstTaskOptions);
+    await createTask(secondTaskOptions);
 
     res.status(200).json({
       success: true,

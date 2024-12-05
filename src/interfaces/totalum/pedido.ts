@@ -24,10 +24,11 @@ export interface TotalumOrder {
   _id: string;
 }
 
-export interface ExtendedTotalumOrder extends Omit<TotalumOrder, 'cliente'> {
+export interface ExtendedTotalumOrder extends Omit<TotalumOrder, 'cliente' | 'socio_profesional'> {
   cliente: TClient;
   envio: ExtendedTotalumShipment[];
   persona_relacionada: TRelatedPersonRelation[];
+  socio_profesional: TExtendedProfessionalPartner;
 }
 
 interface TotalumParsedOrder {

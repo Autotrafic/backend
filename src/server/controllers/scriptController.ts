@@ -6,43 +6,16 @@ import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
 import { createUser, getUserByPhoneNumber, updateUserByPhoneNumber } from '../../database/repository/user';
 import { createStripePaymentIntent } from '../services/stripe';
+import { getExtendedShipmentById } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
-  const CURRENCY = 'eur';
-
-  const amount = 14675;
-  const userData = { fullName: '1', email: '1', phoneNumber: '1' };
-
-  const { fullName, phoneNumber, email } = userData;
 
   try {
-    let user = await getUserByPhoneNumber(phoneNumber);
+    const shipment = await getExtendedShipmentById('67483ee871bb782fa03c7b92');
 
-    if (!user) {
-      user = await createUser(fullName, phoneNumber, email);
-    } else {
-      const updatedUser = {
-        fullName,
-        phoneNumber,
-        email: user.email,
-        stripeId: user.stripeId,
-      };
-      await updateUserByPhoneNumber(updatedUser);
-    }
-
-    const paymentIntent = await createStripePaymentIntent({
-      paymentMethods: ['card', 'link'],
-      automaticPaymentMethods: { enabled: true },
-      amount,
-      currency: CURRENCY,
-      customer: user.stripeId,
-    });
-
-    res.status(200).json({
-      clientSecret: paymentIntent.client_secret,
-    });
+    res.status(200).json({shipment});
   } catch (error) {
     console.error('Error processing the file:', error.message);
     res.status(500).send('Error processing the file');
