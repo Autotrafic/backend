@@ -380,8 +380,12 @@ export async function updateShipmentByOrderId(orderId: string, update: Partial<E
   try {
     const extendedOrder = await getExtendedOrderById(orderId);
 
-    if (extendedOrder.envio.length > 1 || extendedOrder.envio.length < 1)
-      throw new Error('El pedido no contiene envio o contiene muchos envíos');
+    if (extendedOrder.envio.length > 1) throw new Error('El pedido no contiene envio o contiene muchos envíos');
+
+    if (extendedOrder.envio.length < 1) {
+      await createTotalumShipmentAndLinkToOrder(update, orderId);
+      return;
+    }
 
     await totalumSdk.crud.editItemById('envio', extendedOrder.envio[0]._id, update);
   } catch (error) {
