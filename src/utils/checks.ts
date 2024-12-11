@@ -2,9 +2,9 @@ import { ExtendedTotalumOrder } from '../interfaces/totalum/pedido';
 import { Check, CheckCondition, CheckType, TCheck } from '../interfaces/checks';
 import { TOrderState } from '../interfaces/enums';
 
-export function generateChecks<T>(
+export function generateChecks<T, K extends Record<string, CheckCondition<any>[]>>(
   entity: T | null | undefined,
-  fieldConditions: Record<string, CheckCondition[]>
+  fieldConditions: K
 ): { hasError: boolean; passedChecks: Check[]; failedChecks: Check[] } {
   const checks: Check[] = [];
   let hasError = false;
@@ -337,6 +337,13 @@ export const SHIPMENT_FIELD_CONDITIONS = {
         return normalizedValue ? !hasInvalidChars : true;
       },
       checkInfo: { title: 'La referencia no debe contener saltos de línea o tabulaciones', type: CheckType.BAD },
+    },
+  ],
+
+  valor: [
+    {
+      check: (value: number) => !/^\d+(\.\d{3,})$/.test(value.toString()),
+      checkInfo: { title: 'El campo VALOR no debe contener más de dos decimales', type: CheckType.BAD },
     },
   ],
 };

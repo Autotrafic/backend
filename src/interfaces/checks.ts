@@ -16,7 +16,7 @@ export enum CheckType {
   BAD = 3,
 }
 
-export interface CheckCondition {
-  check: (value: string) => boolean;
+export type CheckCondition<T = string> = {
+  check: (value: T) => boolean;
   checkInfo: Check;
-}
+};
