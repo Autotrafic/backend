@@ -149,11 +149,17 @@ export async function uploadWhatsappOrderFilesToDrive(
     return null;
   }
 
-  const orderFolderId = await getOrderFolder(whatsappOrder.vehiclePlate, EXPEDIENTES_DRIVE_FOLDER_ID);
-  const folderUrl = `https://drive.google.com/drive/folders/${orderFolderId}`;
+  let folderId: string;
+  let folderUrl: string;
+
+  if (whatsappOrder.professionalPartnerDriveId) {
+    folderId = whatsappOrder.professionalPartnerDriveId;
+  } else {
+    folderId = await getOrderFolder(whatsappOrder.vehiclePlate, EXPEDIENTES_DRIVE_FOLDER_ID);
+    folderUrl = `https://drive.google.com/drive/folders/${folderId}`;
+  }
 
   for (const file of files) {
-    const folderId = whatsappOrder.professionalPartnerDriveId ? whatsappOrder.professionalPartnerDriveId : orderFolderId;
     await uploadStreamFileToDrive(file, folderId);
   }
 
@@ -161,7 +167,7 @@ export async function uploadWhatsappOrderFilesToDrive(
 
   Teléfono vendedor: ${whatsappOrder.seller.phoneNumber}
   `;
-  await uploadGoogleDocToDrive(textFileString, 'Info adicional', orderFolderId);
+  await uploadGoogleDocToDrive(textFileString, 'Info adicional', folderId);
 
   return folderUrl;
 }
