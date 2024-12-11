@@ -180,7 +180,73 @@ export async function getClientById(clientId: string): Promise<TClient> {
   }
 }
 
+export async function getExtendedClientById(clientId: string): Promise<TExtendedClient> {
+  const nestedQuery = {
+    cliente: {
+      tableFilter: {
+        filter: [
+          {
+            _id: clientId,
+          },
+        ],
+      },
+      socios_profesionales: {},
+    },
+  };
+
+  try {
+    const clientResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return clientResponse.data.data[0];
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum client by id. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum client by id. Unknown error`);
+    }
+  }
+}
+
+// ------ related person ------
+export async function getExtendedRelatedPersonById(relatedPersonId: string) {
+  const nestedQuery = {
+    persona_relacionada: {
+      tableFilter: {
+        filter: [
+          {
+            _id: relatedPersonId,
+          },
+        ],
+      },
+      cliente: { socios_profesionales: {} },
+    },
+  };
+
+  try {
+    const relatedPersonResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return relatedPersonResponse.data.data[0];
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum related person by id. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum related person by id. Unknown error`);
+    }
+  }
+}
+
 // ------ professional partner ------
+export async function getAllProfessionalParteners(): Promise<TProfessionalPartner[]> {
+  try {
+    const professionalPartners = await totalumSdk.crud.getItems('socios_profesionales');
+    return professionalPartners.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum professional partners. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum professional partners. Unknown error`);
+    }
+  }
+}
+
 export async function getProfessionalPartnerById(partnerId: string) {
   try {
     const clientResponse = await totalumSdk.crud.getItemById('socio_profesional', partnerId);

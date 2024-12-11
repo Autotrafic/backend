@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
 import { ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
-import { getAllPendingTasks, updateTaskById } from '../services/totalum';
+import { getAllPendingTasks, getAllProfessionalParteners, updateTaskById } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 
 export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, res: Response, next: NextFunction) {
@@ -38,5 +38,15 @@ export async function updateTotalumTask(req: UpdateTaskBody, res: Response, next
     res.status(200).json(updatedTask);
   } catch (error) {
     catchControllerError(error, 'Error updating totalum task', req.body, next);
+  }
+}
+
+export async function getAllTotalumProfessionalParteners(req: Request, res: Response, next: NextFunction) {
+  try {
+    const professionalPartners = await getAllProfessionalParteners();
+
+    res.status(200).json({ professionalPartners });
+  } catch (error) {
+    catchControllerError(error, 'Error fetching totalum professionalPartners', req.body, next);
   }
 }

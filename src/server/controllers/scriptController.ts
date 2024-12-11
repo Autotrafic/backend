@@ -1,21 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
-import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
-import { createUser, getUserByPhoneNumber, updateUserByPhoneNumber } from '../../database/repository/user';
-import { createStripePaymentIntent } from '../services/stripe';
-import { getExtendedShipmentById } from '../services/totalum';
+import { getAllProfessionalParteners } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
 
   try {
-    const shipment = await getExtendedShipmentById('67483ee871bb782fa03c7b92');
+    const client = await getAllProfessionalParteners();
 
-    res.status(200).json({shipment});
+    res.status(200).json({client});
   } catch (error) {
     console.error('Error processing the file:', error.message);
     res.status(500).send('Error processing the file');

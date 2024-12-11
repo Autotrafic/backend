@@ -6,6 +6,7 @@ interface TProfessionalPartner {
   precio_informe: number;
   precio_notificacion: number;
   precio_batecom: number;
+  carpeta_google_drive: string;
   cliente: TClient;
   createdAt: string;
   updatedAt: string;
