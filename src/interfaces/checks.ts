@@ -1,6 +1,7 @@
 export interface TCheck {
   shipmentId: string;
   reference: string;
+  withSticker: boolean;
   checks: Check[];
 }
 

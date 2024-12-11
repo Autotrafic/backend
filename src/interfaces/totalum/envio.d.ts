@@ -2,6 +2,7 @@ import { ExtendedTotalumOrder, TotalumOrder } from './pedido';
 
 export interface TotalumShipment {
   _id: string;
+  con_distintivo: 'Si' | 'No';
   nombre_cliente: string;
   telefono: string;
   direccion: string;

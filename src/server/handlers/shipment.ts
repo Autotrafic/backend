@@ -45,12 +45,13 @@ export async function checkShipmentsAvailability(): Promise<{ passedChecks: TChe
 
   shipments.forEach((shipment) => {
     const { passedChecks: passed, failedChecks: failed } = generateChecks(shipment, SHIPMENT_FIELD_CONDITIONS);
+    const withSticker = shipment.con_distintivo === 'Si';
 
     if (passed.length > 0) {
-      passedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: passed });
+      passedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: passed, withSticker });
     }
     if (failed.length > 0) {
-      failedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: failed });
+      failedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: failed, withSticker });
     }
   });
 
