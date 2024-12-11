@@ -28,7 +28,6 @@ export function generateChecks<T, K extends Record<string, CheckCondition<any>[]
 
   for (const [field, conditions] of Object.entries(fieldConditions)) {
     const fieldValue = entity[field as keyof T];
-
     conditions.forEach(({ check, checkInfo }) => {
       if (!check(fieldValue as string)) {
         checks.push({ ...checkInfo, propertyChecked: field });
@@ -57,7 +56,7 @@ export function handleOrdersWithWrongNumberOfShipments(
       shipmentId: null,
       reference: order.matricula,
       checks: [{ title: 'El pedido no tiene ningún envío relacionado', type: CheckType.BAD }],
-      withSticker: false
+      withSticker: false,
     });
   }
 
@@ -66,7 +65,7 @@ export function handleOrdersWithWrongNumberOfShipments(
       shipmentId: null,
       reference: order.matricula,
       checks: [{ title: 'El pedido contiene más de un envío relacionado', type: CheckType.BAD }],
-      withSticker: false
+      withSticker: false,
     });
   }
 }
@@ -344,7 +343,11 @@ export const SHIPMENT_FIELD_CONDITIONS = {
 
   valor: [
     {
-      check: (value: number) => !/^\d+(\.\d{3,})$/.test(value.toString()),
+      check: (value: number) => !!value,
+      checkInfo: { title: 'El campo VALOR del envío está vacío', type: CheckType.BAD },
+    },
+    {
+      check: (value: number) => (value ? !/^\d+(\.\d{3,})$/.test(value.toString()) : true),
       checkInfo: { title: 'El campo VALOR no debe contener más de dos decimales', type: CheckType.BAD },
     },
   ],
