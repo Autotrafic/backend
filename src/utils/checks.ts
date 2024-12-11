@@ -57,6 +57,7 @@ export function handleOrdersWithWrongNumberOfShipments(
       shipmentId: null,
       reference: order.matricula,
       checks: [{ title: 'El pedido no tiene ningún envío relacionado', type: CheckType.BAD }],
+      withSticker: false
     });
   }
 
@@ -65,6 +66,7 @@ export function handleOrdersWithWrongNumberOfShipments(
       shipmentId: null,
       reference: order.matricula,
       checks: [{ title: 'El pedido contiene más de un envío relacionado', type: CheckType.BAD }],
+      withSticker: false
     });
   }
 }
