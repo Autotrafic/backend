@@ -219,16 +219,17 @@ export async function updateDriveDocumentsOfTotalumOrder(
       url: driveFolderUrl,
       title: totalumOrder.matricula,
     };
-    if (order && order.buyer) {
-    }
-    const secondTaskOptions = {
-      state: TTaskState.Pending,
-      description: `Enviar provisional\n\n${order.buyer.phoneNumber}`,
-      url: driveFolderUrl,
-      title: `${totalumOrder.matricula} - Nuevo pedido web`,
-    };
     await createTask(firstTaskOptions);
-    await createTask(secondTaskOptions);
+
+    if (order && order.buyer) {
+      const secondTaskOptions = {
+        state: TTaskState.Pending,
+        description: `Enviar provisional\n\n${order.buyer.phoneNumber}`,
+        url: driveFolderUrl,
+        title: `${totalumOrder.matricula} - Nuevo pedido web`,
+      };
+      await createTask(secondTaskOptions);
+    }
 
     res.status(200).json({
       success: true,

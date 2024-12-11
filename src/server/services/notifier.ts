@@ -33,10 +33,12 @@ export async function getAllWhatsappChats(): Promise<WWebChat[]> {
   }
 }
 
-export async function getWhatsappChatMessages(chatId: string): Promise<WWebMessage[]> {
-  const endpoint = `${whatsappApi}/messages/chat-messages/${chatId}`;
-
+export async function getWhatsappChatMessages(phoneNumber: string): Promise<WWebMessage[]> {
+  
   try {
+    const chatId = parsePhoneNumberForWhatsApp(phoneNumber);
+    
+    const endpoint = `${whatsappApi}/messages/chat-messages/${chatId}`;
     const response = await axios.get(endpoint);
 
     return response.data.messages;

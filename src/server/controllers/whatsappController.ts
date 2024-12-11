@@ -44,14 +44,14 @@ export async function getAllChats(req: Request, res: Response, next: NextFunctio
 
 export async function getChatMessages(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { chatId } = req.params;
+    const { phoneNumber } = req.params;
 
-    if (!chatId) {
+    if (!phoneNumber) {
       res.status(404).send({ message: `No chat id provided.` });
       return;
     }
 
-    const chatMessages = await getWhatsappChatMessages(chatId);
+    const chatMessages = await getWhatsappChatMessages(phoneNumber);
 
     const formattedChatMessages = chatMessages.map((message) => parseFullWhatsMessage(message));
 
