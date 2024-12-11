@@ -8,6 +8,23 @@ export function parsePhoneNumberForWhatsApp(phoneNumber: string): string {
   return `34${cleanedPhoneNumber}`;
 }
 
+export function parsePhoneNumberForWhatsappId(phoneNumber: string): string {
+  const cleanedNumber = phoneNumber.replace(/[^+\d]/g, "");
+
+  let formattedNumber = cleanedNumber;
+  if (formattedNumber.startsWith("+")) {
+    formattedNumber = formattedNumber.slice(1);
+  } else if (!formattedNumber.startsWith("34")) {
+    formattedNumber = `34${formattedNumber}`;
+  }
+
+  if (formattedNumber.startsWith("34")) {
+    formattedNumber = formattedNumber.replace(/^34(0+)/, "34");
+  }
+
+  return `${formattedNumber}@c.us`;
+}
+
 export function parseStripeError(stripeError: StripeError): CustomStripeError {
   switch (stripeError.code) {
     case 'email_invalid':

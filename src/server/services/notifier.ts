@@ -1,7 +1,7 @@
 import '../../loadEnvironment';
 import axios from 'axios';
 import { WWebChat, WWebMessage } from '../../interfaces/whatsapp';
-import { parsePhoneNumberForWhatsApp } from '../parsers/other';
+import { parsePhoneNumberForWhatsApp, parsePhoneNumberForWhatsappId } from '../parsers/other';
 
 const backendNotifications = process.env.SLACK_BACKEND_NOTIFICATIONS_WEBHOOK_URL;
 const whatsMessagesWebhook = process.env.SLACK_WHATS_MESSAGES_WEBHOOK_URL;
@@ -34,10 +34,9 @@ export async function getAllWhatsappChats(): Promise<WWebChat[]> {
 }
 
 export async function getWhatsappChatMessages(phoneNumber: string): Promise<WWebMessage[]> {
-  
   try {
-    const chatId = parsePhoneNumberForWhatsApp(phoneNumber);
-    
+    const chatId = parsePhoneNumberForWhatsappId(phoneNumber);
+
     const endpoint = `${whatsappApi}/messages/chat-messages/${chatId}`;
     const response = await axios.get(endpoint);
 

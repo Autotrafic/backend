@@ -59,8 +59,8 @@ export async function getChatMessages(req: Request, res: Response, next: NextFun
   } catch (error) {
     const finalError = new CustomError(
       500,
-      `Error sending WhatsApp message. ${error}`,
-      `Error sending WhatsApp message.
+      `Error fetching chat messages. ${error}`,
+      `Error fetching chat messages.
                   ${error}.
                   
             Body: ${JSON.stringify(req.body)}`
