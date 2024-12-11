@@ -376,6 +376,23 @@ export async function updateShipmentById(shipmentId: string, update: Partial<Ext
   }
 }
 
+export async function updateShipmentByOrderId(orderId: string, update: Partial<ExtendedTotalumShipment>) {
+  try {
+    const extendedOrder = await getExtendedOrderById(orderId);
+
+    if (extendedOrder.envio.length > 1 || extendedOrder.envio.length < 1)
+      throw new Error('El pedido no contiene envio o contiene muchos envíos');
+
+    await totalumSdk.crud.editItemById('envio', extendedOrder.envio[0]._id, update);
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error updating shipment by order id. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error updating shipment by order id. Unknown error`);
+    }
+  }
+}
+
 // ------ task ------
 export async function getAllPendingTasks(): Promise<TTask[]> {
   const response = await totalumSdk.crud.getItems('tarea', {

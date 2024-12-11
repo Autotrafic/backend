@@ -15,6 +15,7 @@ import {
   getClientById,
   getExtendedOrderById,
   getOrderFromDatabaseOrderId,
+  updateShipmentByOrderId,
 } from '../services/totalum';
 import {
   CLIENT_FIELD_CONDITIONS,
@@ -24,7 +25,6 @@ import {
 } from '../../utils/checks';
 import { Check } from '../../interfaces/checks';
 import { getOrderFolder, uploadGoogleDocToDrive, uploadStreamFileToDrive } from '../services/googleDrive';
-import { createTextFile } from '../../utils/file';
 import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
 import { parseShipmentFromWhatsappToTotalum } from '../parsers/shipment';
 import { getCurrentOrNextMonday } from '../../utils/funcs';
@@ -97,7 +97,7 @@ export async function updateTotalumOrderFromDocumentsDetails(
 
   const newClientId = await createTotalumClientByDocumentsDetails(client);
   await createTotalumRelatedPersonByDocumentsDetails(relatedPersonClient, totalumOrder);
-  await createTotalumShipmentAndLinkToOrder(shipment, totalumOrder._id);
+  await updateShipmentByOrderId(totalumOrder._id, shipment);
 
   await updateTotalumOrderByDocumentsDetails(totalumOrder, orderUpdate, newClientId);
 }

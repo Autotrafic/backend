@@ -14,12 +14,13 @@ import { totalumOptions } from '../../utils/constants';
 import { parseOrderFromWebToTotalum, parseRegisterWhatsappOrderBody } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
-import { createTask } from '../services/totalum';
+import { createTask, createTotalumShipmentAndLinkToOrder } from '../services/totalum';
 import {
   createExtendedOrderByWhatsappOrder,
   updateTotalumOrderFromDocumentsDetails,
   uploadWhatsappOrderFilesToDrive,
 } from '../handlers/order';
+import { TotalumShipment } from '../../interfaces/totalum/envio';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -128,7 +129,7 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
   }
 }
 
-export async function createTotalumOrderById(req: CreateTotalumOrderByIdBody, res: Response, next: NextFunction) {
+export async function registerWebOrder(req: CreateTotalumOrderByIdBody, res: Response, next: NextFunction) {
   try {
     const { orderId } = req.body;
 
@@ -137,9 +138,11 @@ export async function createTotalumOrderById(req: CreateTotalumOrderByIdBody, re
     const newTotalumOrder = parseOrderFromWebToTotalum(order);
 
     const response = await totalumSdk.crud.createItem('pedido', newTotalumOrder);
-
     const newTotalumOrderId = response.data.data.insertedId;
 
+    const shipment: Partial<TotalumShipment> = { con_distintivo: order.crossSelling.etiquetaMedioambiental ? 'Si' : 'No' };
+    await createTotalumShipmentAndLinkToOrder(shipment, newTotalumOrderId);
+    
     res.status(201).json({
       success: true,
       message: 'Order created in Totalum successfully',
