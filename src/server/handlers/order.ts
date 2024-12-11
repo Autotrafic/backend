@@ -153,7 +153,8 @@ export async function uploadWhatsappOrderFilesToDrive(
   const folderUrl = `https://drive.google.com/drive/folders/${orderFolderId}`;
 
   for (const file of files) {
-    await uploadStreamFileToDrive(file, orderFolderId);
+    const folderId = whatsappOrder.professionalPartnerDriveId ? whatsappOrder.professionalPartnerDriveId : orderFolderId;
+    await uploadStreamFileToDrive(file, folderId);
   }
 
   const textFileString = `Teléfono comprador: ${whatsappOrder.buyer.phoneNumber}

@@ -23,6 +23,7 @@ export interface WhatsappOrder {
   firstTouchDate: Date;
   vehiclePlate: string;
   totalInvoiced: number;
+  professionalPartnerDriveId: string | null;
   shipmentAddress: {
     street: string;
     houseNumber: string;
