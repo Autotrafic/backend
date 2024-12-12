@@ -11,6 +11,7 @@ import CustomError from '../../errors/CustomError';
 import {
   checkEmptyShipments,
   checkShipmentsAvailability as checkTShipmentsAvailability,
+  createPdfAsBase64,
   handleParcelUpdate,
   makeShipment,
   uploadMergedLabelsToDrive,
@@ -47,7 +48,21 @@ export async function makeMultipleShipments(
   progressMap[requestId] = { progress: 0, total: 0, message: '' };
 
   try {
-    const { shipmentsId, isTest } = req.body;
+    // const { shipmentsId, isTest } = req.body;
+    const shipmentsId = [
+      '66f684b5cc39f4de7bc2683c',
+      '66f686a67b135832f21902af',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9',
+      '66f688db7b135832f21902b9'
+    ];
 
     const shipmentsPromises = shipmentsId.map((shipmentId) => getExtendedShipmentById(shipmentId));
     const shipments = await Promise.all(shipmentsPromises);
@@ -63,7 +78,8 @@ export async function makeMultipleShipments(
       const totalumShipment = cleanedShipments[i];
 
       try {
-        const label = await makeShipment({ totalumShipment, isTest });
+        // const label = await makeShipment({ totalumShipment, isTest });
+        const label = await createPdfAsBase64('Here and now');
         labelsBase64.push(label);
 
         progressMap[requestId].progress = Math.round(((i + 1) / cleanedShipments.length) * 100);
@@ -75,7 +91,7 @@ export async function makeMultipleShipments(
     }
 
     const mergedLabelsBase64 = await mergePdfFromBase64Strings(labelsBase64);
-    await uploadMergedLabelsToDrive(mergedLabelsBase64);
+    // await uploadMergedLabelsToDrive(mergedLabelsBase64);
 
     res.status(200).json({ requestId, mergedLabelsBase64, message: progressMap[requestId].message });
   } catch (error: any) {
