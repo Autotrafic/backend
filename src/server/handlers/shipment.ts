@@ -26,41 +26,10 @@ import {
   updateShipmentById,
 } from '../services/totalum';
 
-type NotifyMessageType = 'sent' | 'pickup';
 
-export async function createPdfAsBase64(text: string): Promise<string> {
-  // Create a new PDF document
-  const pdfDoc = await PDFDocument.create();
+export const progressMap: Record<string, Progress> = {};
+export const temporaryStorage: Record<string, string[]> = {};
 
-  // Add a blank page
-  const page = pdfDoc.addPage([600, 400]);
-
-  // Embed the standard font
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-  // Define font size and color
-  const fontSize = 24;
-  const textColor = rgb(0, 0, 0);
-
-  // Add text to the page
-  page.drawText(text, {
-    x: 50,
-    y: 300,
-    size: fontSize,
-    font: font,
-    color: textColor,
-  });
-
-  // Serialize the PDF document to bytes
-  const pdfBytes = await pdfDoc.save();
-
-  await sleep(4000);
-
-  // Convert the bytes to a Base64 string
-  const labelBase64 = Buffer.from(pdfBytes).toString('base64');
-
-  return labelBase64;
-}
 
 export async function checkShipmentsAvailability(): Promise<{ passedChecks: TCheck[]; failedChecks: TCheck[] }> {
   const passedChecks: TCheck[] = [];

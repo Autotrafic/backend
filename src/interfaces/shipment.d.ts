@@ -32,3 +32,5 @@ interface ShipmentNotificationData {
   isFastShipment: string;
   shipmentUrl: string;
 }
+
+type NotifyMessageType = 'sent' | 'pickup';
