@@ -102,6 +102,71 @@ export async function makeMultipleShipments(
   }
 }
 
+const temporaryStorage: Record<string, string[]> = {};
+
+// Updated function
+export async function makeMultipleShipmentss(
+  req: MakeMultipleShipmentsImportBody,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const requestId = 'make_multiple_shipments';
+  progressMap[requestId] = { progress: 0, total: 0, message: '' };
+
+  try {
+    const { shipmentsId, isLastBatch } = req.body;
+
+    // Initialize storage for this request ID if it doesn't exist
+    if (!temporaryStorage[requestId]) {
+      temporaryStorage[requestId] = [];
+    }
+
+    const shipmentsPromises = shipmentsId.map((shipmentId) =>
+      getExtendedShipmentById(shipmentId)
+    );
+    const shipments = await Promise.all(shipmentsPromises);
+    const cleanedShipments = shipments.filter((shipment) => shipment !== undefined);
+
+    checkEmptyShipments(cleanedShipments);
+
+    for (let i = 0; i < cleanedShipments.length; i++) {
+      const totalumShipment = cleanedShipments[i];
+
+      try {
+        const label = await createPdfAsBase64('Here and now');
+        temporaryStorage[requestId].push(label);
+
+        progressMap[requestId].progress = Math.round(
+          ((i + 1) / cleanedShipments.length) * 100
+        );
+
+        await sleep(500);
+      } catch (error: any) {
+        progressMap[requestId].message = `${error.message}. Body: ${JSON.stringify(req.body)}`;
+      }
+    }
+
+    if (isLastBatch) {
+      // Merge all labels when processing the last batch
+      const allLabelsBase64 = temporaryStorage[requestId];
+      const mergedLabelsBase64 = await mergePdfFromBase64Strings(allLabelsBase64);
+
+      // Cleanup storage for this request ID
+      delete temporaryStorage[requestId];
+
+      res.status(200).json({ requestId, mergedLabelsBase64, message: 'All shipments processed and merged.' });
+    } else {
+      res.status(200).json({ requestId, message: 'Batch processed successfully.' });
+    }
+  } catch (error: any) {
+    progressMap[requestId].message = `Error making multiple shipments: ${error.message}`;
+    catchControllerError(error.message, progressMap[requestId].message, req.body, next);
+  } finally {
+    delete progressMap[requestId];
+  }
+}
+
+
 export async function checkShipmentsAvailability(req: Request, res: Response, next: NextFunction) {
   try {
     const checks = await checkTShipmentsAvailability();
