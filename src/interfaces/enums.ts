@@ -117,11 +117,11 @@ export enum TOrderState {
   PendienteEnviar3Gestoria = 'Pendiente enviar 3º gestoría',
   Enviado3Gestoria = 'Enviado 3º gestoría',
   PendienteRecibirInfoCliente = 'Pendiente recibir info cliente',
-  PendienteRecogerCorreos = 'Pendiente recoger Correos',
   NuevoPedidoWeb = 'Nuevo pedido web',
-  NuevoPedidoWhatsapp = 'Nuevo pedido WhatsApp',
   PendienteDevolucionCorreos = 'Pendiente devolución Correos',
   PendienteEntregarCorreos = 'Pendiente entrega Correos',
+  PendientePagoDevolucionEnvio = 'Pendiente Pago Devolución Envío',
+  PendientePagoTramite = 'Pendiente Pago Trámite'
 }
 
 export enum TOrderType {

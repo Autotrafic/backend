@@ -88,11 +88,11 @@ export type TState =
   | 'Pendiente enviar 3º gestoría'
   | 'Enviado 3º gestoría'
   | 'Pendiente recibir info cliente'
-  | 'Pendiente recoger Correos'
   | 'Nuevo pedido web'
-  | 'Nuevo pedido WhatsApp'
   | 'Pendiente devolución Correos'
-  | 'Pendiente entrega Correos';
+  | 'Pendiente entrega Correos'
+  | 'Pendiente Pago Devolución Envío'
+  | 'Pendiente Pago Trámite';
 
 type TType =
   | 'Transferencia'

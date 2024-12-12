@@ -84,7 +84,7 @@ export const ORDER_FIELD_CONDITIONS = {
     },
     {
       check: (value: string) =>
-        value ? value !== TOrderState.NuevoPedidoWeb && value !== TOrderState.NuevoPedidoWhatsapp : true,
+        value ? value !== TOrderState.NuevoPedidoWeb : true,
       checkInfo: { title: 'El estado del pedido debe actualizarse', type: CheckType.BAD },
     },
   ],
