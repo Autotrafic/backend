@@ -42,7 +42,11 @@ export async function getWhatsappChatMessages(phoneNumber: string): Promise<WWeb
 
     return response.data.messages;
   } catch (error) {
-    throw new Error(error);
+    if (error?.response?.data?.message) {
+      throw new Error(error?.response?.data?.message);
+    } else {
+      throw new Error(error.message);
+    }
   }
 }
 
