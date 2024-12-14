@@ -1,7 +1,7 @@
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { TOrderState, TOrderType, TTaskState } from '../../interfaces/enums';
-import { getCurrentTrimesterDates } from '../../utils/funcs';
+import { cleanObject, getCurrentTrimesterDates } from '../../utils/funcs';
 import { ExtendedTotalumOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
 import { TTask } from '../../interfaces/totalum/tarea';
@@ -202,6 +202,45 @@ export async function getExtendedClientById(clientId: string): Promise<TExtended
       throw new Error(`Error fetching Totalum client by id. ${error.response.data.errors}`);
     } else {
       throw new Error(`Error fetching Totalum client by id. Unknown error`);
+    }
+  }
+}
+
+export async function getClientByNif(clientNif: string): Promise<TClient> {
+  try {
+    const options = { filter: [{ nif: clientNif }] };
+
+    const response = await totalumSdk.crud.getItems('cliente', options);
+
+    return response.data?.data?.[0];
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum client by nif. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum client by nif. Unknown error`);
+    }
+  }
+}
+
+export async function createClient(client: Partial<TClient>): Promise<string> {
+  const clientResponse = await totalumSdk.crud.createItem('cliente', client);
+  const newClientId = clientResponse.data.data.insertedId;
+
+  return newClientId;
+}
+
+export async function updateClientById(clientId: string, update: Partial<TClient>) {
+  try {
+    const cleanedClient = cleanObject(update);
+
+    await totalumSdk.crud.editItemById('cliente', clientId, cleanedClient);
+
+    return clientId;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error updating Totalum client by id. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error updating Totalum client by id. Unknown error`);
     }
   }
 }

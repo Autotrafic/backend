@@ -22,6 +22,7 @@ export default function parseClientFromPrimitive(client: TClient): Client {
 
 export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
   const { clientType, name, firstSurname, secondSurname, nif, phoneNumber } = whatsappOrder.buyer;
+  if (!name && !firstSurname && !secondSurname && !nif && !phoneNumber) return null;
 
   return {
     tipo: clientType,
@@ -35,6 +36,7 @@ export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): 
 
 export function parseRelatedPersonFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
   const { clientType, name, firstSurname, secondSurname, nif, phoneNumber } = whatsappOrder.seller;
+  if (!name && !firstSurname && !secondSurname && !nif && !phoneNumber) return null;
 
   return {
     tipo: clientType,

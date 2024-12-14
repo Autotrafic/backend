@@ -43,3 +43,15 @@ export function getCurrentOrNextMonday(): number {
 
   return today.setUTCHours(0, 0, 0, 0);
 }
+
+export function cleanObject<T extends Record<string, any>>(obj: T): Partial<T> {
+  const cleanedObject: Partial<T> = {};
+
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+      cleanedObject[key as keyof T] = obj[key];
+    }
+  });
+
+  return cleanedObject;
+}

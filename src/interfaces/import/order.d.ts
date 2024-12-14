@@ -23,18 +23,23 @@ export interface WhatsappOrder {
   firstTouchDate: Date;
   vehiclePlate: string;
   totalInvoiced: number;
-  professionalPartnerDriveId: string | null;
   shipmentAddress: {
     street: string;
     houseNumber: string;
     postalCode: string;
     city: string;
   };
-  buyer: WhatsappClient;
-  seller: WhatsappClient;
+  professionalPartner: WProfessionalPartner;
+  buyer: WClient;
+  seller: WClient;
 }
 
-interface WhatsappClient {
+interface WProfessionalPartner {
+  id: string | null;
+  driveId: string | null;
+}
+
+interface WClient {
   clientType: TClientType;
   name: string;
   firstSurname: string;

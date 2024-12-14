@@ -128,6 +128,9 @@ export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
   if (typeof whatsappOrder.shipmentAddress === 'string') {
     whatsappOrder.shipmentAddress = JSON.parse(whatsappOrder.shipmentAddress);
   }
+  if (typeof whatsappOrder.professionalPartner === 'string') {
+    whatsappOrder.professionalPartner = JSON.parse(whatsappOrder.professionalPartner);
+  }
   if (typeof whatsappOrder.buyer === 'string') {
     whatsappOrder.buyer = JSON.parse(whatsappOrder.buyer);
   }

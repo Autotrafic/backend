@@ -109,7 +109,7 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
     parseRegisterWhatsappOrderBody(whatsappOrder);
 
     const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
-    await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
+    await createExtendedOrderByWhatsappOrder(whatsappOrder, 'folderUrl');
 
     res.status(201).json({
       success: true,
