@@ -39,7 +39,7 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
 }
 
 export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
-  const { orderType, totalInvoiced, autonomousCommunity, vehiclePlate, firstTouchDate } = whatsappOrder;
+  const { orderType, totalInvoiced, autonomousCommunity, vehiclePlate, firstTouchDate, mandates } = whatsappOrder;
 
   let orderState;
   if (
@@ -58,7 +58,7 @@ export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): P
     matricula: vehiclePlate,
     fecha_de_contacto: firstTouchDate,
     total_facturado: totalInvoiced,
-    mandatos: 'No enviados',
+    mandatos: mandates,
   };
 }
 

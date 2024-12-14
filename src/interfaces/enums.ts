@@ -121,7 +121,7 @@ export enum TOrderState {
   PendienteDevolucionCorreos = 'Pendiente devolución Correos',
   PendienteEntregarCorreos = 'Pendiente entrega Correos',
   PendientePagoDevolucionEnvio = 'Pendiente Pago Devolución Envío',
-  PendientePagoTramite = 'Pendiente Pago Trámite'
+  PendientePagoTramite = 'Pendiente Pago Trámite',
 }
 
 export enum TOrderType {
@@ -158,6 +158,13 @@ export enum TAccountingType {
   PedidoAds = 'Pedido Ads',
   ConsultaWeb = 'Consulta Web',
   ContactoWhatsapp = 'Contacto WhatsApp',
+}
+
+export enum TOrderMandate {
+  NoEnviados = 'No enviados',
+  Enviados = 'Enviados',
+  Firmados = 'Firmados',
+  Adjuntados = 'Adjuntados',
 }
 
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
