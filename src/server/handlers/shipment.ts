@@ -1,4 +1,3 @@
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { TCheck } from '../../interfaces/checks';
 import {
   autonomousCommunityMap,
@@ -7,12 +6,11 @@ import {
   TOrderState,
 } from '../../interfaces/enums';
 import { CreateLabelImport } from '../../interfaces/import/shipment';
-import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
+import { ExtendedTotalumShipment } from '../../interfaces/totalum/envio';
 import { SHIPMENT_FIELD_CONDITIONS, handleOrdersWithWrongNumberOfShipments, generateChecks } from '../../utils/checks';
 import { ENVIOS_DRIVE_FOLDER_ID } from '../../utils/constants';
-import { getActualDay, getMonthNameInSpanish, sleep } from '../../utils/funcs';
-import { getDriveFolderIdFromLink } from '../parsers/order';
-import { parsePhoneNumberForWhatsApp } from '../parsers/other';
+import { getActualDay, getMonthNameInSpanish } from '../../utils/funcs';
+import { extractDriveFolderIdFromLink, parsePhoneNumberForWhatsApp } from '../parsers/other';
 import { parseAddressFromTotalumToRedeable, parseTotalumShipment } from '../parsers/shipment';
 import { ensureFolderExists, uploadBase64FileToDrive } from '../services/googleDrive';
 import notifySlack, { searchRegexInWhatsappChat, sendWhatsappMessage } from '../services/notifier';
@@ -94,7 +92,7 @@ export async function makeShipment({ totalumShipment, isTest }: CreateLabelImpor
     const shipmentOrders = totalumShipment.pedido;
 
     const uploadLabelPromises = shipmentOrders.map((order) => {
-      const folderId = getDriveFolderIdFromLink(order.documentos);
+      const folderId = extractDriveFolderIdFromLink(order.documentos);
       return uploadBase64FileToDrive(labelBase64, folderId, 'Etiqueta_envio');
     });
 

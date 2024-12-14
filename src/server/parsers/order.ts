@@ -5,6 +5,7 @@ import {
   AutonomousCommunityValue,
   reverseAutonomousCommunityMap,
   TOrderState,
+  TOrderType,
 } from '../../interfaces/enums';
 import { OrderDetailsBody, WhatsappOrder } from '../../interfaces/import/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
@@ -40,9 +41,19 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
 export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
   const { orderType, totalInvoiced, autonomousCommunity, vehiclePlate, firstTouchDate } = whatsappOrder;
 
+  let orderState;
+  if (
+    (orderType === TOrderType.Transferencia && totalInvoiced !== 129.95 && totalInvoiced !== 94.95) ||
+    orderType === TOrderType.EntregaCompraventa
+  ) {
+    orderState = TOrderState.PendientePagoITP;
+  } else {
+    orderState = TOrderState.PendienteTramitarA9;
+  }
+
   return {
     tipo: orderType,
-    estado: totalInvoiced === 129.95 ? TOrderState.PendienteTramitarA9 : TOrderState.PendientePagoITP,
+    estado: orderState,
     comunidad_autonoma: autonomousCommunity,
     matricula: vehiclePlate,
     fecha_de_contacto: firstTouchDate,
@@ -115,12 +126,6 @@ export function parseWebOrderToTotalum(webOrder: WebOrder): Partial<TotalumOrder
   return {};
 }
 
-export function getDriveFolderIdFromLink(driveLink: string): string {
-  const url = new URL(driveLink);
-  const pathSegments = url.pathname.split('/');
-  return pathSegments.pop() || '';
-}
-
 export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
   if (typeof whatsappOrder.firstTouchDate === 'string') {
     whatsappOrder.firstTouchDate = new Date(whatsappOrder.firstTouchDate);
@@ -130,6 +135,9 @@ export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
   }
   if (typeof whatsappOrder.professionalPartner === 'string') {
     whatsappOrder.professionalPartner = JSON.parse(whatsappOrder.professionalPartner);
+  }
+  if (typeof whatsappOrder.collaborator === 'string') {
+    whatsappOrder.collaborator = JSON.parse(whatsappOrder.collaborator);
   }
   if (typeof whatsappOrder.buyer === 'string') {
     whatsappOrder.buyer = JSON.parse(whatsappOrder.buyer);

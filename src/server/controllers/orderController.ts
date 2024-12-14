@@ -21,7 +21,7 @@ import {
   uploadWhatsappOrderFilesToDrive,
 } from '../handlers/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
-import { createTaskByWhatsappOrder, createTasksByWebOrder } from '../helpers/order';
+import { createTaskByWhatsappOrder, createTasksByWebOrder, notifyNewOrderToCollaborator } from '../helpers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -113,6 +113,8 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
 
     await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
     await createTaskByWhatsappOrder(whatsappOrder, folderUrl);
+
+    if (whatsappOrder.collaborator.id) await notifyNewOrderToCollaborator(whatsappOrder, folderUrl)
 
     res.status(201).json({
       success: true,

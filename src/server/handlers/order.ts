@@ -23,7 +23,12 @@ import {
   SHIPMENT_FIELD_CONDITIONS,
 } from '../../utils/checks';
 import { Check } from '../../interfaces/checks';
-import { getOrderFolder, uploadGoogleDocToDrive, uploadStreamFileToDrive } from '../services/googleDrive';
+import {
+  getOrderFolder,
+  shareFolderWithReaderPermission,
+  uploadGoogleDocToDrive,
+  uploadStreamFileToDrive,
+} from '../services/googleDrive';
 import { getCurrentOrNextMonday } from '../../utils/funcs';
 import { checkExistingTotalumClient, parseFromWhatsappToTotalum } from '../helpers/order';
 
@@ -167,6 +172,8 @@ export async function uploadWhatsappOrderFilesToDrive(
   `;
   await uploadGoogleDocToDrive(textFileString, 'Info adicional', folderId);
 
+  if (whatsappOrder.collaborator.id) await shareFolderWithReaderPermission(folderId, whatsappOrder.collaborator.email);
+
   return folderUrl;
 }
 
@@ -174,7 +181,7 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
   try {
     const { order, client, relatedPersonClient, shipment } = parseFromWhatsappToTotalum(whatsappOrder);
 
-    const clientId = await checkExistingTotalumClient(client);
+    const clientId = client && (await checkExistingTotalumClient(client));
 
     const orderResponse = await totalumSdk.crud.createItem('pedido', {
       ...order,
@@ -182,7 +189,9 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
       documentos: folderUrl,
       cliente: clientId,
       socio_profesional: whatsappOrder.professionalPartner.id ?? null,
+      gestoria_colaboradora: whatsappOrder.collaborator.id ?? null,
     });
+
     const newOrderId = orderResponse.data.data.insertedId;
 
     await createTotalumShipmentAndLinkToOrder(shipment, newOrderId);

@@ -30,6 +30,7 @@ export interface WhatsappOrder {
     city: string;
   };
   professionalPartner: WProfessionalPartner;
+  collaborator: WCollaborator;
   buyer: WClient;
   seller: WClient;
 }
@@ -38,6 +39,13 @@ interface WProfessionalPartner {
   id: string | null;
   driveId: string | null;
 }
+
+interface WCollaborator {
+  id: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+}
+
 
 interface WClient {
   clientType: TClientType;

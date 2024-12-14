@@ -1,4 +1,3 @@
-import { title } from 'process';
 import { TTaskState } from '../../interfaces/enums';
 import { WhatsappOrder } from '../../interfaces/import/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
@@ -7,9 +6,9 @@ import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotal
 import { parseOrderFromWhatsappToTotalum } from '../parsers/order';
 import { parseShipmentFromWhatsappToTotalum } from '../parsers/shipment';
 import { createClient, createTask, getClientByNif, updateClientById } from '../services/totalum';
-import { url } from 'inspector';
-import { formatCurrentDateToSpain } from '../parsers/other';
+import { formatCurrentDateToSpain, parsePhoneNumberForWhatsApp } from '../parsers/other';
 import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
+import { sendWhatsappMessage } from '../services/notifier';
 
 export function parseFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): ParsedWhatsappOrder {
   const order = parseOrderFromWhatsappToTotalum(whatsappOrder);
@@ -65,6 +64,21 @@ export async function createTaskByWhatsappOrder(whatsappOrder: WhatsappOrder, fo
   };
 
   await createTask(options);
+}
+
+export async function notifyNewOrderToCollaborator(whatsappOrder: WhatsappOrder, folderUrl: string) {
+  try {
+    const { collaborator, autonomousCommunity, vehiclePlate, orderType } = whatsappOrder;
+
+    const message = `Buenas! *Nueva ${orderType}: ${autonomousCommunity} / ${vehiclePlate}*
+
+${folderUrl}`;
+    const phoneNumber = parsePhoneNumberForWhatsApp(collaborator.phoneNumber);
+
+    await sendWhatsappMessage({ phoneNumber, message });
+  } catch (error) {
+    throw new Error(`Error notifying new order to collaborator. ${error.message}`);
+  }
 }
 
 interface ParsedWhatsappOrder {

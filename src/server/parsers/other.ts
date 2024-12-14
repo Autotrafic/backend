@@ -56,6 +56,12 @@ export function formatCurrentDateToSpain(): string {
   return `${day}/${month} ${time}`;
 }
 
+export function extractDriveFolderIdFromLink(driveLink: string): string {
+  const url = new URL(driveLink);
+  const pathSegments = url.pathname.split('/');
+  return pathSegments.pop() || '';
+}
+
 interface StripeError {
   type: 'StripeInvalidRequestError';
   code: 'email_invalid';

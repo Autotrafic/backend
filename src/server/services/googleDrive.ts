@@ -154,3 +154,26 @@ export async function uploadAdditionalInformationFile(orderData: DatabaseOrder, 
 
   await uploadStreamFileToDrive(orderDataFile as Express.Multer.File, orderFolderId);
 }
+
+export async function shareFolderWithReaderPermission(folderId: string, email: string): Promise<string> {
+  try {
+    if (email) {
+      const permission: drive_v3.Schema$Permission = {
+        type: 'user',
+        role: 'reader',
+        emailAddress: email,
+      };
+
+      await drive.permissions.create({
+        fileId: folderId,
+        requestBody: permission,
+        fields: 'id',
+      });
+    }
+
+    return folderId;
+  } catch (error) {
+    console.error('Failed to share folder:', error);
+    throw error;
+  }
+}
