@@ -153,11 +153,11 @@ export async function uploadWhatsappOrderFilesToDrive(
   let folderUrl: string;
 
   if (whatsappOrder.professionalPartnerDriveId) {
-    folderId = whatsappOrder.professionalPartnerDriveId;
+    folderId = await getOrderFolder(whatsappOrder.vehiclePlate, whatsappOrder.professionalPartnerDriveId);
   } else {
     folderId = await getOrderFolder(whatsappOrder.vehiclePlate, EXPEDIENTES_DRIVE_FOLDER_ID);
-    folderUrl = `https://drive.google.com/drive/folders/${folderId}`;
   }
+  folderUrl = `https://drive.google.com/drive/folders/${folderId}`;
 
   for (const file of files) {
     await uploadStreamFileToDrive(file, folderId);
