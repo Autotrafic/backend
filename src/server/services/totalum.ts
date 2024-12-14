@@ -451,14 +451,14 @@ export async function getAllPendingTasks(): Promise<TTask[]> {
 
 export async function createTask({
   state,
-  description,
   url,
   title,
+  description,
 }: {
   state: TTaskState;
-  description: string;
   url: string;
   title: string;
+  description: string;
 }): Promise<string> {
   try {
     const newTask = await totalumSdk.crud.createItem('tarea', {

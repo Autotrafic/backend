@@ -21,6 +21,7 @@ import {
   uploadWhatsappOrderFilesToDrive,
 } from '../handlers/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
+import { createTaskByWhatsappOrder, createTasksByWebOrder } from '../helpers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -108,8 +109,10 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
     const files = req.files as Express.Multer.File[];
     parseRegisterWhatsappOrderBody(whatsappOrder);
 
-    const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
-    await createExtendedOrderByWhatsappOrder(whatsappOrder, 'folderUrl');
+    // const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
+
+    // await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
+    // await createTaskByWhatsappOrder(whatsappOrder, folderUrl);
 
     res.status(201).json({
       success: true,
@@ -216,23 +219,7 @@ export async function updateDriveDocumentsOfTotalumOrder(
 
     await totalumSdk.crud.editItemById('pedido', totalumOrderId, update);
 
-    const firstTaskOptions = {
-      state: TTaskState.Pending,
-      description: 'Completar Totalum',
-      url: driveFolderUrl,
-      title: totalumOrder.matricula,
-    };
-    await createTask(firstTaskOptions);
-
-    if (order && order.buyer) {
-      const secondTaskOptions = {
-        state: TTaskState.Pending,
-        description: `Enviar provisional\n\n${order.buyer.phoneNumber}`,
-        url: driveFolderUrl,
-        title: `${totalumOrder.matricula} - Nuevo pedido web`,
-      };
-      await createTask(secondTaskOptions);
-    }
+    await createTasksByWebOrder(order, totalumOrder, driveFolderUrl);
 
     res.status(200).json({
       success: true,

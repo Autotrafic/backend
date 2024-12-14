@@ -35,6 +35,27 @@ export function parseStripeError(stripeError: StripeError): CustomStripeError {
   }
 }
 
+export function formatCurrentDateToSpain(): string {
+  const date = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Europe/Madrid",
+  };
+
+  const formatter = new Intl.DateTimeFormat("es-ES", options);
+  const formattedDate = formatter.format(date);
+
+  const [dayMonth, time] = formattedDate.split(", ");
+  const [day, month] = dayMonth.split("/");
+
+  return `${day}/${month} ${time}`;
+}
+
 interface StripeError {
   type: 'StripeInvalidRequestError';
   code: 'email_invalid';
