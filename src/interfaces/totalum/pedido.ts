@@ -99,7 +99,6 @@ type TType =
   | 'Duplicado permiso'
   | 'Distintivo'
   | 'Notificacion'
-  | 'Transferencia ciclomotor'
   | 'Entrega compraventa'
   | 'Transferencia por finalizacion entrega'
   | 'Alta por baja voluntaria'

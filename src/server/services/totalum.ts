@@ -480,6 +480,20 @@ export async function updateTaskById(id: string, update: Partial<TTask>) {
   return response.data.data;
 }
 
+// ------ collaborator ------
+export async function getAllCollaborators(): Promise<TProfessionalPartner[]> {
+  try {
+    const professionalPartners = await totalumSdk.crud.getItems('gestorias_colaboradoras');
+    return professionalPartners.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum collaborators. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum collaborators. Unknown error`);
+    }
+  }
+}
+
 // ------ accounting ------
 export async function createAccounting(accountingInfo: Accounting) {
   const parsedAccounting = parseAccountingFromTotalum(accountingInfo);

@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  getAllTotalumCollaborators,
   getAllTotalumProfessionalParteners,
   getPendingTotalumTasks,
   toggleTotalumActiveHeader,
@@ -14,5 +15,6 @@ totalumRouter.get('/pending-tasks', getPendingTotalumTasks);
 totalumRouter.post('/update-task', updateTotalumTask);
 
 totalumRouter.get('/professional-partners', getAllTotalumProfessionalParteners);
+totalumRouter.get('/collaborators', getAllTotalumCollaborators);
 
 export default totalumRouter;

@@ -24,9 +24,6 @@ function getOrderTypeDetails(orderType: string) {
   if (orderType === 'Transferencia') {
     taxValue = ORDER_TYPES.TRANSFERENCE.taxValue;
     hasShipmentCost = ORDER_TYPES.TRANSFERENCE.hasShipment;
-  } else if (orderType === 'Transferencia ciclomotor') {
-    taxValue = ORDER_TYPES.TRANSFERENCE_CICL.taxValue;
-    hasShipmentCost = ORDER_TYPES.TRANSFERENCE_CICL.hasShipment;
   } else if (orderType === 'Entrega compraventa') {
     taxValue = ORDER_TYPES.NOTIFICATION.taxValue;
     hasShipmentCost = ORDER_TYPES.NOTIFICATION.hasShipment;

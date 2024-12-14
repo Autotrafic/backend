@@ -129,7 +129,6 @@ export enum TOrderType {
   DuplicadoPermiso = 'Duplicado permiso',
   Distintivo = 'Distintivo',
   Notificacion = 'Notificacion',
-  TransferenciaCiclomotor = 'Transferencia ciclomotor',
   EntregaCompraventa = 'Entrega compraventa',
   TransferenciaPorFinalizacionEntrega = 'Transferencia por finalizacion entrega',
   AltaPorBajaVoluntaria = 'Alta por baja voluntaria',
