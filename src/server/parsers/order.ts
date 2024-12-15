@@ -49,6 +49,7 @@ export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): P
     orderState = TOrderState.PendientePagoITP;
   } else {
     orderState = TOrderState.PendienteTramitarA9;
+    console.log('here');
   }
 
   return {
@@ -144,5 +145,8 @@ export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
   }
   if (typeof whatsappOrder.seller === 'string') {
     whatsappOrder.seller = JSON.parse(whatsappOrder.seller);
+  }
+  if (typeof whatsappOrder.totalInvoiced === 'string') {
+    whatsappOrder.totalInvoiced = Number(whatsappOrder.totalInvoiced);
   }
 }
