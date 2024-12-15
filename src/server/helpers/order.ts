@@ -44,7 +44,7 @@ export async function createTasksByWebOrder(
     const secondTaskOptions = {
       state: TTaskState.Pending,
       url: folderUrl,
-      title: `Nuevo pedido - ${totalumOrder.matricula} - ${currentTime}`,
+      title: `✅ Nuevo pedido  /  ${totalumOrder.matricula}  /  ${currentTime}`,
       description: `Enviar mandatos`,
     };
 
@@ -59,7 +59,7 @@ export async function createTaskByWhatsappOrder(whatsappOrder: WhatsappOrder, fo
   const options = {
     state: TTaskState.Pending,
     url: folderUrl,
-    title: `Nuevo pedido - ${vehiclePlate} - ${currentTime}`,
+    title: `✅ Nuevo pedido  /  ${vehiclePlate}  /  ${currentTime}`,
     description: `Enviar mandatos`,
   };
 
