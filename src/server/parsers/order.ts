@@ -49,7 +49,6 @@ export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): P
     orderState = TOrderState.PendientePagoITP;
   } else {
     orderState = TOrderState.PendienteTramitarA9;
-    console.log('here');
   }
 
   return {
@@ -148,5 +147,8 @@ export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
   }
   if (typeof whatsappOrder.totalInvoiced === 'string') {
     whatsappOrder.totalInvoiced = Number(whatsappOrder.totalInvoiced);
+  }
+  if (typeof whatsappOrder.vehiclePlate === 'string') {
+    whatsappOrder.vehiclePlate = whatsappOrder.vehiclePlate.replace(/[a-z]/gi, (char) => char.toUpperCase());
   }
 }
