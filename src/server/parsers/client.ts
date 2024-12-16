@@ -23,11 +23,11 @@ export default function parseClientFromPrimitive(client: TClient): Client {
 export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
   const { clientType, name, firstSurname, secondSurname, nif, phoneNumber } = whatsappOrder.buyer;
   const {
-    name: representativeName,
-    firstSurname: representativeFirstSurname,
-    secondSurname: representativeSecondSurname,
-    nif: representativeNif,
-  } = whatsappOrder.buyer.representative;
+    name: representativeName = '',
+    firstSurname: representativeFirstSurname = '',
+    secondSurname: representativeSecondSurname = '',
+    nif: representativeNif = '',
+  } = whatsappOrder.buyer.representative || {};
 
   if (
     !name &&
@@ -55,11 +55,11 @@ export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): 
 export function parseRelatedPersonFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
   const { clientType, name, firstSurname, secondSurname, nif, phoneNumber } = whatsappOrder.seller;
   const {
-    name: representativeName,
-    firstSurname: representativeFirstSurname,
-    secondSurname: representativeSecondSurname,
-    nif: representativeNif,
-  } = whatsappOrder.seller.representative;
+    name: representativeName = '',
+    firstSurname: representativeFirstSurname = '',
+    secondSurname: representativeSecondSurname = '',
+    nif: representativeNif = '',
+  } = whatsappOrder.seller.representative || {};
 
   if (
     !name &&
