@@ -223,10 +223,18 @@ export async function getClientByNif(clientNif: string): Promise<TClient> {
 }
 
 export async function createClient(client: Partial<TClient>): Promise<string> {
-  const clientResponse = await totalumSdk.crud.createItem('cliente', client);
-  const newClientId = clientResponse.data.data.insertedId;
+  try {
+    const clientResponse = await totalumSdk.crud.createItem('cliente', client);
+    const newClientId = clientResponse.data.data.insertedId;
 
-  return newClientId;
+    return newClientId;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error creando cliente. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error creando cliente. Error desconocido`);
+    }
+  }
 }
 
 export async function updateClientById(clientId: string, update: Partial<TClient>) {
@@ -268,6 +276,54 @@ export async function getExtendedRelatedPersonById(relatedPersonId: string) {
       throw new Error(`Error fetching Totalum related person by id. ${error.response.data.errors}`);
     } else {
       throw new Error(`Error fetching Totalum related person by id. Unknown error`);
+    }
+  }
+}
+
+// ------ representative ------
+export async function getRepresentativeByNif(representativeNif: string): Promise<TRepresentative> {
+  try {
+    const options = { filter: [{ nif: representativeNif }] };
+
+    const response = await totalumSdk.crud.getItems('representante', options);
+
+    return response.data?.data?.[0];
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum client by nif. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum client by nif. Unknown error`);
+    }
+  }
+}
+
+export async function createRepresentative(representative: Partial<TRepresentative>): Promise<string> {
+  try {
+    const representativeResponse = await totalumSdk.crud.createItem('representante', representative);
+    const newRepresentativeId = representativeResponse.data.data.insertedId;
+
+    return newRepresentativeId;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error creando representante. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error creando representante. Error desconocido`);
+    }
+  }
+}
+
+export async function updateRepresentativeById(representativeId: string, update: Partial<TRepresentative>) {
+  try {
+    const cleanedRepresentative = cleanObject(update);
+
+    await totalumSdk.crud.editItemById('representante', representativeId, cleanedRepresentative);
+
+    return representativeId;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error actualizando los datos del representante. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error actualizando los datos del representante. Error desconocido`);
     }
   }
 }
@@ -516,6 +572,30 @@ export async function generatePdfByTemplate(fileOptions: MandateFileOptions) {
       throw new Error(`Error generating Totalum pdf by template. ${error.response.data.errors}`);
     } else {
       throw new Error(`Error generating Totalum pdf by template. Unknown error`);
+    }
+  }
+}
+
+// ------ composed ------
+export async function createClientAndRelatedItem(clientData: Partial<TClient>, relatedItemData: any) {
+  try {
+    if (clientData) {
+      const newClient = await totalumSdk.crud.createItem('cliente', clientData);
+      const newClientId = newClient.data.data.insertedId;
+
+      const newRelatedItem = await totalumSdk.crud.createItem(relatedItemData.collection, {
+        ...relatedItemData.data,
+        cliente: newClientId,
+      });
+
+      const newRelatedItemId = newRelatedItem.data.data.insertedId;
+      return newRelatedItemId;
+    }
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error creando un cliente y un nuevo documento relacionado. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error creando un cliente y un nuevo documento relacionado. Unknown error`);
     }
   }
 }

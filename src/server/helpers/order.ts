@@ -2,10 +2,23 @@ import { TTaskState } from '../../interfaces/enums';
 import { WhatsappOrder } from '../../interfaces/import/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
-import { parseClientFromWhatsappToTotalum, parseRelatedPersonFromWhatsappToTotalum } from '../parsers/client';
+import {
+  parseClientFromWhatsappToTotalum,
+  parseClientRepresentativeFromWhatsappToTotalum,
+  parseRelatedPersonFromWhatsappToTotalum,
+  parseRelatedPersonRepresentativeFromWhatsappToTotalum,
+} from '../parsers/client';
 import { parseOrderFromWhatsappToTotalum } from '../parsers/order';
 import { parseShipmentFromWhatsappToTotalum } from '../parsers/shipment';
-import { createClient, createTask, getClientByNif, updateClientById } from '../services/totalum';
+import {
+  createClient,
+  createRepresentative,
+  createTask,
+  getClientByNif,
+  getRepresentativeByNif,
+  updateClientById,
+  updateRepresentativeById,
+} from '../services/totalum';
 import { formatCurrentDateToSpain, parsePhoneNumberForWhatsApp } from '../parsers/other';
 import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import { sendWhatsappMessage } from '../services/notifier';
@@ -14,15 +27,25 @@ export function parseFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Parsed
   const order = parseOrderFromWhatsappToTotalum(whatsappOrder);
   const client = parseClientFromWhatsappToTotalum(whatsappOrder);
   const relatedPersonClient = parseRelatedPersonFromWhatsappToTotalum(whatsappOrder);
+  const clientRepresentative = parseClientRepresentativeFromWhatsappToTotalum(whatsappOrder);
+  const relatedPersonRepresentative = parseRelatedPersonRepresentativeFromWhatsappToTotalum(whatsappOrder);
   const shipment = parseShipmentFromWhatsappToTotalum(whatsappOrder);
 
-  return { order, client, relatedPersonClient, shipment };
+  return { order, client, relatedPersonClient, clientRepresentative, relatedPersonRepresentative, shipment };
 }
 
 export async function checkExistingTotalumClient(client: Partial<TClient>): Promise<string> {
   const existingClient = await getClientByNif(client.nif);
 
   return existingClient ? await updateClientById(existingClient._id, client) : await createClient(client);
+}
+
+export async function checkExistingTotalumRepresentative(representative: Partial<TRepresentative>): Promise<string> {
+  const existingRepresentative = await getRepresentativeByNif(representative.nif);
+
+  return existingRepresentative
+    ? await updateRepresentativeById(existingRepresentative._id, representative)
+    : await createRepresentative(representative);
 }
 
 export async function createTasksByWebOrder(
@@ -71,6 +94,7 @@ export async function notifyNewOrderToCollaborator(whatsappOrder: WhatsappOrder,
     const { collaborator, autonomousCommunity, vehiclePlate, orderType } = whatsappOrder;
 
     const message = `Buenas! *Nueva ${orderType}: ${autonomousCommunity} / ${vehiclePlate}*
+En cuanto tengamos los mandatos firmados los adjuntamos en la carpeta de Drive
 
 ${folderUrl}`;
     const phoneNumber = parsePhoneNumberForWhatsApp(collaborator.phoneNumber);
@@ -86,4 +110,6 @@ interface ParsedWhatsappOrder {
   client: Partial<TClient>;
   relatedPersonClient: Partial<TClient>;
   shipment: Partial<TotalumShipment>;
+  clientRepresentative: Partial<TRepresentative>;
+  relatedPersonRepresentative: Partial<TRepresentative>;
 }

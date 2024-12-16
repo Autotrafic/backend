@@ -141,9 +141,17 @@ export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
   }
   if (typeof whatsappOrder.buyer === 'string') {
     whatsappOrder.buyer = JSON.parse(whatsappOrder.buyer);
+
+    if (typeof whatsappOrder.buyer.representative === 'string') {
+      whatsappOrder.buyer.representative = JSON.parse(whatsappOrder.buyer.representative);
+    }
   }
   if (typeof whatsappOrder.seller === 'string') {
     whatsappOrder.seller = JSON.parse(whatsappOrder.seller);
+
+    if (typeof whatsappOrder.seller.representative === 'string') {
+      whatsappOrder.seller.representative = JSON.parse(whatsappOrder.seller.representative);
+    }
   }
   if (typeof whatsappOrder.totalInvoiced === 'string') {
     whatsappOrder.totalInvoiced = Number(whatsappOrder.totalInvoiced);

@@ -30,7 +30,11 @@ import {
   uploadStreamFileToDrive,
 } from '../services/googleDrive';
 import { getCurrentOrNextMonday } from '../../utils/funcs';
-import { checkExistingTotalumClient, parseFromWhatsappToTotalum } from '../helpers/order';
+import {
+  checkExistingTotalumClient,
+  checkExistingTotalumRepresentative,
+  parseFromWhatsappToTotalum,
+} from '../helpers/order';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -179,7 +183,8 @@ export async function uploadWhatsappOrderFilesToDrive(
 
 export async function createExtendedOrderByWhatsappOrder(whatsappOrder: WhatsappOrder, folderUrl: string): Promise<string> {
   try {
-    const { order, client, relatedPersonClient, shipment } = parseFromWhatsappToTotalum(whatsappOrder);
+    const { order, client, relatedPersonClient, clientRepresentative, relatedPersonRepresentative, shipment } =
+      parseFromWhatsappToTotalum(whatsappOrder);
 
     const clientId = client && (await checkExistingTotalumClient(client));
 
@@ -196,14 +201,22 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
 
     await createTotalumShipmentAndLinkToOrder(shipment, newOrderId);
 
+    let relatedPersonClientId;
     if (relatedPersonClient) {
-      const relatedPersonClientResponse = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
-      const newRelatedPersonClientId = relatedPersonClientResponse.data.data.insertedId;
+      const newClient = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
+      relatedPersonClientId = newClient.data.data.insertedId;
 
       await totalumSdk.crud.createItem('persona_relacionada', {
-        cliente: newRelatedPersonClientId,
+        cliente: relatedPersonClientId,
         pedido: newOrderId,
       });
+    }
+
+    if (clientRepresentative) {
+      await checkExistingTotalumRepresentative({ ...clientRepresentative, cliente: clientId });
+    }
+    if (relatedPersonRepresentative && relatedPersonClientId) {
+      await checkExistingTotalumRepresentative({ ...relatedPersonRepresentative, cliente: relatedPersonClientId });
     }
 
     return newOrderId;
