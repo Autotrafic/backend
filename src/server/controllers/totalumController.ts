@@ -1,9 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
-import { ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
-import { getAllCollaborators, getAllPendingTasks, getAllProfessionalParteners, updateTaskById } from '../services/totalum';
+import { SendOrderMandatesBody, ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
+import {
+  generatePdfByTemplate,
+  getAllCollaborators,
+  getAllPendingTasks,
+  getAllProfessionalParteners,
+  getExtendedOrderById,
+  updateTaskById,
+} from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
+import { getCurrentSpanishDate } from '../../utils/funcs';
+import { generateMandate } from '../handlers/totalum';
 
 export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, res: Response, next: NextFunction) {
   try {
@@ -58,5 +67,17 @@ export async function getAllTotalumCollaborators(req: Request, res: Response, ne
     res.status(200).json({ collaborators });
   } catch (error) {
     catchControllerError(error, 'Error fetching totalum collaborators', req.body, next);
+  }
+}
+
+export async function sendOrderMandates(req: SendOrderMandatesBody, res: Response, next: NextFunction) {
+  try {
+    const { orderId } = req.body;
+
+    const fileUrl = await generateMandate(orderId);
+
+    res.status(200).json({ fileUrl });
+  } catch (error) {
+    catchControllerError(error, 'Error enviando los mandatos', req.body, next);
   }
 }

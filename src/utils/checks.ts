@@ -1,4 +1,4 @@
-import { ExtendedTotalumOrder } from '../interfaces/totalum/pedido';
+import { TExtendedOrder } from '../interfaces/totalum/pedido';
 import { Check, CheckCondition, CheckType, TCheck } from '../interfaces/checks';
 import { TOrderState } from '../interfaces/enums';
 
@@ -48,8 +48,8 @@ export function generateChecks<T, K extends Record<string, CheckCondition<any>[]
 
 export function handleOrdersWithWrongNumberOfShipments(
   failedChecks: TCheck[],
-  ordersWithoutShipment: ExtendedTotalumOrder[],
-  ordersWithMultipleShipments: ExtendedTotalumOrder[]
+  ordersWithoutShipment: TExtendedOrder[],
+  ordersWithMultipleShipments: TExtendedOrder[]
 ) {
   for (let order of ordersWithoutShipment) {
     failedChecks.push({
@@ -83,8 +83,7 @@ export const ORDER_FIELD_CONDITIONS = {
       checkInfo: { title: 'El pedido no contiene Estado', type: CheckType.BAD },
     },
     {
-      check: (value: string) =>
-        value ? value !== TOrderState.NuevoPedidoWeb : true,
+      check: (value: string) => (value ? value !== TOrderState.NuevoPedidoWeb : true),
       checkInfo: { title: 'El estado del pedido debe actualizarse', type: CheckType.BAD },
     },
   ],

@@ -24,8 +24,8 @@ export interface TotalumOrder {
   _id: string;
 }
 
-export interface ExtendedTotalumOrder extends Omit<TotalumOrder, 'cliente' | 'socio_profesional'> {
-  cliente: TClient;
+export interface TExtendedOrder extends Omit<TotalumOrder, 'cliente' | 'socio_profesional'> {
+  cliente: TExtendedClient;
   envio: ExtendedTotalumShipment[];
   persona_relacionada: TRelatedPersonRelation[];
   socio_profesional: TExtendedProfessionalPartner;

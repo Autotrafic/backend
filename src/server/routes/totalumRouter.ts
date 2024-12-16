@@ -3,6 +3,7 @@ import {
   getAllTotalumCollaborators,
   getAllTotalumProfessionalParteners,
   getPendingTotalumTasks,
+  sendOrderMandates,
   toggleTotalumActiveHeader,
   updateTotalumTask,
 } from '../controllers/totalumController';
@@ -16,5 +17,7 @@ totalumRouter.post('/update-task', updateTotalumTask);
 
 totalumRouter.get('/professional-partners', getAllTotalumProfessionalParteners);
 totalumRouter.get('/collaborators', getAllTotalumCollaborators);
+
+totalumRouter.post('/mandates', sendOrderMandates);
 
 export default totalumRouter;

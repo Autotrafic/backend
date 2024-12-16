@@ -30,3 +30,7 @@ export interface LogAccountingBody extends Request {
     accountingType: TAccountingType;
   };
 }
+
+export interface SendOrderMandatesBody {
+  body: { orderId: string };
+}

@@ -2,7 +2,7 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import { TOrderState, TOrderType, TTaskState } from '../../interfaces/enums';
 import { cleanObject, getCurrentTrimesterDates } from '../../utils/funcs';
-import { ExtendedTotalumOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
+import { TExtendedOrder, TotalumOrder } from '../../interfaces/totalum/pedido';
 import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/totalum/envio';
 import { TTask } from '../../interfaces/totalum/tarea';
 import { Accounting } from '../../interfaces/totalum/contabilidad';
@@ -30,7 +30,7 @@ export async function getOrderById(orderId: string) {
   }
 }
 
-export async function getExtendedOrderById(orderId: string): Promise<ExtendedTotalumOrder> {
+export async function getExtendedOrderById(orderId: string): Promise<TExtendedOrder> {
   const nestedQuery = {
     pedido: {
       tableFilter: {
@@ -40,7 +40,7 @@ export async function getExtendedOrderById(orderId: string): Promise<ExtendedTot
           },
         ],
       },
-      cliente: {},
+      cliente: { representante: { cliente: {} } },
       envio: {},
       persona_relacionada: { cliente: {} },
     },
@@ -112,7 +112,7 @@ export async function getActualTrimesterExtendedOrders() {
 export async function getOrdersByVehiclePlateAndOrderType(
   vehiclePlate: string,
   orderType: TOrderType
-): Promise<ExtendedTotalumOrder[]> {
+): Promise<TExtendedOrder[]> {
   const nestedQuery = {
     pedido: {
       tableFilter: {
@@ -137,7 +137,7 @@ export async function getOrdersByVehiclePlateAndOrderType(
   }
 }
 
-export async function getOrdersPendingToShip(): Promise<ExtendedTotalumOrder[]> {
+export async function getOrdersPendingToShip(): Promise<TExtendedOrder[]> {
   const nestedTreeStructure = {
     pedido: {
       envio: { pedido: {} },
@@ -161,7 +161,7 @@ export async function getOrdersPendingToShip(): Promise<ExtendedTotalumOrder[]> 
   }
 }
 
-export async function updateOrderById(orderId: string, update: Partial<ExtendedTotalumOrder>) {
+export async function updateOrderById(orderId: string, update: Partial<TExtendedOrder>) {
   try {
     await totalumSdk.crud.editItemById('pedido', orderId, update);
   } catch (error) {
@@ -344,7 +344,7 @@ export async function getExtendedShipmentsByParcelId(parcelId: number): Promise<
   }
 }
 
-export async function getShipmentsByOrders(): Promise<ExtendedTotalumOrder[]> {
+export async function getShipmentsByOrders(): Promise<TExtendedOrder[]> {
   const nestedTreeStructure = {
     pedido: {
       envio: {},
@@ -501,4 +501,21 @@ export async function createAccounting(accountingInfo: Accounting) {
   const response = await totalumSdk.crud.createItem('contabilidad', parsedAccounting as any);
 
   return response.data.data;
+}
+
+// ------ file ------
+export async function generatePdfByTemplate(fileOptions: MandateFileOptions) {
+  const { templateId, fileName, data } = fileOptions;
+
+  try {
+    const file = await totalumSdk.files.generatePdfByTemplate(templateId, data, fileName);
+
+    return file.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error generating Totalum pdf by template. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error generating Totalum pdf by template. Unknown error`);
+    }
+  }
 }

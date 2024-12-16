@@ -1,4 +1,4 @@
-import { ExtendedTotalumOrder, TotalumOrder } from './pedido';
+import { TExtendedOrder, TotalumOrder } from './pedido';
 
 export interface TotalumShipment {
   _id: string;
@@ -18,5 +18,5 @@ export interface TotalumShipment {
 }
 
 export interface ExtendedTotalumShipment extends TotalumShipment {
-  pedido: ExtendedTotalumOrder[];
+  pedido: TExtendedOrder[];
 }

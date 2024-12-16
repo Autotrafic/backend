@@ -11,6 +11,25 @@ export function getMonthNameInSpanish(): string {
   return new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(date);
 }
 
+export function getCurrentSpanishDate() {
+  const monthsInSpanish = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+  ];
+
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = monthsInSpanish[now.getMonth()];
+  const day = now.getDate();
+
+  return {
+    year: year,
+    month: month,
+    day: day
+  };
+}
+
 export function getActualDay(): number {
   const today = new Date();
   return today.getDate();
