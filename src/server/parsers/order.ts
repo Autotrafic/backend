@@ -127,36 +127,40 @@ export function parseWebOrderToTotalum(webOrder: WebOrder): Partial<TotalumOrder
 }
 
 export function parseRegisterWhatsappOrderBody(whatsappOrder: WhatsappOrder) {
-  if (typeof whatsappOrder.firstTouchDate === 'string') {
-    whatsappOrder.firstTouchDate = new Date(whatsappOrder.firstTouchDate);
-  }
-  if (typeof whatsappOrder.shipmentAddress === 'string') {
-    whatsappOrder.shipmentAddress = JSON.parse(whatsappOrder.shipmentAddress);
-  }
-  if (typeof whatsappOrder.professionalPartner === 'string') {
-    whatsappOrder.professionalPartner = JSON.parse(whatsappOrder.professionalPartner);
-  }
-  if (typeof whatsappOrder.collaborator === 'string') {
-    whatsappOrder.collaborator = JSON.parse(whatsappOrder.collaborator);
-  }
-  if (typeof whatsappOrder.buyer === 'string') {
-    whatsappOrder.buyer = JSON.parse(whatsappOrder.buyer);
-
-    if (typeof whatsappOrder.buyer.representative === 'string') {
-      whatsappOrder.buyer.representative = JSON.parse(whatsappOrder.buyer.representative);
+  try {
+    if (typeof whatsappOrder.firstTouchDate === 'string') {
+      whatsappOrder.firstTouchDate = new Date(whatsappOrder.firstTouchDate);
     }
-  }
-  if (typeof whatsappOrder.seller === 'string') {
-    whatsappOrder.seller = JSON.parse(whatsappOrder.seller);
-
-    if (typeof whatsappOrder.seller.representative === 'string') {
-      whatsappOrder.seller.representative = JSON.parse(whatsappOrder.seller.representative);
+    if (typeof whatsappOrder.shipmentAddress === 'string') {
+      whatsappOrder.shipmentAddress = JSON.parse(whatsappOrder.shipmentAddress);
     }
-  }
-  if (typeof whatsappOrder.totalInvoiced === 'string') {
-    whatsappOrder.totalInvoiced = Number(whatsappOrder.totalInvoiced);
-  }
-  if (typeof whatsappOrder.vehiclePlate === 'string') {
-    whatsappOrder.vehiclePlate = whatsappOrder.vehiclePlate.replace(/[a-z]/gi, (char) => char.toUpperCase());
+    if (typeof whatsappOrder.professionalPartner === 'string') {
+      whatsappOrder.professionalPartner = JSON.parse(whatsappOrder.professionalPartner);
+    }
+    if (typeof whatsappOrder.collaborator === 'string') {
+      whatsappOrder.collaborator = JSON.parse(whatsappOrder.collaborator);
+    }
+    if (typeof whatsappOrder.buyer === 'string') {
+      whatsappOrder.buyer = JSON.parse(whatsappOrder.buyer);
+
+      if (typeof whatsappOrder.buyer.representative === 'string') {
+        whatsappOrder.buyer.representative = JSON.parse(whatsappOrder.buyer.representative);
+      }
+    }
+    if (typeof whatsappOrder.seller === 'string') {
+      whatsappOrder.seller = JSON.parse(whatsappOrder.seller);
+
+      if (typeof whatsappOrder.seller.representative === 'string') {
+        whatsappOrder.seller.representative = JSON.parse(whatsappOrder.seller.representative);
+      }
+    }
+    if (typeof whatsappOrder.totalInvoiced === 'string') {
+      whatsappOrder.totalInvoiced = Number(whatsappOrder.totalInvoiced);
+    }
+    if (typeof whatsappOrder.vehiclePlate === 'string') {
+      whatsappOrder.vehiclePlate = whatsappOrder.vehiclePlate.replace(/[a-z]/gi, (char) => char.toUpperCase());
+    }
+  } catch (error) {
+    throw new Error(`Error parseando los datos del pedido de WhatsApp, ${error.message}`);
   }
 }
