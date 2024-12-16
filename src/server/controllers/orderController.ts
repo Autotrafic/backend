@@ -109,9 +109,10 @@ export async function registerWhatsappOrder(req: CreateTotalumOrderBody, res: Re
     const files = req.files as Express.Multer.File[];
     parseRegisterWhatsappOrderBody(whatsappOrder);
 
+
     const folderUrl = await uploadWhatsappOrderFilesToDrive(whatsappOrder, files);
 
-    await createExtendedOrderByWhatsappOrder(whatsappOrder, 'folderUrl');
+    await createExtendedOrderByWhatsappOrder(whatsappOrder, folderUrl);
     await createTaskByWhatsappOrder(whatsappOrder, folderUrl);
 
     if (whatsappOrder.collaborator.id) await notifyNewOrderToCollaborator(whatsappOrder, folderUrl);
