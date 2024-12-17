@@ -3,7 +3,7 @@ import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
 import { SendOrderMandatesBody, ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
 import {
-  generatePdfByTemplate,
+  generatePdfByTotalumTemplate,
   getAllCollaborators,
   getAllPendingTasks,
   getAllProfessionalParteners,
@@ -12,7 +12,7 @@ import {
 } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 import { getCurrentSpanishDate } from '../../utils/funcs';
-import { generateMandate } from '../handlers/totalum';
+import { sendMandate } from '../handlers/totalum';
 
 export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, res: Response, next: NextFunction) {
   try {
@@ -74,9 +74,9 @@ export async function sendOrderMandates(req: SendOrderMandatesBody, res: Respons
   try {
     const { orderId } = req.body;
 
-    const fileUrl = await generateMandate(orderId);
+    await sendMandate(orderId);
 
-    res.status(200).json({ fileUrl });
+    res.status(200).json({ success: true });
   } catch (error) {
     catchControllerError(error, 'Error enviando los mandatos', req.body, next);
   }

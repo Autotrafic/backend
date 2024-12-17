@@ -25,6 +25,22 @@ export function parsePhoneNumberForWhatsappId(phoneNumber: string): string {
   return `${formattedNumber}@c.us`;
 }
 
+export function parsePhoneNumberToE164(phoneNumber: string): string | null {
+  if (!phoneNumber) return null;
+  
+  const SPANISH_CODE = "34";
+
+  const cleanedNumber = phoneNumber.replace(/[^\d+]/g, "");
+
+  if (/^\+/.test(cleanedNumber)) {
+    return /^\+\d{1,15}$/.test(cleanedNumber) ? cleanedNumber : null;
+  }
+
+  const formattedNumber = `+${SPANISH_CODE}${cleanedNumber}`;
+
+  return /^\+\d{1,15}$/.test(formattedNumber) ? formattedNumber : null;
+}
+
 export function parseStripeError(stripeError: StripeError): CustomStripeError {
   switch (stripeError.code) {
     case 'email_invalid':

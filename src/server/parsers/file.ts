@@ -2,9 +2,22 @@ import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
 import { nanoid } from 'nanoid';
+import axios from 'axios';
 
 export async function bufferToBase64(buffer: Buffer) {
   return buffer.toString('base64');
+}
+
+export async function parsePdfUrlToBase64(pdfUrl: string) {
+  try {
+    const response = await axios.get(pdfUrl, { responseType: 'arraybuffer' });
+
+    const base64 = Buffer.from(response.data, 'binary').toString('base64');
+
+    return base64;
+  } catch (error) {
+    throw new Error(`Error parseando la url del pdf a base 64: ${error.message}`);
+  }
 }
 
 export function parseBase64ToPDFFile(base64Data: string, fileNameWithoutExtension: string): Promise<Express.Multer.File> {

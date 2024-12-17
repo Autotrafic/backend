@@ -1,18 +1,29 @@
-import { generateFileData } from '../helpers/totalum';
-import { generatePdfByTemplate, getExtendedOrderById } from '../services/totalum';
+import { docusealSendSMSEventId } from '../../utils/totalum';
+import {
+  generateFileData,
+  generateMandateFile,
+  notifyForMandate,
+  sendMandateDocuSeal,
+  updateTotalumForSendedMandates,
+} from '../helpers/totalum';
+import { getExtendedOrderById } from '../services/totalum';
 
-export async function generateMandate(orderId: string) {
+export async function sendMandate(orderId: string) {
   try {
     const order = await getExtendedOrderById(orderId);
-
     const fileData = generateFileData(order);
-    const templateId = '675fd876302266a6d14228ee';
-    const fileName = 'Autorizacion para realizar el tramite.pdf';
+    const { fullName: userFullName, phoneNumber: userPhone } = fileData.client;
 
-    const { url: fileUrl } = await generatePdfByTemplate({ templateId, fileName, data: fileData });
+    const fileUrl = await generateMandateFile(fileData);
+    const submission = await sendMandateDocuSeal({ fileUrl, userFullName, userPhone });
 
-    return fileUrl;
+    const isMandateSended = submission.submission_events.filter((event) => event.id === docusealSendSMSEventId).length > 0;
+
+    if (isMandateSended) {
+      await updateTotalumForSendedMandates({ orderId });
+      await notifyForMandate(fileData);
+    }
   } catch (error) {
-    throw error;
+    throw new Error(`Error generando el mandato, ${error.message}`);
   }
 }

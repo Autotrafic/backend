@@ -560,7 +560,7 @@ export async function createAccounting(accountingInfo: Accounting) {
 }
 
 // ------ file ------
-export async function generatePdfByTemplate(fileOptions: MandateFileOptions) {
+export async function generatePdfByTotalumTemplate(fileOptions: MandateFileOptions) {
   const { templateId, fileName, data } = fileOptions;
 
   try {

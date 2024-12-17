@@ -1,8 +1,20 @@
 import '../loadEnvironment';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export const SENDCLOUD_API = 'https://panel.sendcloud.sc/api/v2/';
 
 export const SHORT_URL_API = 'https://cleanuri.com/api/v1/shorten';
+
+export const DOCUSEAL_API = 'https://api.docuseal.com';
+
+const docusealProdKey = process.env.DOCUSEAL_API_KEY;
+const docusealDevKey = process.env.DOCUSEAL_TEST_API_KEY;
+
+export const docusealOptions = {
+  'X-Auth-Token': isProduction ? docusealProdKey : docusealDevKey,
+  'content-type': 'application/json',
+};
 
 export const VEHICLE_TYPE = { CAR: 1, MOTORBIKE: 2, CARAVAN: 3 };
 

@@ -4,23 +4,25 @@ import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
 import { createClientAndRelatedItem, getAllProfessionalParteners, getClientByNif } from '../services/totalum';
+import { parsePdfUrlToBase64 } from '../parsers/file';
+import { createTemplateFromPdf } from '../services/docuseal';
+import { sendMandate } from '../handlers/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
+    const submission = await sendMandate('66794a7e948441f51c00c501');
 
-    // const options: {
-    //   nombre_o_razon_social: 'Aron',
-    //   nif: '48189968T'
-    // };
-
-    // const client = await createClientAndRelatedItem(clientRepresentativeClient, { collection: 'representante', data: {} });
-
-    // res.status(200).json({client});
+    res.status(200).json({ submission });
   } catch (error) {
-    console.error('Error processing the file:', error.message);
-    res.status(500).send('Error processing the file');
+    console.log(error);
+    const finalError = new CustomError(
+      400,
+      `Error running script. ${error.message}.`,
+      `Error running script. ${error.message}.`
+    );
+    next(finalError);
   }
 }
 
@@ -31,7 +33,7 @@ export async function runSecondScript(req: Request, res: Response, next: NextFun
       socio_profesional: '669cca57ab9b3aabb59ace26',
     });
 
-    res.status(200).json({client: true});
+    res.status(200).json({ client: true });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(

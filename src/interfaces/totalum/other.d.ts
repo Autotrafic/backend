@@ -1,24 +1,31 @@
 interface MandateFileOptions {
   templateId: string;
   fileName: string;
-  data: MandateFileData;
+  data: MandateData;
 }
 
-interface MandateFileData {
-  client: {
-    fullName: string;
-    nif: string;
-    address: string;
-  };
-  company: {
-    fullName: string;
-    nif: string;
-  };
+interface MandateData {
+  client: MandateClient;
+  company: MandateCompany;
   orderType: string;
   vehiclePlate: string;
-  actualDate: {
-    year: number;
-    month: string;
-    day: number;
-  };
+  actualDate: MandateDate;
+}
+
+interface MandateClient {
+  fullName: string;
+  nif: string;
+  address: string;
+  phoneNumber: string;
+}
+
+interface MandateCompany {
+  fullName: string;
+  nif: string;
+}
+
+interface MandateDate {
+  year: number;
+  month: string;
+  day: number;
 }

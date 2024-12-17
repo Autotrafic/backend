@@ -2,6 +2,7 @@ import '../../loadEnvironment';
 import axios from 'axios';
 import { WWebChat, WWebMessage } from '../../interfaces/whatsapp';
 import { parsePhoneNumberForWhatsApp, parsePhoneNumberForWhatsappId } from '../parsers/other';
+import { getPreviousWhatsappMessages } from '../handlers/notifier';
 
 const backendNotifications = process.env.SLACK_BACKEND_NOTIFICATIONS_WEBHOOK_URL;
 const whatsMessagesWebhook = process.env.SLACK_WHATS_MESSAGES_WEBHOOK_URL;
@@ -75,5 +76,17 @@ export default async function notifySlack(message: string, channel?: 'whatsapp_m
     await axios.post(channelWebhook, { text: message });
   } catch (error) {
     console.error('Error sending notification to Slack:', error.message);
+  }
+}
+
+export async function arePreviousWhatsappMessages(phoneNumber: string) {
+  try {
+    if (!phoneNumber) throw new Error(`No se ha podido comprobar si hay mensajes previos ya que no hay número de teléfono`);
+
+    const previousMessages = await getPreviousWhatsappMessages(phoneNumber);
+
+    return previousMessages.length > 0;
+  } catch (error) {
+    throw new Error(`Error consultando si hay mensajes previos con ${phoneNumber}`);
   }
 }
