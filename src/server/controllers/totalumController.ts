@@ -120,7 +120,7 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
           }
         }
 
-        res.status(200).json({ message: 'DocuSeal webhook processed successfully' });
+        res.status(200).json({ message: 'DocuSeal webhook processed successfully!' });
       } else {
         throw new Error(
           `Se ha recibido un webhook de Docuseal de ${DocusealFormWebhookEventType.Completed}, pero no se ha encontrado ningun pedido con el docuseal submission id: ${submissionId}. No se ha actualizado ningun pedido.`
