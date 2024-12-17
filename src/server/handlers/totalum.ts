@@ -1,4 +1,4 @@
-import { docusealSendSMSEventId } from '../../utils/totalum';
+import { DocusealSubmissionStatus } from '../../interfaces/enums';
 import {
   generateFileData,
   generateMandateFile,
@@ -12,18 +12,17 @@ export async function sendMandate(orderId: string) {
   try {
     const order = await getExtendedOrderById(orderId);
     const fileData = generateFileData(order);
-    const { fullName: userFullName, phoneNumber: userPhone } = fileData.client;
 
     const fileUrl = await generateMandateFile(fileData);
     const submission = await sendMandateDocuSeal({ fileUrl, fileData });
 
-    const isMandateSended = submission.submission_events.filter((event) => event.id === docusealSendSMSEventId).length > 0;
+    const isMandateSended = submission?.[0]?.status === DocusealSubmissionStatus.Awaiting;
 
     if (isMandateSended) {
-      await updateTotalumForSendedMandates({ orderId, submissionId: submission.id });
+      await updateTotalumForSendedMandates({ orderId, submissionId: submission[0].id });
       await notifyForMandate(fileData);
     }
   } catch (error) {
-    throw new Error(`Error generando el mandato, ${error.message}`);
+    throw new Error(`Error generando el mandato: ${error.message}`);
   }
 }

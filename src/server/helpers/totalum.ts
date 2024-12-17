@@ -1,6 +1,5 @@
 import { TOrderMandate } from '../../interfaces/enums';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
-import { docusealSendSMSEventId } from '../../utils/totalum';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
 import { createSubmission, createTemplateFromPdf } from '../services/docuseal';
@@ -8,70 +7,90 @@ import { arePreviousWhatsappMessages, sendWhatsappMessage } from '../services/no
 import { generatePdfByTotalumTemplate, updateOrderById } from '../services/totalum';
 
 export async function notifyForMandate(fileData: MandateData) {
-  const { client, vehiclePlate } = fileData;
-  const arePreviousMessages = await arePreviousWhatsappMessages(client.phoneNumber);
+  try {
+    const { client, vehiclePlate } = fileData;
+    const arePreviousMessages = await arePreviousWhatsappMessages(client.phoneNumber);
 
-  function getClientNotifyMessage() {
-    return `Acabamos de enviar los mandatos para firmar por SMS a nombre de *DocuSeal*`;
-  }
+    function getClientNotifyMessage() {
+      return `Acabamos de enviar los mandatos para firmar por SMS a nombre de *DocuSeal*`;
+    }
 
-  function getRelatedPersonNotifyMessage(customerName: string, vehiclePlate: string) {
-    return `*Muy buenas${customerName ? `, ${customerName}` : ''} 👋🏼*
+    function getRelatedPersonNotifyMessage(customerName: string, vehiclePlate: string) {
+      return `*Muy buenas${customerName ? `, ${customerName}` : ''} 👋🏼*
 
 Le saludamos desde *Gestoría AutoTrafic*.
 
 Tenemos una transferencia de vehículo ${
-      vehiclePlate ? `con matrícula ${vehiclePlate}` : ''
-    } pendiente y necesitamos su autorización para continuar con el trámite.
+        vehiclePlate ? `con matrícula ${vehiclePlate}` : ''
+      } pendiente y necesitamos su autorización para continuar con el trámite.
 
 Le hemos enviado un mandato para firmar por SMS a nombre de *DocuSeal*. Una vez recibida su firma, procederemos con el trámite y enviaremos el nuevo permiso de circulación al comprador ✅.
 
 Gracias por su tiempo!`;
-  }
+    }
 
-  let notifyMessage: string = '';
-  if (arePreviousMessages) {
-    notifyMessage = getClientNotifyMessage();
-  } else {
-    notifyMessage = getRelatedPersonNotifyMessage(client.fullName, vehiclePlate);
-  }
+    let notifyMessage: string = '';
+    if (arePreviousMessages) {
+      notifyMessage = getClientNotifyMessage();
+    } else {
+      notifyMessage = getRelatedPersonNotifyMessage(client.fullName, vehiclePlate);
+    }
 
-  const sendMessageOptions = { phoneNumber: client.phoneNumber, message: notifyMessage };
-  await sendWhatsappMessage(sendMessageOptions);
+    const sendMessageOptions = { phoneNumber: client.phoneNumber, message: notifyMessage };
+    await sendWhatsappMessage(sendMessageOptions);
+  } catch (error) {
+    throw new Error(`Error notificando el mandato: ${error.message}`);
+  }
 }
 
 export async function updateTotalumForSendedMandates({ orderId, submissionId }: { orderId: string; submissionId: number }) {
-  await updateOrderById(orderId, { mandatos: TOrderMandate.Firmados, docuseal_submission_id: submissionId });
+  try {
+    await updateOrderById(orderId, { mandatos: TOrderMandate.Firmados, docuseal_submission_id: submissionId });
+  } catch (error) {
+    throw new Error(`Error actualizando totalum una vez enviados los mandatos: ${error.message}`);
+  }
 }
 
-export async function sendMandateDocuSeal({ fileUrl, fileData }: SendMandateDocuSeal): Promise<DSubmissionDone> {
-  const { client, vehiclePlate } = fileData;
+export async function sendMandateDocuSeal({ fileUrl, fileData }: SendMandateDocuSeal): Promise<DSubmissionDone[]> {
+  try {
+    const { client, vehiclePlate } = fileData;
 
-  const pdfBase64 = await parsePdfUrlToBase64(fileUrl);
+    const pdfBase64 = await parsePdfUrlToBase64(fileUrl);
 
-  const template = await createTemplateFromPdf({ pdfBase64, userFullName: client.fullName, vehiclePlate });
-  const templateId = template.id;
+    const template = await createTemplateFromPdf({ pdfBase64, userFullName: client.fullName, vehiclePlate });
+    const templateId = template.id;
 
-  const submission = await createSubmission({ templateId, userFullName: client.fullName, userPhone: client.phoneNumber });
+    const submission = await createSubmission({ templateId, userFullName: client.fullName, userPhone: client.phoneNumber });
 
-  return submission;
+    return submission;
+  } catch (error) {
+    throw new Error(`Error enviando los mandatos mediante docuseal: ${error.message}`);
+  }
 }
 
 export async function generateMandateFile(fileData: MandateData): Promise<string> {
-  const totalumTemplateId = '675fd876302266a6d14228ee';
-  const fileName = 'Autorizacion para realizar el tramite.pdf';
+  try {
+    const totalumTemplateId = '675fd876302266a6d14228ee';
+    const fileName = 'Autorizacion para realizar el tramite.pdf';
 
-  const { url: fileUrl } = await generatePdfByTotalumTemplate({ templateId: totalumTemplateId, fileName, data: fileData });
+    const { url: fileUrl } = await generatePdfByTotalumTemplate({ templateId: totalumTemplateId, fileName, data: fileData });
 
-  return fileUrl;
+    return fileUrl;
+  } catch (error) {
+    throw new Error(`Error generando el archivo de mandato: ${error.message}`);
+  }
 }
 
 export function generateFileData(order: TExtendedOrder): MandateData {
-  const mandateFileData = parseTotalumOrderToMandateFileData(order);
+  try {
+    const mandateFileData = parseTotalumOrderToMandateFileData(order);
 
-  validateMandateFileData(mandateFileData);
+    validateMandateFileData(mandateFileData);
 
-  return mandateFileData;
+    return mandateFileData;
+  } catch (error) {
+    throw new Error(`Error generando los datos para el archivo de mandato: ${error.message}`);
+  }
 }
 
 function validateMandateFileData(fileData: MandateData): boolean {

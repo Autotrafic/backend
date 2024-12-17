@@ -11,15 +11,21 @@ const ordersWebhook = process.env.SLACK_ORDERS_WEBHOOK_URL;
 const whatsappApi = process.env.AUTOTRAFIC_WHATSAPP_API;
 
 export async function sendWhatsappMessage({ phoneNumber, message }: { phoneNumber: string; message: string }) {
-  const endpoint = `${whatsappApi}/messages/send`;
-  const options = { phoneNumber, message };
-
   try {
+    const formattedPhoneNumber = parsePhoneNumberForWhatsApp(phoneNumber);
+
+    const endpoint = `${whatsappApi}/messages/send`;
+    const options = { phoneNumber: formattedPhoneNumber, message };
+
     const response = await axios.post(endpoint, options);
 
     return response.data;
   } catch (error) {
-    throw new Error(error);
+    if (error.response.data) {
+      throw new Error(`Error enviando el mensaje de whatsapp: ${error.response.data.error}`);
+    } else {
+      throw new Error(`Error enviando el mensaje de whatsapp: ${error.response.data.error}`);
+    }
   }
 }
 

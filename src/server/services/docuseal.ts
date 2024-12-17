@@ -63,7 +63,7 @@ export async function createSubmission({
   userFullName,
   userPhone,
   userRole = 'MANDANTE',
-}: CreateSubmission): Promise<DSubmissionDone> {
+}: CreateSubmission): Promise<DSubmissionDone[]> {
   if (!templateId || !userFullName || !userPhone) throw new Error('Faltan datos');
 
   try {

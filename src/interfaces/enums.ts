@@ -174,6 +174,13 @@ export enum DocusealFormWebhookEventType {
   Declined = 'form.declined',
 }
 
+export enum DocusealSubmissionStatus {
+  Sent = 'sent',
+  Awaiting = 'awaiting',
+  Pending = 'pending',
+  Completed = 'completed'
+}
+
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,
   Aragón: AutonomousCommunityValue.ARAGON,

@@ -50,7 +50,11 @@ export async function getExtendedOrderById(orderId: string): Promise<TExtendedOr
     const response = await totalumSdk.crud.getNestedData(nestedQuery);
     return response.data.data[0];
   } catch (error) {
-    throw new Error(`Error fetching Totalum shipment by id. ${error}`);
+    if (error.response.data.errors) {
+      throw new Error(`Error obteniendo el pedido extenso mediante id: ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error obteniendo el pedido extenso mediante id: ${error.response.data.errors}`);
+    }
   }
 }
 
@@ -197,7 +201,11 @@ export async function updateOrderById(orderId: string, update: Partial<TExtended
   try {
     await totalumSdk.crud.editItemById('pedido', orderId, update);
   } catch (error) {
-    throw new Error(`Error updating Totalum order. ${error}`);
+    if (error.response.data.errors) {
+      throw new Error(`Error actualizando el pedido mediante id: ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error actualizando el pedido mediante id: ${error.response.data.errors}`);
+    }
   }
 }
 
