@@ -95,8 +95,7 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
     const webhook = req.body;
 
     if (webhook.event_type === DocusealFormWebhookEventType.Completed) {
-      console.log(webhook);
-      const submissionId = webhook.submission.id;
+      const submissionId = webhook.data.id;
       const mandates = await getMandatesByFilter('docuseal_submission_id', submissionId);
 
       if (mandates.length > 0) {
