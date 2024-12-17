@@ -6,13 +6,14 @@ import sseClientManager from '../../sse/sseClientManager';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { createTemplateFromPdf } from '../services/docuseal';
 import { sendMandates } from '../handlers/totalum';
+import { getMandatesByFilter } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    // const order = await getExtendedOrderByFilterWithRegex('_id', '66794a7e948441f51c00c501')
-    // res.status(200).json({ order });
+    const mandates = await getMandatesByFilter('docuseal_submission_id', 1135953);
+    res.status(200).json({ mandates });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(

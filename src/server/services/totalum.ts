@@ -582,6 +582,7 @@ export async function getMandatesByFilter(propertyToFilter: string, value: any):
           },
         ],
       },
+      cliente: {},
     },
   };
 
@@ -623,7 +624,6 @@ export async function updateMandateById(mandateId: string, update: Partial<TMand
     }
   }
 }
-
 
 // ------ accounting ------
 export async function createAccounting(accountingInfo: Accounting) {

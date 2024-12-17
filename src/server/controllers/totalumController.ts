@@ -99,6 +99,7 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
       const mandates = await getMandatesByFilter('docuseal_submission_id', submissionId);
 
       if (mandates.length > 0) {
+        console.log('mandate', mandates);
         for (let mandate of mandates) {
           await updateMandateById(mandate._id, { signed: 'true' });
 
