@@ -6,7 +6,6 @@ import {
   getAllCollaborators,
   getAllPendingTasks,
   getAllProfessionalParteners,
-  getMandateById,
   getMandatesByFilter,
   getOrderById,
   updateMandateById,

@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { DOCUSEAL_API, docusealOptions } from '../../utils/constants';
 
-export async function createTemplateFromPdf({ pdfBase64, userFullName, vehiclePlate }: CreateTemplateFromPdf): Promise<DocusealTemplate> {
+export async function createTemplateFromPdf({
+  pdfBase64,
+  userFullName,
+  vehiclePlate,
+}: CreateTemplateFromPdf): Promise<DocusealTemplate> {
   try {
     const options = {
       method: 'POST',
@@ -78,6 +82,7 @@ export async function createSubmission({
         submitters: [{ role: userRole, name: userFullName, phone: userPhone, send_sms: true, send_email: false }],
       },
     };
+    console.log('docuseal submission optionsssssssssssssssssssssss', options);
 
     const newSubmission = await axios.request(options);
 

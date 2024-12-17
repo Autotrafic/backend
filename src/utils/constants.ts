@@ -1,6 +1,6 @@
 import '../loadEnvironment';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.NODE_ENV !== 'production';
 
 export const SENDCLOUD_API = 'https://panel.sendcloud.sc/api/v2/';
 
@@ -12,7 +12,7 @@ const docusealProdKey = process.env.DOCUSEAL_API_KEY;
 const docusealDevKey = process.env.DOCUSEAL_TEST_API_KEY;
 
 export const docusealOptions = {
-  'X-Auth-Token': isProduction ? docusealProdKey : docusealDevKey,
+  'X-Auth-Token': isTest ? docusealDevKey : docusealProdKey,
   'content-type': 'application/json',
 };
 
