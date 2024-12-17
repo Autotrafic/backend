@@ -13,7 +13,7 @@ interface MandateData {
 }
 
 interface MandateClient {
-  type: 'client' | 'related_person';
+  type: TMandateIsFor;
   fullName: string;
   nif: string;
   address: string;

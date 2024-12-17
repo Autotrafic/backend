@@ -3,18 +3,16 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import sseClientManager from '../../sse/sseClientManager';
-import { createClientAndRelatedItem, getAllProfessionalParteners, getClientByNif } from '../services/totalum';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { createTemplateFromPdf } from '../services/docuseal';
-import { sendMandate } from '../handlers/totalum';
+import { sendMandates } from '../handlers/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    // const submission = await sendMandate('66794a7e948441f51c00c501');
-
-    res.status(200).json({ submission: true });
+    // const order = await getExtendedOrderByFilterWithRegex('_id', '66794a7e948441f51c00c501')
+    // res.status(200).json({ order });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(

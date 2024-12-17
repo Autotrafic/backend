@@ -1,11 +1,11 @@
 import { TOrderMandate } from '../../interfaces/enums';
-import { MandateIsFor } from '../../interfaces/import/totalum';
+import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
 import { createSubmission, createTemplateFromPdf } from '../services/docuseal';
 import { arePreviousWhatsappMessages, sendWhatsappMessage } from '../services/notifier';
-import { generatePdfByTotalumTemplate, updateOrderById } from '../services/totalum';
+import { createMandate, generatePdfByTotalumTemplate, getMandatesByFilter, updateOrderById } from '../services/totalum';
 
 export async function notifyForMandate(fileData: MandateData) {
   try {
@@ -44,9 +44,24 @@ Gracias por su tiempo!`;
   }
 }
 
-export async function updateTotalumForSendedMandates({ orderId, submissionId }: { orderId: string; submissionId: number }) {
+export async function updateTotalumForSendedMandates({
+  orderId,
+  submissionId,
+  fileData,
+}: {
+  orderId: string;
+  submissionId: number;
+  fileData: MandateData;
+}) {
   try {
-    await updateOrderById(orderId, { mandatos: TOrderMandate.Firmados, docuseal_submission_id: submissionId });
+    const mandateOptions: Partial<TMandate> = {
+      totalum_order_id: orderId,
+      docuseal_submission_id: submissionId,
+      mandate_is_for: fileData.client.type,
+    };
+
+    await createMandate(mandateOptions);
+    await updateOrderById(orderId, { mandatos: TOrderMandate.Enviados });
   } catch (error) {
     throw new Error(`Error actualizando totalum una vez enviados los mandatos: ${error.message}`);
   }
@@ -82,7 +97,7 @@ export async function generateMandateFile(fileData: MandateData): Promise<string
   }
 }
 
-export function generateFileData(order: TExtendedOrder, mandateIsFor: MandateIsFor): MandateData[] {
+export function generateFileData(order: TExtendedOrder, mandateIsFor: DMandateIsFor): MandateData[] {
   try {
     const mandatesFilesData = parseTotalumOrderToMandateFileData(order, mandateIsFor);
 
@@ -154,6 +169,28 @@ export function validateRelatedPerson(relatedPersons: TExtendedRelatedPerson[]):
     );
   } else {
     return relatedPersons[0];
+  }
+}
+
+export async function areOrderMandatesSigned(orderId: string): Promise<boolean> {
+  try {
+    const orderMandates = await getMandatesByFilter('totalum_order_id', orderId);
+
+    const hasAtLeastOneSigned = (mandates: TMandate[], type: TMandateIsFor) =>
+      mandates.some((mandate) => mandate.mandate_is_for === type && mandate.signed === 'true');
+
+    const clientSigned = hasAtLeastOneSigned(orderMandates, 'client');
+    const relatedPersonSigned = hasAtLeastOneSigned(orderMandates, 'related_person');
+
+    const hasClientMandates = orderMandates.some((m) => m.mandate_is_for === 'client');
+    const hasRelatedPersonMandates = orderMandates.some((m) => m.mandate_is_for === 'related_person');
+
+    const clientsValid = !hasClientMandates || clientSigned;
+    const relatedPersonsValid = !hasRelatedPersonMandates || relatedPersonSigned;
+
+    return clientsValid && relatedPersonsValid;
+  } catch (error) {
+    throw new Error(`Error comprobando si los mandatos del pedido se han firmado: ${error.message}`);
   }
 }
 

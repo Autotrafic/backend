@@ -1,10 +1,10 @@
-import { MandateIsFor } from '../../interfaces/import/totalum';
+import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { getCurrentSpanishDate } from '../../utils/funcs';
 import { validateRelatedPerson } from '../helpers/totalum';
 import { parsePhoneNumberToE164 } from './other';
 
-export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandateIsFor: MandateIsFor): MandateData[] {
+export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandateIsFor: DMandateIsFor): MandateData[] {
   try {
     const { cliente, matricula, tipo, persona_relacionada: relatedPersons } = order;
 

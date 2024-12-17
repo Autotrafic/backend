@@ -21,7 +21,7 @@ export async function getOrderFromDatabaseOrderId(databaseOrderId: string): Prom
   return totalumOrder;
 }
 
-export async function getOrderById(orderId: string) {
+export async function getOrderById(orderId: string): Promise<TotalumOrder> {
   try {
     const clientResponse = await totalumSdk.crud.getItemById('pedido', orderId);
     return clientResponse.data.data;
@@ -54,38 +54,6 @@ export async function getExtendedOrderById(orderId: string): Promise<TExtendedOr
       throw new Error(`Error obteniendo el pedido extenso mediante id: ${error.response.data.errors}`);
     } else {
       throw new Error(`Error obteniendo el pedido extenso mediante id: ${error.response.data.errors}`);
-    }
-  }
-}
-
-export async function getExtendedOrderByFilter(totalumPropertyToFilter: string, value: any): Promise<TExtendedOrder[]> {
-  const nestedQuery = {
-    pedido: {
-      tableFilter: {
-        filter: [
-          {
-            [totalumPropertyToFilter]: value,
-          },
-        ],
-      },
-      cliente: { representante: { cliente: {} } },
-      envio: {},
-      persona_relacionada: { cliente: {} },
-    },
-  };
-
-  try {
-    const response = await totalumSdk.crud.getNestedData(nestedQuery);
-    return response.data.data;
-  } catch (error) {
-    if (error.response.data.errors) {
-      throw new Error(
-        `Error obteniendo el pedido con los filtros: Propiedad para filtrar: ${totalumPropertyToFilter}, valor: ${value}. ${error.response.data.errors}`
-      );
-    } else {
-      throw new Error(
-        `Error obteniendo el pedido con los filtros: Propiedad para filtrar: ${totalumPropertyToFilter}, valor: ${value}. Error desconocido`
-      );
     }
   }
 }
@@ -589,6 +557,73 @@ export async function getAllCollaborators(): Promise<TProfessionalPartner[]> {
     }
   }
 }
+
+// ------ mandate ------
+export async function getMandateById(mandateId: string): Promise<TMandate> {
+  try {
+    const mandateResponse = await totalumSdk.crud.getItemById('mandato', mandateId);
+    return mandateResponse.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error obteniendo el documento mandato de Totalum mediante su id: ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error obteniendo el documento mandato de Totalum mediante su id. Error desconocido`);
+    }
+  }
+}
+
+export async function getMandatesByFilter(propertyToFilter: string, value: any): Promise<TMandate[]> {
+  const nestedQuery = {
+    mandato: {
+      tableFilter: {
+        filter: [
+          {
+            [propertyToFilter]: value,
+          },
+        ],
+      },
+    },
+  };
+
+  try {
+    const mandatesResponse = await totalumSdk.crud.getNestedData(nestedQuery);
+    return mandatesResponse.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error obteniendo los mandatos de Totalum mediante filtros: ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error obteniendo los mandatos de Totalum mediante filtros. Error desconocido`);
+    }
+  }
+}
+
+export async function createMandate(mandate: Partial<TMandate>): Promise<string> {
+  try {
+    const mandateResponse = await totalumSdk.crud.createItem('mandato', mandate);
+    const newMandateId = mandateResponse.data.data.insertedId;
+
+    return newMandateId;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error creando mandato en Totalum. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error creando mandato en totalum. Error desconocido`);
+    }
+  }
+}
+
+export async function updateMandateById(mandateId: string, update: Partial<TMandate>) {
+  try {
+    await totalumSdk.crud.editItemById('mandato', mandateId, update);
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error actualizando el mandato mediante id: ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error actualizando el mandato mediante id: ${error.response.data.errors}`);
+    }
+  }
+}
+
 
 // ------ accounting ------
 export async function createAccounting(accountingInfo: Accounting) {

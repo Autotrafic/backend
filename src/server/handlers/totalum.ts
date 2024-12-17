@@ -1,5 +1,5 @@
 import { DocusealSubmissionStatus } from '../../interfaces/enums';
-import { MandateIsFor } from '../../interfaces/import/totalum';
+import { DMandateIsFor } from '../../interfaces/import/totalum';
 import {
   generateFileData,
   generateMandateFile,
@@ -9,7 +9,7 @@ import {
 } from '../helpers/totalum';
 import { getExtendedOrderById } from '../services/totalum';
 
-export async function sendMandate(orderId: string, mandateIsFor: MandateIsFor) {
+export async function sendMandates(orderId: string, mandateIsFor: DMandateIsFor) {
   try {
     const order = await getExtendedOrderById(orderId);
     const filesData = generateFileData(order, mandateIsFor);
@@ -21,7 +21,7 @@ export async function sendMandate(orderId: string, mandateIsFor: MandateIsFor) {
       const isMandateSended = submission?.[0]?.status === DocusealSubmissionStatus.Awaiting;
 
       if (isMandateSended) {
-        await updateTotalumForSendedMandates({ orderId, submissionId: submission[0].id });
+        await updateTotalumForSendedMandates({ orderId, submissionId: submission[0].id, fileData });
         await notifyForMandate(fileData);
       }
     }

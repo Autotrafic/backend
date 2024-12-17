@@ -3,24 +3,25 @@ import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
 import { SendOrderMandatesBody, ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
 import {
-  generatePdfByTotalumTemplate,
   getAllCollaborators,
   getAllPendingTasks,
   getAllProfessionalParteners,
-  getExtendedOrderByFilter,
-  getExtendedOrderById,
+  getMandateById,
+  getMandatesByFilter,
+  getOrderById,
+  updateMandateById,
   updateOrderById,
   updateTaskById,
 } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
-import { getCurrentSpanishDate } from '../../utils/funcs';
-import { sendMandate } from '../handlers/totalum';
+import { sendMandates } from '../handlers/totalum';
 import { DocusealFormWebhookEventType, TOrderMandate } from '../../interfaces/enums';
 import { getSubmissionById } from '../services/docuseal';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { uploadBase64FileToDrive } from '../services/googleDrive';
 import { extractDriveFolderIdFromLink } from '../parsers/other';
 import { nanoid } from 'nanoid';
+import { areOrderMandatesSigned } from '../helpers/totalum';
 
 export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, res: Response, next: NextFunction) {
   try {
@@ -82,7 +83,7 @@ export async function sendOrderMandates(req: SendOrderMandatesBody, res: Respons
   try {
     const { orderId, mandateIsFor } = req.body;
 
-    await sendMandate(orderId, mandateIsFor);
+    await sendMandates(orderId, mandateIsFor);
 
     res.status(200).json({ success: true });
   } catch (error) {
@@ -96,11 +97,13 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
 
     if (webhook.event_type === DocusealFormWebhookEventType.Completed) {
       const submissionId = webhook.data.submission_id;
-      const orders = await getExtendedOrderByFilter('docuseal_submission_id', submissionId);
+      const mandates = await getMandatesByFilter('docuseal_submission_id', submissionId);
 
-      if (orders.length > 0) {
-        for (let order of orders) {
-          await updateOrderById(order._id, { mandatos: TOrderMandate.Firmados });
+      if (mandates.length > 0) {
+        for (let mandate of mandates) {
+          await updateMandateById(mandate._id, { signed: 'true' });
+
+          const order = await getOrderById(mandate.totalum_order_id);
 
           const submission = await getSubmissionById(submissionId);
           const signedFiles = submission.documents;
@@ -111,8 +114,13 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
             const fileName = `Mandato firmado ${nanoid(4)}`;
 
             await uploadBase64FileToDrive(base64File, driveFolderId, fileName);
+
+            const mandatesSigned = await areOrderMandatesSigned(order._id);
+            if (mandatesSigned) await updateOrderById(order._id, { mandatos: TOrderMandate.Firmados });
           }
         }
+
+        res.status(200).json({ message: 'DocuSeal webhook processed successfully' });
       } else {
         throw new Error(
           `Se ha recibido un webhook de Docuseal de ${DocusealFormWebhookEventType.Completed}, pero no se ha encontrado ningun pedido con el docuseal submission id: ${submissionId}. No se ha actualizado ningun pedido.`
