@@ -13,6 +13,19 @@ interface TClient {
   id: string;
 }
 
+interface TExtendedRelatedPerson extends TRelatedPerson {
+  cliente: TExtendedClient;
+}
+
+interface TRelatedPerson {
+  _id: string;
+  nombre_o_razon_social: string;
+  primer_apellido: string;
+  segundo_apellido: string;
+  telefono: string;
+  cliente: string;
+}
+
 interface TRelatedPersonRelation {
   _id: string;
   cliente: {

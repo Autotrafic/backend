@@ -40,9 +40,9 @@ export async function getExtendedOrderById(orderId: string): Promise<TExtendedOr
           },
         ],
       },
-      cliente: { representante: { cliente: {} } },
+      cliente: { representante: {} },
       envio: {},
-      persona_relacionada: { cliente: {} },
+      persona_relacionada: { cliente: { representante: {} } },
     },
   };
 

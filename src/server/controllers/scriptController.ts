@@ -12,9 +12,9 @@ const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const submission = await sendMandate('66794a7e948441f51c00c501');
+    // const submission = await sendMandate('66794a7e948441f51c00c501');
 
-    res.status(200).json({ submission });
+    res.status(200).json({ submission: true });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(

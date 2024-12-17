@@ -80,9 +80,9 @@ export async function getAllTotalumCollaborators(req: Request, res: Response, ne
 
 export async function sendOrderMandates(req: SendOrderMandatesBody, res: Response, next: NextFunction) {
   try {
-    const { orderId } = req.body;
+    const { orderId, mandateIsFor } = req.body;
 
-    await sendMandate(orderId);
+    await sendMandate(orderId, mandateIsFor);
 
     res.status(200).json({ success: true });
   } catch (error) {

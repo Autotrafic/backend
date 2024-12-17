@@ -18,7 +18,7 @@ export async function createTemplateFromPdf({ pdfBase64, userFullName, vehiclePl
                 name: userFullName,
                 role: 'MANDANTE',
                 type: 'signature',
-                areas: [{ x: 240, y: 650, w: 120, h: 40, page: 1 }],
+                areas: [{ x: 242, y: 650, w: 120, h: 40, page: 1 }],
               },
             ],
           },

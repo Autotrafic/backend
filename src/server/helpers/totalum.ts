@@ -1,4 +1,5 @@
 import { TOrderMandate } from '../../interfaces/enums';
+import { MandateIsFor } from '../../interfaces/import/totalum';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
@@ -81,53 +82,79 @@ export async function generateMandateFile(fileData: MandateData): Promise<string
   }
 }
 
-export function generateFileData(order: TExtendedOrder): MandateData {
+export function generateFileData(order: TExtendedOrder, mandateIsFor: MandateIsFor): MandateData[] {
   try {
-    const mandateFileData = parseTotalumOrderToMandateFileData(order);
+    const mandatesFilesData = parseTotalumOrderToMandateFileData(order, mandateIsFor);
 
-    validateMandateFileData(mandateFileData);
+    validateMandateFileData(mandatesFilesData);
 
-    return mandateFileData;
+    return mandatesFilesData;
   } catch (error) {
     throw new Error(`Error generando los datos para el archivo de mandato: ${error.message}`);
   }
 }
 
-function validateMandateFileData(fileData: MandateData): boolean {
-  const { client, company, orderType, vehiclePlate, actualDate } = fileData;
-  let isValid = true;
-
-  if (client.nif && company.nif) {
-    if (!client.fullName) throw new Error('El representante no contiene nombre');
-
-    if (!client.nif) throw new Error('El representante no contiene NIF');
-
-    if (!client.address) throw new Error('El representante no contiene dirección');
-
-    if (!client.phoneNumber) throw new Error('El cliente no contiene teléfono');
-
-    if (!company.fullName) throw new Error('La empresa no contiene nombre');
-
-    if (!company.nif) throw new Error('La empresa no contiene NIF');
-  } else {
-    if (!client.fullName) throw new Error('El cliente no contiene nombre');
-
-    if (!client.nif) throw new Error('El cliente no contiene NIF');
-
-    if (!client.address) throw new Error('El cliente no contiene dirección');
+export function validateMandateFileData(fileDataArray: MandateData[]): boolean {
+  if (!Array.isArray(fileDataArray) || fileDataArray.length === 0) {
+    throw new Error('No se recibieron datos de mandato para validar.');
   }
 
-  if (!orderType) throw new Error("El pedido no contiene 'Tipo de Pedido'");
+  fileDataArray.forEach((fileData) => {
+    const { client, company, orderType, vehiclePlate, actualDate } = fileData;
 
-  if (!vehiclePlate) throw new Error('El pedido no contiene matrícula');
+    let subjectType;
+    if (client.type === 'client') subjectType = 'cliente';
+    if (client.type === 'related_person') subjectType = 'persona relacionada';
 
-  if (!actualDate.year) throw new Error('La fecha actual no contiene año (contactar con soporte)');
+    if (client.nif && company.nif) {
+      if (!client.fullName) throw new Error(`El representante de ${subjectType} no contiene nombre`);
 
-  if (!actualDate.month) throw new Error('La fecha actual no contiene mes (contactar con soporte)');
+      if (!client.nif) throw new Error(`El representante de ${subjectType} no contiene NIF`);
 
-  if (!actualDate.day) throw new Error('La fecha actual no contiene día (contactar con soporte)');
+      if (!client.address) throw new Error(`El representante de ${subjectType} no contiene dirección`);
 
-  return isValid;
+      if (!client.phoneNumber) throw new Error(`El ${subjectType} no contiene teléfono`);
+
+      if (!company.fullName) throw new Error(`La empresa asociada al ${subjectType} no contiene nombre`);
+
+      if (!company.nif) throw new Error(`La empresa asociada al ${subjectType} no contiene NIF`);
+    } else {
+      if (!client.fullName) throw new Error(`El ${subjectType} no contiene nombre`);
+
+      if (!client.nif) throw new Error(`El ${subjectType} no contiene NIF`);
+
+      if (!client.address) throw new Error(`El ${subjectType} no contiene dirección`);
+    }
+
+    if (!orderType) throw new Error(`El pedido asociado al ${subjectType} no contiene 'Tipo de Pedido'`);
+
+    if (!vehiclePlate) throw new Error(`El pedido asociado al ${subjectType} no contiene matrícula`);
+
+    if (!actualDate.year)
+      throw new Error(`La fecha actual del pedido asociado al ${subjectType} no contiene año (contactar con soporte)`);
+
+    if (!actualDate.month)
+      throw new Error(`La fecha actual del pedido asociado al ${subjectType} no contiene mes (contactar con soporte)`);
+
+    if (!actualDate.day)
+      throw new Error(`La fecha actual del pedido asociado al ${subjectType} no contiene día (contactar con soporte)`);
+  });
+
+  return true;
+}
+
+export function validateRelatedPerson(relatedPersons: TExtendedRelatedPerson[]): TExtendedRelatedPerson {
+  if (!relatedPersons || relatedPersons.length < 1) {
+    throw new Error(
+      `El pedido no contiene ninguna persona relacionada. Para la acción que quieres hacer, se necesita que exista una.`
+    );
+  } else if (relatedPersons.length > 1) {
+    throw new Error(
+      `El pedido contiene múltiples personas relacionadas. Para la acción que quieres hacer, sólo se permite que exista una.`
+    );
+  } else {
+    return relatedPersons[0];
+  }
 }
 
 interface SendMandateDocuSeal {

@@ -32,5 +32,10 @@ export interface LogAccountingBody extends Request {
 }
 
 export interface SendOrderMandatesBody {
-  body: { orderId: string };
+  body: { orderId: string; mandateIsFor: MandateIsFor };
+}
+
+export interface MandateIsFor {
+  client: boolean;
+  relatedPerson: boolean;
 }
