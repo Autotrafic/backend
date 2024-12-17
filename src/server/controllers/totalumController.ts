@@ -96,16 +96,17 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
 
     if (webhook.event_type === DocusealFormWebhookEventType.Completed && webhook?.data?.id) {
       const submissionId = webhook.data.id;
+      const newSubmissionId = webhook.data.submission_id;
+      
       const mandates = await getMandatesByFilter('docuseal_submission_id', submissionId);
 
       if (mandates.length > 0) {
-        console.log('mandate', mandates);
         for (let mandate of mandates) {
           await updateMandateById(mandate._id, { signed: 'true' });
 
           const order = await getOrderById(mandate.totalum_order_id);
 
-          const submission = await getSubmissionById(submissionId);
+          const submission = await getSubmissionById(newSubmissionId);
           const signedFiles = submission.documents;
 
           for (let file of signedFiles) {

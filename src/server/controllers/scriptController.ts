@@ -2,10 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
-import sseClientManager from '../../sse/sseClientManager';
-import { parsePdfUrlToBase64 } from '../parsers/file';
-import { createTemplateFromPdf } from '../services/docuseal';
-import { sendMandates } from '../handlers/totalum';
 import { getMandatesByFilter } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);

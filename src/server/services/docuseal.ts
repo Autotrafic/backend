@@ -55,9 +55,9 @@ export async function getSubmissionById(submissionId: number): Promise<DSubmissi
     return submission.data;
   } catch (error) {
     if (error.response) {
-      throw new Error(`Error haciendo el envío del documento Docuseal: ${error.response.data.error}`);
+      throw new Error(`Error obteniendo submission de DocuSeal por id: ${error.response.data.error}`);
     } else {
-      throw new Error(`Error haciendo el envío del documento Docuseal: ${error.message}`);
+      throw new Error(`Error obteniendo submission de DocuSeal por id: ${error.message}`);
     }
   }
 }
