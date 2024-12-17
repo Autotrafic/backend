@@ -82,7 +82,6 @@ export async function createSubmission({
         submitters: [{ role: userRole, name: userFullName, phone: userPhone, send_sms: true, send_email: false }],
       },
     };
-    console.log('docuseal submission optionsssssssssssssssssssssss', options);
 
     const newSubmission = await axios.request(options);
 
