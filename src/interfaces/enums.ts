@@ -167,6 +167,13 @@ export enum TOrderMandate {
   Adjuntados = 'Adjuntados',
 }
 
+export enum DocusealFormWebhookEventType {
+  Viewed = 'form.viewed',
+  Started = 'form.started',
+  Completed = 'form.completed',
+  Declined = 'form.declined',
+}
+
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,
   Aragón: AutonomousCommunityValue.ARAGON,

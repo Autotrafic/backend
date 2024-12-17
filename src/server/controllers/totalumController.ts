@@ -7,12 +7,20 @@ import {
   getAllCollaborators,
   getAllPendingTasks,
   getAllProfessionalParteners,
+  getExtendedOrderByFilter,
   getExtendedOrderById,
+  updateOrderById,
   updateTaskById,
 } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 import { getCurrentSpanishDate } from '../../utils/funcs';
 import { sendMandate } from '../handlers/totalum';
+import { DocusealFormWebhookEventType, TOrderMandate } from '../../interfaces/enums';
+import { getSubmissionById } from '../services/docuseal';
+import { parsePdfUrlToBase64 } from '../parsers/file';
+import { uploadBase64FileToDrive } from '../services/googleDrive';
+import { extractDriveFolderIdFromLink } from '../parsers/other';
+import { nanoid } from 'nanoid';
 
 export async function toggleTotalumActiveHeader(req: ToggleTotalumHeaderBody, res: Response, next: NextFunction) {
   try {
@@ -79,5 +87,39 @@ export async function sendOrderMandates(req: SendOrderMandatesBody, res: Respons
     res.status(200).json({ success: true });
   } catch (error) {
     catchControllerError(error, 'Error enviando los mandatos', req.body, next);
+  }
+}
+
+export async function handleDocusealWebhook(req: Request, res: Response, next: NextFunction) {
+  try {
+    const webhook = req.body;
+
+    if (webhook.event_type === DocusealFormWebhookEventType.Completed) {
+      const submissionId = webhook.data.submission_id;
+      const orders = await getExtendedOrderByFilter('docuseal_submission_id', submissionId);
+
+      if (orders.length > 0) {
+        for (let order of orders) {
+          await updateOrderById(order._id, { mandatos: TOrderMandate.Firmados });
+
+          const submission = await getSubmissionById(submissionId);
+          const signedFiles = submission.documents;
+
+          for (let file of signedFiles) {
+            const base64File = await parsePdfUrlToBase64(file.url);
+            const driveFolderId = extractDriveFolderIdFromLink(order.documentos);
+            const fileName = `Mandato firmado ${nanoid(4)}`;
+
+            await uploadBase64FileToDrive(base64File, driveFolderId, fileName);
+          }
+        }
+      } else {
+        throw new Error(
+          `Se ha recibido un webhook de Docuseal de ${DocusealFormWebhookEventType.Completed}, pero no se ha encontrado ningun pedido con el docuseal submission id: ${submissionId}. No se ha actualizado ningun pedido.`
+        );
+      }
+    }
+  } catch (error) {
+    catchControllerError(error, 'Error gestionando el webhook de docuseal', req.body, next);
   }
 }

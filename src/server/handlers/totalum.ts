@@ -15,12 +15,12 @@ export async function sendMandate(orderId: string) {
     const { fullName: userFullName, phoneNumber: userPhone } = fileData.client;
 
     const fileUrl = await generateMandateFile(fileData);
-    const submission = await sendMandateDocuSeal({ fileUrl, userFullName, userPhone });
+    const submission = await sendMandateDocuSeal({ fileUrl, fileData });
 
     const isMandateSended = submission.submission_events.filter((event) => event.id === docusealSendSMSEventId).length > 0;
 
     if (isMandateSended) {
-      await updateTotalumForSendedMandates({ orderId });
+      await updateTotalumForSendedMandates({ orderId, submissionId: submission.id });
       await notifyForMandate(fileData);
     }
   } catch (error) {

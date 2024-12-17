@@ -16,6 +16,7 @@ export interface TotalumOrder {
   total_facturado: number;
   mandatos: TMandate;
   autotrafic_id: string;
+  docuseal_submission_id: number;
   cliente: string;
   socio_profesional: string;
   createdAt: string;

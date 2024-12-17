@@ -37,7 +37,7 @@ interface DocusealTemplate {
   documents: Document[];
 }
 
-interface DocusealSubmission {
+interface DSubmission {
   id: number;
   submission_id: number;
   uuid: string;
@@ -118,6 +118,7 @@ interface Preferences {
 interface CreateTemplateFromPdf {
   pdfBase64: string;
   userFullName: string;
+  vehiclePlate: string;
 }
 
 interface CreateSubmission {
@@ -157,7 +158,7 @@ interface DSubmissionDoneSubmitter {
   status: string;
   metadata: Record<string, unknown>;
   values: Array<{ field: string; value: string }>;
-  documents: Document[];
+  documents: DSubmissionDoneDocument[];
   role: string;
 }
 

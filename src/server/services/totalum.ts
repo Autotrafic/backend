@@ -54,6 +54,38 @@ export async function getExtendedOrderById(orderId: string): Promise<TExtendedOr
   }
 }
 
+export async function getExtendedOrderByFilter(totalumPropertyToFilter: string, value: any): Promise<TExtendedOrder[]> {
+  const nestedQuery = {
+    pedido: {
+      tableFilter: {
+        filter: [
+          {
+            [totalumPropertyToFilter]: value,
+          },
+        ],
+      },
+      cliente: { representante: { cliente: {} } },
+      envio: {},
+      persona_relacionada: { cliente: {} },
+    },
+  };
+
+  try {
+    const response = await totalumSdk.crud.getNestedData(nestedQuery);
+    return response.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(
+        `Error obteniendo el pedido con los filtros: Propiedad para filtrar: ${totalumPropertyToFilter}, valor: ${value}. ${error.response.data.errors}`
+      );
+    } else {
+      throw new Error(
+        `Error obteniendo el pedido con los filtros: Propiedad para filtrar: ${totalumPropertyToFilter}, valor: ${value}. Error desconocido`
+      );
+    }
+  }
+}
+
 export async function getExtendedOrders() {
   const nestedTreeStructure = {
     pedido: {

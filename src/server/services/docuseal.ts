@@ -1,14 +1,14 @@
 import axios from 'axios';
 import { DOCUSEAL_API, docusealOptions } from '../../utils/constants';
 
-export async function createTemplateFromPdf({ pdfBase64, userFullName }: CreateTemplateFromPdf): Promise<DocusealTemplate> {
+export async function createTemplateFromPdf({ pdfBase64, userFullName, vehiclePlate }: CreateTemplateFromPdf): Promise<DocusealTemplate> {
   try {
     const options = {
       method: 'POST',
       url: `${DOCUSEAL_API}/templates/pdf`,
       headers: docusealOptions,
       data: {
-        name: 'Autorización para realizar el trámite',
+        name: vehiclePlate,
         documents: [
           {
             name: 'string',
@@ -34,6 +34,26 @@ export async function createTemplateFromPdf({ pdfBase64, userFullName }: CreateT
       throw new Error(`Error creando la plantilla de Docuseal desde el pdf: ${error.response.data.error}`);
     } else {
       throw new Error(`Error creando la plantilla de Docuseal desde el pdf: ${error.message}`);
+    }
+  }
+}
+
+export async function getSubmissionById(submissionId: number): Promise<DSubmissionDoneSubmitter> {
+  try {
+    const options = {
+      method: 'GET',
+      url: `${DOCUSEAL_API}/submissions/${submissionId}`,
+      headers: docusealOptions,
+    };
+
+    const submission = await axios.request(options);
+
+    return submission.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(`Error haciendo el envío del documento Docuseal: ${error.response.data.error}`);
+    } else {
+      throw new Error(`Error haciendo el envío del documento Docuseal: ${error.message}`);
     }
   }
 }

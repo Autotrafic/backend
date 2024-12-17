@@ -3,6 +3,7 @@ import {
   getAllTotalumCollaborators,
   getAllTotalumProfessionalParteners,
   getPendingTotalumTasks,
+  handleDocusealWebhook,
   sendOrderMandates,
   toggleTotalumActiveHeader,
   updateTotalumTask,
@@ -19,5 +20,6 @@ totalumRouter.get('/professional-partners', getAllTotalumProfessionalParteners);
 totalumRouter.get('/collaborators', getAllTotalumCollaborators);
 
 totalumRouter.post('/mandates', sendOrderMandates);
+totalumRouter.post('/docuseal/hook', handleDocusealWebhook);
 
 export default totalumRouter;

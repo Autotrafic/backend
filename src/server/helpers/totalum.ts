@@ -40,21 +40,19 @@ Gracias por su tiempo!`;
   await sendWhatsappMessage(sendMessageOptions);
 }
 
-export async function updateTotalumForSendedMandates({ orderId }: { orderId: string }) {
-  await updateOrderById(orderId, { mandatos: TOrderMandate.Firmados });
+export async function updateTotalumForSendedMandates({ orderId, submissionId }: { orderId: string; submissionId: number }) {
+  await updateOrderById(orderId, { mandatos: TOrderMandate.Firmados, docuseal_submission_id: submissionId });
 }
 
-export async function sendMandateDocuSeal({
-  fileUrl,
-  userFullName,
-  userPhone,
-}: SendMandateDocuSeal): Promise<DSubmissionDone> {
+export async function sendMandateDocuSeal({ fileUrl, fileData }: SendMandateDocuSeal): Promise<DSubmissionDone> {
+  const { client, vehiclePlate } = fileData;
+
   const pdfBase64 = await parsePdfUrlToBase64(fileUrl);
 
-  const template = await createTemplateFromPdf({ pdfBase64, userFullName });
+  const template = await createTemplateFromPdf({ pdfBase64, userFullName: client.fullName, vehiclePlate });
   const templateId = template.id;
 
-  const submission = await createSubmission({ templateId, userFullName, userPhone });
+  const submission = await createSubmission({ templateId, userFullName: client.fullName, userPhone: client.phoneNumber });
 
   return submission;
 }
@@ -115,6 +113,5 @@ function validateMandateFileData(fileData: MandateData): boolean {
 
 interface SendMandateDocuSeal {
   fileUrl: string;
-  userFullName: string;
-  userPhone: string;
+  fileData: MandateData;
 }
