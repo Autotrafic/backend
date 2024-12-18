@@ -1,3 +1,5 @@
+import { TMandateIsFor } from "../enums";
+
 interface MandateFileOptions {
   templateId: string;
   fileName: string;

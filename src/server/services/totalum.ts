@@ -7,6 +7,8 @@ import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/total
 import { TTask } from '../../interfaces/totalum/tarea';
 import { Accounting } from '../../interfaces/totalum/contabilidad';
 import { parseAccountingFromTotalum } from '../parsers/logger';
+import { TMandate } from '../../interfaces/totalum/mandato';
+import { MandateFileOptions } from '../../interfaces/totalum/other';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 

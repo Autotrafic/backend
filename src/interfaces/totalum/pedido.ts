@@ -14,7 +14,7 @@ export interface TotalumOrder {
   itp_pagado: number;
   fecha_de_contacto: Date;
   total_facturado: number;
-  mandatos: TMandate;
+  mandatos: TOrderMandate;
   autotrafic_id: string;
   cliente: string;
   socio_profesional: string;
@@ -45,7 +45,7 @@ interface TotalumParsedOrder {
   notes: string;
   itpPaid: number;
   totalInvoiced: number;
-  mandates: TMandate;
+  mandates: TOrderMandate;
   autotraficId: string;
   clientId: string;
   createdAt: string;
@@ -105,4 +105,4 @@ type TType =
   | 'Cambio de domicilio'
   | 'Baja temporal';
 
-type TMandate = 'No enviados' | 'Enviados' | 'Firmados' | 'Adjuntados';
+type TOrderMandate = 'No enviados' | 'Enviados' | 'Firmados' | 'Adjuntados';

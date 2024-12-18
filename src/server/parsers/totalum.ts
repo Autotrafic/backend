@@ -1,4 +1,6 @@
+import { TMandateIsFor } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
+import { MandateClient, MandateCompany, MandateData } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { getCurrentSpanishDate } from '../../utils/funcs';
 import { validateRelatedPerson } from '../helpers/totalum';
@@ -8,7 +10,7 @@ export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandat
   try {
     const { cliente, matricula, tipo, persona_relacionada: relatedPersons } = order;
 
-    const createMandateData = (sourceClient: TExtendedClient, clientType: 'client' | 'related_person'): MandateData => {
+    const createMandateData = (sourceClient: TExtendedClient, clientType: TMandateIsFor): MandateData => {
       const { nombre_o_razon_social, primer_apellido, segundo_apellido, telefono, nif, direccion, representante } =
         sourceClient;
 
@@ -53,12 +55,12 @@ export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandat
     const result: MandateData[] = [];
 
     if (mandateIsFor.client) {
-      result.push(createMandateData(cliente, 'client'));
+      result.push(createMandateData(cliente, TMandateIsFor.Client));
     }
 
     if (mandateIsFor.relatedPerson) {
       const relatedPerson = validateRelatedPerson(relatedPersons);
-      result.push(createMandateData(relatedPerson.cliente, 'related_person'));
+      result.push(createMandateData(relatedPerson.cliente, TMandateIsFor.RelatedPerson));
     }
 
     return result;

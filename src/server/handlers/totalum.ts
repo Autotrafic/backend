@@ -5,7 +5,7 @@ import {
   generateMandateFile,
   notifyForMandate,
   sendMandateDocuSeal,
-  updateTotalumForSendedMandates,
+  updateTotalumOnceMandatesSended,
 } from '../helpers/totalum';
 import { getExtendedOrderById } from '../services/totalum';
 
@@ -21,7 +21,7 @@ export async function sendMandates(orderId: string, mandateIsFor: DMandateIsFor)
       const isMandateSended = submission?.[0]?.status === DocusealSubmissionStatus.Awaiting;
 
       if (isMandateSended) {
-        await updateTotalumForSendedMandates({ orderId, submissionId: submission[0].id, fileData });
+        await updateTotalumOnceMandatesSended({ orderId, submissionId: submission[0].id, fileData });
         await notifyForMandate(fileData);
       }
     }

@@ -178,7 +178,17 @@ export enum DocusealSubmissionStatus {
   Sent = 'sent',
   Awaiting = 'awaiting',
   Pending = 'pending',
-  Completed = 'completed'
+  Completed = 'completed',
+}
+
+export enum TMandateIsFor {
+  Client = 'cliente',
+  RelatedPerson = 'persona_relacionada',
+}
+
+export enum TMandateSigned {
+  Yes = 'si',
+  No = 'no'
 }
 
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {

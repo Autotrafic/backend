@@ -1,5 +1,7 @@
-import { TOrderMandate } from '../../interfaces/enums';
+import { TMandateIsFor, TOrderMandate } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
+import { TMandate } from '../../interfaces/totalum/mandato';
+import { MandateData } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
@@ -44,20 +46,12 @@ Gracias por su tiempo!`;
   }
 }
 
-export async function updateTotalumForSendedMandates({
-  orderId,
-  submissionId,
-  fileData,
-}: {
-  orderId: string;
-  submissionId: number;
-  fileData: MandateData;
-}) {
+export async function updateTotalumOnceMandatesSended({ orderId, submissionId, fileData }: UpdateTotalumOnceMandatesSended) {
   try {
     const mandateOptions: Partial<TMandate> = {
-      totalum_order_id: orderId,
+      pedido: orderId,
       docuseal_submission_id: submissionId,
-      mandate_is_for: fileData.client.type,
+      mandato_es_para: fileData.client.type,
     };
 
     await createMandate(mandateOptions);
@@ -118,8 +112,8 @@ export function validateMandateFileData(fileDataArray: MandateData[]): boolean {
     const { client, company, orderType, vehiclePlate, actualDate } = fileData;
 
     let subjectType;
-    if (client.type === 'client') subjectType = 'cliente';
-    if (client.type === 'related_person') subjectType = 'persona relacionada';
+    if (client.type === TMandateIsFor.Client) subjectType = 'cliente';
+    if (client.type === TMandateIsFor.RelatedPerson) subjectType = 'persona relacionada';
 
     if (client.nif && company.nif) {
       if (!client.fullName) throw new Error(`El representante de ${subjectType} no contiene nombre`);
@@ -177,13 +171,13 @@ export async function areOrderMandatesSigned(orderId: string): Promise<boolean> 
     const orderMandates = await getMandatesByFilter('totalum_order_id', orderId);
 
     const hasAtLeastOneSigned = (mandates: TMandate[], type: TMandateIsFor) =>
-      mandates.some((mandate) => mandate.mandate_is_for === type && mandate.signed === 'true');
+      mandates.some((mandate) => mandate.mandato_es_para === type && mandate.firmado === 'si');
 
-    const clientSigned = hasAtLeastOneSigned(orderMandates, 'client');
-    const relatedPersonSigned = hasAtLeastOneSigned(orderMandates, 'related_person');
+    const clientSigned = hasAtLeastOneSigned(orderMandates, TMandateIsFor.Client);
+    const relatedPersonSigned = hasAtLeastOneSigned(orderMandates, TMandateIsFor.RelatedPerson);
 
-    const hasClientMandates = orderMandates.some((m) => m.mandate_is_for === 'client');
-    const hasRelatedPersonMandates = orderMandates.some((m) => m.mandate_is_for === 'related_person');
+    const hasClientMandates = orderMandates.some((m) => m.mandato_es_para === TMandateIsFor.Client);
+    const hasRelatedPersonMandates = orderMandates.some((m) => m.mandato_es_para === TMandateIsFor.RelatedPerson);
 
     const clientsValid = !hasClientMandates || clientSigned;
     const relatedPersonsValid = !hasRelatedPersonMandates || relatedPersonSigned;
@@ -196,5 +190,11 @@ export async function areOrderMandatesSigned(orderId: string): Promise<boolean> 
 
 interface SendMandateDocuSeal {
   fileUrl: string;
+  fileData: MandateData;
+}
+
+interface UpdateTotalumOnceMandatesSended {
+  orderId: string;
+  submissionId: number;
   fileData: MandateData;
 }

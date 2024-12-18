@@ -1,9 +1,9 @@
-interface TMandate {
-  _id: string;
-  totalum_order_id: string;
-  docuseal_submission_id: number;
-  mandate_is_for: TMandateIsFor;
-  signed: 'true' | 'false' | null;
-}
+import { TMandateIsFor, TMandateSigned } from "../enums";
 
-type TMandateIsFor = 'client' | 'related_person' | null;
+export interface TMandate {
+  _id: string;
+  pedido: string;
+  docuseal_submission_id: number;
+  mandato_es_para: TMandateIsFor;
+  firmado: TMandateSigned;
+}
