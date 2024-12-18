@@ -201,13 +201,12 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
 
     await createTotalumShipmentAndLinkToOrder(shipment, newOrderId);
 
-    let relatedPersonClientId;
+    let newRelatedPersonClientId;
     if (relatedPersonClient) {
-      const newClient = await totalumSdk.crud.createItem('cliente', relatedPersonClient);
-      relatedPersonClientId = newClient.data.data.insertedId;
+      newRelatedPersonClientId = await checkExistingTotalumClient(relatedPersonClient);
 
       await totalumSdk.crud.createItem('persona_relacionada', {
-        cliente: relatedPersonClientId,
+        cliente: newRelatedPersonClientId,
         pedido: newOrderId,
       });
     }
@@ -215,8 +214,8 @@ export async function createExtendedOrderByWhatsappOrder(whatsappOrder: Whatsapp
     if (clientRepresentative) {
       await checkExistingTotalumRepresentative({ ...clientRepresentative, cliente: clientId });
     }
-    if (relatedPersonRepresentative && relatedPersonClientId) {
-      await checkExistingTotalumRepresentative({ ...relatedPersonRepresentative, cliente: relatedPersonClientId });
+    if (relatedPersonRepresentative && newRelatedPersonClientId) {
+      await checkExistingTotalumRepresentative({ ...relatedPersonRepresentative, cliente: newRelatedPersonClientId });
     }
 
     return newOrderId;

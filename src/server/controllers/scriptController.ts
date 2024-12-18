@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
-import { getMandatesByFilter } from '../services/totalum';
+import { getClientByNif, getMandatesByFilter } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const mandates = await getMandatesByFilter('docuseal_submission_id', 1137134);
-    res.status(200).json({ mandates });
+    const existingClient = await getClientByNif('06622679J');
+    res.status(200).json({ existingClient });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(
