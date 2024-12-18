@@ -22,7 +22,7 @@ export async function createTemplateFromPdf({
                 name: userFullName,
                 role: 'MANDANTE',
                 type: 'signature',
-                areas: [{ x: 241, y: 640, w: 120, h: 40, page: 1 }],
+                areas: [{ x: 241, y: 632, w: 120, h: 40, page: 1 }],
               },
             ],
           },
