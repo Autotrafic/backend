@@ -8,7 +8,7 @@ const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const mandates = await getMandatesByFilter('docuseal_submission_id', 1135953);
+    const mandates = await getMandatesByFilter('docuseal_submission_id', 1137134);
     res.status(200).json({ mandates });
   } catch (error) {
     console.log(error);

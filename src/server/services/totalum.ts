@@ -7,7 +7,7 @@ import { ExtendedTotalumShipment, TotalumShipment } from '../../interfaces/total
 import { TTask } from '../../interfaces/totalum/tarea';
 import { Accounting } from '../../interfaces/totalum/contabilidad';
 import { parseAccountingFromTotalum } from '../parsers/logger';
-import { TMandate } from '../../interfaces/totalum/mandato';
+import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
 import { MandateFileOptions } from '../../interfaces/totalum/other';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
@@ -574,7 +574,7 @@ export async function getMandateById(mandateId: string): Promise<TMandate> {
   }
 }
 
-export async function getMandatesByFilter(propertyToFilter: string, value: any): Promise<TMandate[]> {
+export async function getMandatesByFilter(propertyToFilter: string, value: any): Promise<TExtendedMandate[]> {
   const nestedQuery = {
     mandato: {
       tableFilter: {
@@ -584,7 +584,7 @@ export async function getMandatesByFilter(propertyToFilter: string, value: any):
           },
         ],
       },
-      cliente: {},
+      pedido: {},
     },
   };
 

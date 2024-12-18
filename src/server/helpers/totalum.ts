@@ -1,6 +1,6 @@
 import { TMandateIsFor, TOrderMandate } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
-import { TMandate } from '../../interfaces/totalum/mandato';
+import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
 import { MandateData } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { parsePdfUrlToBase64 } from '../parsers/file';
@@ -170,7 +170,7 @@ export async function areOrderMandatesSigned(orderId: string): Promise<boolean> 
   try {
     const orderMandates = await getMandatesByFilter('totalum_order_id', orderId);
 
-    const hasAtLeastOneSigned = (mandates: TMandate[], type: TMandateIsFor) =>
+    const hasAtLeastOneSigned = (mandates: TExtendedMandate[], type: TMandateIsFor) =>
       mandates.some((mandate) => mandate.mandato_es_para === type && mandate.firmado === 'si');
 
     const clientSigned = hasAtLeastOneSigned(orderMandates, TMandateIsFor.Client);

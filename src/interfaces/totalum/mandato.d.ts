@@ -1,9 +1,14 @@
 import { TMandateIsFor, TMandateSigned } from "../enums";
+import { TotalumOrder } from "./pedido";
 
-export interface TMandate {
+interface TMandate {
   _id: string;
   pedido: string;
   docuseal_submission_id: number;
   mandato_es_para: TMandateIsFor;
   firmado: TMandateSigned;
+}
+
+interface TExtendedMandate extends TMandate {
+  pedido: TotalumOrder;
 }

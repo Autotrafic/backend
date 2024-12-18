@@ -104,7 +104,12 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
         for (let mandate of mandates) {
           await updateMandateById(mandate._id, { firmado: TMandateSigned.Yes });
 
-          const order = await getOrderById(mandate.pedido);
+          if (!mandate.pedido?._id)
+            throw new Error(
+              `Se ha actualizado el mandato sin estar relacionado a ningún pedido: ${JSON.stringify(mandate)}`
+            );
+
+          const order = await getOrderById(mandate.pedido._id);
 
           const submission = await getSubmissionById(newSubmissionId);
           const signedFiles = submission.documents;
