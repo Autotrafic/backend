@@ -188,7 +188,12 @@ export enum TMandateIsFor {
 
 export enum TMandateSigned {
   Yes = 'si',
-  No = 'no'
+  No = 'no',
+}
+
+export enum TMomentPayment {
+  BeforeProcedure = 'Antes del tramite',
+  AfterProcedure = 'Despues del tramite',
 }
 
 export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {

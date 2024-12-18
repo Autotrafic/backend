@@ -3,12 +3,12 @@ import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { MandateClient, MandateCompany, MandateData } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { getCurrentSpanishDate } from '../../utils/funcs';
-import { validateRelatedPerson } from '../helpers/totalum';
+import { ensureMandatePartner, validateRelatedPerson } from '../helpers/totalum';
 import { parsePhoneNumberToE164 } from './other';
 
 export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandateIsFor: DMandateIsFor): MandateData[] {
   try {
-    const { cliente, matricula, tipo, persona_relacionada: relatedPersons } = order;
+    const { cliente, matricula, tipo, persona_relacionada: relatedPersons, gestoria_colaboradora } = order;
 
     const createMandateData = (sourceClient: TExtendedClient, clientType: TMandateIsFor): MandateData => {
       const { nombre_o_razon_social, primer_apellido, segundo_apellido, telefono, nif, direccion, representante } =
@@ -49,6 +49,7 @@ export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandat
         orderType: tipo,
         vehiclePlate: matricula,
         actualDate: getCurrentSpanishDate(),
+        partner: ensureMandatePartner(gestoria_colaboradora),
       };
     };
 

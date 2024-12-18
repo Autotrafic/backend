@@ -1,8 +1,10 @@
 import { TMandateIsFor, TOrderMandate } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
+import { TCollaborator } from '../../interfaces/totalum/gestoria_colaboradora';
 import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
-import { MandateData } from '../../interfaces/totalum/other';
+import { MandateData, MandatePartner } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
+import { ovidiuPartnerData } from '../../utils/totalum';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
 import { createSubmission, createTemplateFromPdf } from '../services/docuseal';
@@ -185,6 +187,18 @@ export async function areOrderMandatesSigned(orderId: string): Promise<boolean> 
     return clientsValid && relatedPersonsValid;
   } catch (error) {
     throw new Error(`Error comprobando si los mandatos del pedido se han firmado: ${error.message}`);
+  }
+}
+
+export function ensureMandatePartner(partner: MandatePartner): MandatePartner {
+  if (!partner) return ovidiuPartnerData;
+
+  const { nombre_gestor, nif_gestor, num_colegiado_gestor, nombre_colegio_gestor, domicilio_despacho_profesional } = partner;
+
+  if (!nombre_gestor || !nif_gestor || !num_colegiado_gestor || !nombre_colegio_gestor || !domicilio_despacho_profesional) {
+    return ovidiuPartnerData;
+  } else {
+    return partner;
   }
 }
 

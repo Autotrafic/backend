@@ -122,7 +122,7 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
             await uploadBase64FileToDrive(base64File, driveFolderId, fileName);
 
             const mandatesSigned = await areOrderMandatesSigned(order._id);
-            if (mandatesSigned) await updateOrderById(order._id, { mandatos: TOrderMandate.Firmados });
+            if (mandatesSigned) await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
           }
         }
 

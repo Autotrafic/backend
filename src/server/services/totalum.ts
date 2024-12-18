@@ -9,6 +9,7 @@ import { Accounting } from '../../interfaces/totalum/contabilidad';
 import { parseAccountingFromTotalum } from '../parsers/logger';
 import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
 import { MandateFileOptions } from '../../interfaces/totalum/other';
+import { TProfessionalPartner } from '../../interfaces/totalum/socio_profesional';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -45,6 +46,7 @@ export async function getExtendedOrderById(orderId: string): Promise<TExtendedOr
       cliente: { representante: {} },
       envio: {},
       persona_relacionada: { cliente: { representante: {} } },
+      gestorias_colaboradoras: {}
     },
   };
 

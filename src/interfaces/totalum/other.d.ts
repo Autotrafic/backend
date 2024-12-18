@@ -1,4 +1,5 @@
 import { TMandateIsFor } from "../enums";
+import { TCollaborator } from "./gestoria_colaboradora";
 
 interface MandateFileOptions {
   templateId: string;
@@ -12,6 +13,7 @@ interface MandateData {
   orderType: string;
   vehiclePlate: string;
   actualDate: MandateDate;
+  partner: MandatePartner;
 }
 
 interface MandateClient {
@@ -32,3 +34,5 @@ interface MandateDate {
   month: string;
   day: number;
 }
+
+interface MandatePartner extends Partial<TCollaborator> {};
