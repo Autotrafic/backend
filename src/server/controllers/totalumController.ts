@@ -14,7 +14,7 @@ import {
 } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 import { sendMandates } from '../handlers/totalum';
-import { DocusealFormWebhookEventType, TMandateSigned, TOrderMandate } from '../../interfaces/enums';
+import { DocusealFormWebhookEventType, TMandateState, TOrderMandate } from '../../interfaces/enums';
 import { getSubmissionById } from '../services/docuseal';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { uploadBase64FileToDrive } from '../services/googleDrive';
@@ -102,7 +102,7 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
 
       if (mandates.length > 0) {
         for (let mandate of mandates) {
-          await updateMandateById(mandate._id, { firmado: TMandateSigned.Yes });
+          await updateMandateById(mandate._id, { estado: TMandateState.Signed });
 
           if (!mandate.pedido?._id)
             throw new Error(

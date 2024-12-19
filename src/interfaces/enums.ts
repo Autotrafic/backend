@@ -186,9 +186,11 @@ export enum TMandateIsFor {
   RelatedPerson = 'persona_relacionada',
 }
 
-export enum TMandateSigned {
-  Yes = 'si',
-  No = 'no',
+export enum TMandateState {
+  Opened = 'Abierto',
+  Signed = 'Firmado',
+  Declined = 'Rechazado',
+  Sended = 'Enviado'
 }
 
 export enum TMomentPayment {

@@ -1,4 +1,4 @@
-import { TMandateIsFor, TOrderMandate } from '../../interfaces/enums';
+import { TMandateIsFor, TMandateState, TOrderMandate } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { TCollaborator } from '../../interfaces/totalum/gestoria_colaboradora';
 import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
@@ -54,6 +54,7 @@ export async function updateTotalumOnceMandatesSended({ orderId, submissionId, f
       pedido: orderId,
       docuseal_submission_id: submissionId,
       mandato_es_para: fileData.client.type,
+      estado: TMandateState.Sended,
     };
 
     await createMandate(mandateOptions);
@@ -173,7 +174,7 @@ export async function areOrderMandatesSigned(orderId: string): Promise<boolean> 
     const orderMandates = await getMandatesByFilter('totalum_order_id', orderId);
 
     const hasAtLeastOneSigned = (mandates: TExtendedMandate[], type: TMandateIsFor) =>
-      mandates.some((mandate) => mandate.mandato_es_para === type && mandate.firmado === 'si');
+      mandates.some((mandate) => mandate.mandato_es_para === type && mandate.estado === TMandateState.Signed);
 
     const clientSigned = hasAtLeastOneSigned(orderMandates, TMandateIsFor.Client);
     const relatedPersonSigned = hasAtLeastOneSigned(orderMandates, TMandateIsFor.RelatedPerson);
