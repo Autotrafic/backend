@@ -339,15 +339,4 @@ export const SHIPMENT_FIELD_CONDITIONS = {
       checkInfo: { title: 'La referencia no debe contener saltos de línea o tabulaciones', type: CheckType.BAD },
     },
   ],
-
-  valor: [
-    {
-      check: (value: number) => !!value,
-      checkInfo: { title: 'El campo VALOR del envío está vacío', type: CheckType.BAD },
-    },
-    {
-      check: (value: number) => (value ? !/^\d+(\.\d{3,})$/.test(value.toString()) : true),
-      checkInfo: { title: 'El campo VALOR no debe contener más de dos decimales', type: CheckType.BAD },
-    },
-  ],
 };

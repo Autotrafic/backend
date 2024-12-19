@@ -11,7 +11,6 @@ export interface TotalumShipment {
   localidad: string;
   email: string;
   referencia: string;
-  valor: number;
   codigo_seguimiento: string;
   enlace_seguimiento: string;
   sendcloud_parcel_id: number;

@@ -9,7 +9,6 @@ interface ParsedTotalumShipment {
   city: string;
   email: string;
   reference: string;
-  value: number;
   trackingCode: string;
   trackingUrl: string;
   sendcloudParcelId: number
