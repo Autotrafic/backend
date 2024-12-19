@@ -21,7 +21,7 @@ export default function parseClientFromPrimitive(client: TClient): Client {
 }
 
 export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
-  const { clientType, name, firstSurname, secondSurname, nif, phoneNumber } = whatsappOrder.buyer;
+  const { clientType, name, firstSurname, secondSurname, nif, phoneNumber, address } = whatsappOrder.buyer;
   const {
     name: representativeName = '',
     firstSurname: representativeFirstSurname = '',
@@ -38,7 +38,8 @@ export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): 
     !representativeName &&
     !representativeFirstSurname &&
     !representativeSecondSurname &&
-    !representativeNif
+    !representativeNif &&
+    !address
   )
     return null;
 
@@ -49,11 +50,12 @@ export function parseClientFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): 
     segundo_apellido: secondSurname,
     nif,
     telefono: phoneNumber,
+    direccion: address,
   };
 }
 
 export function parseRelatedPersonFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TClient> {
-  const { clientType, name, firstSurname, secondSurname, nif, phoneNumber } = whatsappOrder.seller;
+  const { clientType, name, firstSurname, secondSurname, nif, phoneNumber, address } = whatsappOrder.seller;
   const {
     name: representativeName = '',
     firstSurname: representativeFirstSurname = '',
@@ -70,7 +72,8 @@ export function parseRelatedPersonFromWhatsappToTotalum(whatsappOrder: WhatsappO
     !representativeName &&
     !representativeFirstSurname &&
     !representativeSecondSurname &&
-    !representativeNif
+    !representativeNif &&
+    !address
   )
     return null;
 
@@ -81,6 +84,7 @@ export function parseRelatedPersonFromWhatsappToTotalum(whatsappOrder: WhatsappO
     segundo_apellido: secondSurname,
     nif,
     telefono: phoneNumber,
+    direccion: address,
   };
 }
 
@@ -96,7 +100,9 @@ export function parseClientRepresentativeFromWhatsappToTotalum(whatsappOrder: Wh
   };
 }
 
-export function parseRelatedPersonRepresentativeFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TRepresentative> {
+export function parseRelatedPersonRepresentativeFromWhatsappToTotalum(
+  whatsappOrder: WhatsappOrder
+): Partial<TRepresentative> {
   const { name, firstSurname, secondSurname, nif } = whatsappOrder.seller.representative;
   if (!name && !firstSurname && !secondSurname && !nif) return null;
 

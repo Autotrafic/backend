@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid';
 import { TMandateIsFor, TMandateState, TOrderMandate } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
-import { TCollaborator } from '../../interfaces/totalum/gestoria_colaboradora';
 import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
 import { MandateData, MandatePartner } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';

@@ -55,6 +55,7 @@ interface WClient {
   secondSurname: string;
   nif: string;
   phoneNumber: string;
+  address: string;
   representative: { name: string; firstSurname: string; secondSurname: string; nif: string };
 }
 
