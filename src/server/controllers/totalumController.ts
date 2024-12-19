@@ -13,7 +13,7 @@ import {
   updateTaskById,
 } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
-import { sendMandates } from '../handlers/totalum';
+import { handleDocusealMandateEvent, sendMandates } from '../handlers/totalum';
 import { DocusealFormWebhookEventType, TMandateState, TOrderMandate } from '../../interfaces/enums';
 import { getSubmissionById } from '../services/docuseal';
 import { parsePdfUrlToBase64 } from '../parsers/file';
@@ -94,45 +94,11 @@ export async function handleDocusealWebhook(req: Request, res: Response, next: N
   try {
     const webhook = req.body;
 
-    if (webhook.event_type === DocusealFormWebhookEventType.Completed && webhook?.data?.id) {
-      const submissionId = webhook.data.id;
-      const newSubmissionId = webhook.data.submission_id;
-
-      const mandates = await getMandatesByFilter('docuseal_submission_id', submissionId);
-
-      if (mandates.length > 0) {
-        for (let mandate of mandates) {
-          await updateMandateById(mandate._id, { estado: TMandateState.Signed });
-
-          if (!mandate.pedido?._id)
-            throw new Error(
-              `Se ha actualizado el mandato sin estar relacionado a ningún pedido: ${JSON.stringify(mandate)}`
-            );
-
-          const order = await getOrderById(mandate.pedido._id);
-
-          const submission = await getSubmissionById(newSubmissionId);
-          const signedFiles = submission.documents;
-
-          for (let file of signedFiles) {
-            const base64File = await parsePdfUrlToBase64(file.url);
-            const driveFolderId = extractDriveFolderIdFromLink(order.documentos);
-            const fileName = `Mandato firmado ${nanoid(4)}`;
-
-            await uploadBase64FileToDrive(base64File, driveFolderId, fileName);
-
-            const mandatesSigned = await areOrderMandatesSigned(order._id);
-            if (mandatesSigned) await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
-          }
-        }
-
-        res.status(200).json({ message: 'DocuSeal webhook processed successfully!' });
-      } else {
-        throw new Error(
-          `Se ha recibido un webhook de Docuseal de ${DocusealFormWebhookEventType.Completed}, pero no se ha encontrado ningun pedido con el docuseal submission id: ${submissionId}. No se ha actualizado ningun pedido.`
-        );
-      }
+    if (webhook?.data?.id && webhook.data?.submission_id) {
+      await handleDocusealMandateEvent(webhook);
     }
+
+    res.status(200).json({ success: true });
   } catch (error) {
     catchControllerError(error, 'Error gestionando el webhook de docuseal', req.body, next);
   }

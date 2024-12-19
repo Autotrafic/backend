@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { TMandateIsFor, TMandateState, TOrderMandate } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { TCollaborator } from '../../interfaces/totalum/gestoria_colaboradora';
@@ -6,10 +7,19 @@ import { MandateData, MandatePartner } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { ovidiuPartnerData } from '../../utils/totalum';
 import { parsePdfUrlToBase64 } from '../parsers/file';
+import { extractDriveFolderIdFromLink } from '../parsers/other';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
-import { createSubmission, createTemplateFromPdf } from '../services/docuseal';
+import { createSubmission, createTemplateFromPdf, getSubmissionById } from '../services/docuseal';
 import { arePreviousWhatsappMessages, sendWhatsappMessage } from '../services/notifier';
-import { createMandate, generatePdfByTotalumTemplate, getMandatesByFilter, updateOrderById } from '../services/totalum';
+import {
+  createMandate,
+  generatePdfByTotalumTemplate,
+  getMandatesByFilter,
+  getOrderById,
+  updateMandateById,
+  updateOrderById,
+} from '../services/totalum';
+import { uploadBase64FileToDrive } from '../services/googleDrive';
 
 export async function notifyForMandate(fileData: MandateData) {
   try {
@@ -200,6 +210,53 @@ export function ensureMandatePartner(partner: MandatePartner): MandatePartner {
     return ovidiuPartnerData;
   } else {
     return partner;
+  }
+}
+
+export async function processViewedMandate(mandates: any[]) {
+  for (let mandate of mandates) {
+    await updateMandateById(mandate._id, { estado: TMandateState.Opened });
+
+    if (!mandate.pedido?._id)
+      throw new Error(`Se ha actualizado el mandato sin estar relacionado a ningún pedido: ${JSON.stringify(mandate)}`);
+  }
+}
+
+export async function processDeclinedMandate(mandates: any[]) {
+  for (let mandate of mandates) {
+    await updateMandateById(mandate._id, { estado: TMandateState.Declined });
+
+    if (!mandate.pedido?._id)
+      throw new Error(`Se ha actualizado el mandato sin estar relacionado a ningún pedido: ${JSON.stringify(mandate)}`);
+  }
+}
+
+export async function processSignedMandate(mandates: any[], newSubmissionId: number) {
+  for (let mandate of mandates) {
+    await updateMandateById(mandate._id, { estado: TMandateState.Signed });
+
+    if (!mandate.pedido?._id)
+      throw new Error(`Se ha actualizado el mandato sin estar relacionado a ningún pedido: ${JSON.stringify(mandate)}`);
+
+    const order = await getOrderById(mandate.pedido._id);
+
+    const submission = await getSubmissionById(newSubmissionId);
+    const signedFiles = submission.documents;
+
+    await processSignedFiles(signedFiles, order);
+
+    const mandatesSigned = await areOrderMandatesSigned(order._id);
+    if (mandatesSigned) await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
+  }
+}
+
+async function processSignedFiles(signedFiles: any[], order: any) {
+  for (let file of signedFiles) {
+    const base64File = await parsePdfUrlToBase64(file.url);
+    const driveFolderId = extractDriveFolderIdFromLink(order.documentos);
+    const fileName = `Mandato firmado ${nanoid(4)}`;
+
+    await uploadBase64FileToDrive(base64File, driveFolderId, fileName);
   }
 }
 

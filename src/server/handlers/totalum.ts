@@ -1,13 +1,16 @@
-import { DocusealSubmissionStatus } from '../../interfaces/enums';
+import { DocusealFormWebhookEventType, DocusealSubmissionStatus } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
 import {
   generateFileData,
   generateMandateFile,
   notifyForMandate,
+  processDeclinedMandate,
+  processSignedMandate,
+  processViewedMandate,
   sendMandateDocuSeal,
   updateTotalumOnceMandatesSended,
 } from '../helpers/totalum';
-import { getExtendedOrderById } from '../services/totalum';
+import { getExtendedOrderById, getMandatesByFilter } from '../services/totalum';
 
 export async function sendMandates(orderId: string, mandateIsFor: DMandateIsFor) {
   try {
@@ -27,5 +30,26 @@ export async function sendMandates(orderId: string, mandateIsFor: DMandateIsFor)
     }
   } catch (error) {
     throw new Error(`Error generando el mandato: ${error.message}`);
+  }
+}
+
+export async function handleDocusealMandateEvent(webhook: any) {
+  const submissionId = webhook.data.id;
+  const newSubmissionId = webhook.data.submission_id;
+
+  const mandates = await getMandatesByFilter('docuseal_submission_id', submissionId);
+
+  if (mandates.length > 0) {
+    if (webhook.event_type === DocusealFormWebhookEventType.Viewed) {
+      await processViewedMandate(mandates);
+    } else if (webhook.event_type === DocusealFormWebhookEventType.Completed) {
+      await processSignedMandate(mandates, newSubmissionId);
+    } else if (webhook.event_type === DocusealFormWebhookEventType.Declined) {
+      await processDeclinedMandate(mandates);
+    }
+  } else {
+    throw new Error(
+      `Se ha recibido un evento de Docuseal de tipo: ${webhook.event_type}, pero no se ha encontrado ningun pedido con el docuseal submission id: ${submissionId}. No se ha actualizado ningun pedido.`
+    );
   }
 }
