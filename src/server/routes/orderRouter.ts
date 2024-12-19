@@ -8,6 +8,7 @@ import {
   extendTotalumOrderByDocumentsDetails,
   updateDriveDocumentsOfTotalumOrder,
   registerWhatsappOrder,
+  getTotalumOrderById,
 } from '../controllers/orderController';
 import multer from 'multer';
 
@@ -26,5 +27,6 @@ orderRouter.post('/totalum/update-documents-url', updateDriveDocumentsOfTotalumO
 orderRouter.post('/documentsDetails/:orderId', updateOrderWithDocumentsDetails);
 orderRouter.post('/:orderId', updateOrder);
 orderRouter.get('/:orderId', getOrderById);
+orderRouter.get('/totalum/:orderId', getTotalumOrderById);
 
 export default orderRouter;

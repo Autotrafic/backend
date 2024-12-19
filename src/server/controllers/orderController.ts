@@ -14,7 +14,7 @@ import { totalumOptions } from '../../utils/constants';
 import { parseOrderFromWebToTotalum, parseRegisterWhatsappOrderBody } from '../parsers/order';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 import { TTaskState } from '../../interfaces/enums';
-import { createTask, createTotalumShipmentAndLinkToOrder } from '../services/totalum';
+import { createTask, createTotalumShipmentAndLinkToOrder, getExtendedOrderById } from '../services/totalum';
 import {
   createExtendedOrderByWhatsappOrder,
   updateTotalumOrderFromDocumentsDetails,
@@ -22,6 +22,7 @@ import {
 } from '../handlers/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import { createTaskByWhatsappOrder, createTasksByWebOrder, notifyNewOrderToCollaborator } from '../helpers/order';
+import { catchControllerError } from '../../errors/generalError';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -43,6 +44,18 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
       Body: ${JSON.stringify(req.body)}`
     );
     next(finalError);
+  }
+};
+
+export const getTotalumOrderById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await getExtendedOrderById(orderId);
+
+    res.status(200).json({ order });
+  } catch (error) {
+    catchControllerError(error, 'Error obteniendo el pedido extenso de totalum', req.body, next);
   }
 };
 
