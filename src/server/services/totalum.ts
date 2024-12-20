@@ -46,7 +46,8 @@ export async function getExtendedOrderById(orderId: string): Promise<TExtendedOr
       cliente: { representante: {} },
       envio: {},
       persona_relacionada: { cliente: { representante: {} } },
-      gestorias_colaboradoras: {}
+      gestorias_colaboradoras: {},
+      socio_profesional: {}
     },
   };
 
