@@ -35,7 +35,7 @@ export async function notifyForMandate(fileData: MandateData) {
 Le saludamos desde *Gestoría AutoTrafic*.
 
 Tenemos una transferencia de vehículo ${
-        vehiclePlate ? `con matrícula ${vehiclePlate}` : ''
+        vehiclePlate ? `con matrícula *${vehiclePlate}*` : ''
       } pendiente y necesitamos su autorización para continuar con el trámite.
 
 Le hemos enviado un mandato para firmar por SMS a nombre de *DocuSeal*. Una vez recibida su firma, procederemos con el trámite y enviaremos el nuevo permiso de circulación al comprador ✅.
@@ -245,7 +245,10 @@ export async function processSignedMandate(mandates: any[], newSubmissionId: num
     await processSignedFiles(signedFiles, order);
 
     const mandatesSigned = await areOrderMandatesSigned(order._id);
-    if (mandatesSigned) await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
+
+    if (mandatesSigned) {
+      await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
+    }
   }
 }
 

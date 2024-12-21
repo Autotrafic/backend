@@ -16,5 +16,5 @@ interface TProfessionalPartner {
 }
 
 interface TExtendedProfessionalPartner extends TProfessionalPartner {
-  cliente: TClient;
+  cliente: TExtendedClient;
 }
