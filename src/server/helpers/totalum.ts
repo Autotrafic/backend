@@ -111,8 +111,10 @@ export function generateFileData(order: TExtendedOrder, mandateIsFor: DMandateIs
 
     return mandatesFilesData;
   } catch (error) {
-    if (error.publicMessage) throw error;
-    throw new Error(`Error generando los datos para el archivo de mandato: ${error.message}`);
+    throw {
+      publicMessage: error?.publicMessage,
+      message: `Error generando los datos para el archivo de mandato: ${error?.publicMessage ?? error.message}`,
+    };
   }
 }
 
@@ -129,41 +131,46 @@ function validateMandateFileData(fileDataArray: MandateData[]): boolean {
     if (client.type === TMandateIsFor.RelatedPerson) subjectType = 'Persona Relacionada';
 
     if (client.nif && company.nif) {
-      if (!client.fullName) throw { publicMessage: `El representante de ${subjectType} no contiene nombre` };
+      if (!client.fullName) throw { status: 400, publicMessage: `El representante de ${subjectType} no contiene nombre` };
 
-      if (!client.nif) throw { publicMessage: `El representante de ${subjectType} no contiene NIF` };
+      if (!client.nif) throw { status: 400, publicMessage: `El representante de ${subjectType} no contiene NIF` };
 
-      if (!client.address) throw { publicMessage: `El representante de ${subjectType} no contiene dirección` };
+      if (!client.address) throw { status: 400, publicMessage: `El representante de ${subjectType} no contiene dirección` };
 
-      if (!client.phoneNumber) throw { publicMessage: `${subjectType} no contiene teléfono` };
+      if (!client.phoneNumber) throw { status: 400, publicMessage: `${subjectType} no contiene teléfono` };
 
-      if (!company.fullName) throw { publicMessage: `La empresa asociada al ${subjectType} no contiene nombre` };
+      if (!company.fullName)
+        throw { status: 400, publicMessage: `La empresa asociada al ${subjectType} no contiene nombre` };
 
-      if (!company.nif) throw { publicMessage: `La empresa asociada al ${subjectType} no contiene NIF` };
+      if (!company.nif) throw { status: 400, publicMessage: `La empresa asociada al ${subjectType} no contiene NIF` };
     } else {
-      if (!client.fullName) throw { publicMessage: `${subjectType} no contiene nombre` };
+      if (!client.fullName) throw { status: 400, publicMessage: `${subjectType} no contiene nombre` };
 
-      if (!client.nif) throw { publicMessage: `${subjectType} no contiene NIF` };
+      if (!client.nif) throw { status: 400, publicMessage: `${subjectType} no contiene NIF` };
 
-      if (!client.address) throw { publicMessage: `${subjectType} no contiene dirección` };
+      if (!client.address) throw { status: 400, publicMessage: `${subjectType} no contiene dirección` };
     }
 
-    if (!orderType) throw { publicMessage: `El pedido asociado al ${subjectType} no contiene 'Tipo de Pedido'` };
+    if (!orderType)
+      throw { status: 400, publicMessage: `El pedido asociado al ${subjectType} no contiene 'Tipo de Pedido'` };
 
-    if (!vehiclePlate) throw { publicMessage: `El pedido asociado al ${subjectType} no contiene matrícula` };
+    if (!vehiclePlate) throw { status: 400, publicMessage: `El pedido asociado al ${subjectType} no contiene matrícula` };
 
     if (!actualDate.year)
       throw {
+        status: 400,
         publicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene año (contactar con soporte)`,
       };
 
     if (!actualDate.month)
       throw {
-        publicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene mes (contactar con soporte)`,
+        status: 400,
+        ublicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene mes (contactar con soporte)`,
       };
 
     if (!actualDate.day)
       throw {
+        status: 400,
         publicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene día (contactar con soporte)`,
       };
   });
