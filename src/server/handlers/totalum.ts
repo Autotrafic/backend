@@ -29,6 +29,7 @@ export async function sendMandates(orderId: string, mandateIsFor: DMandateIsFor)
       }
     }
   } catch (error) {
+    if (error.publicMessage) throw error;
     throw new Error(`Error generando el mandato: ${error.message}`);
   }
 }

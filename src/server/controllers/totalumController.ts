@@ -70,7 +70,7 @@ export async function sendOrderMandates(req: SendOrderMandatesBody, res: Respons
 
     res.status(200).json({ success: true });
   } catch (error) {
-    catchControllerError(error, 'Error enviando los mandatos', req.body, next);
+    catchControllerError(error, 'Error enviando los mandatos', req.body, next, error?.publicMessage);
   }
 }
 

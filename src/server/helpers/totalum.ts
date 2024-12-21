@@ -111,11 +111,12 @@ export function generateFileData(order: TExtendedOrder, mandateIsFor: DMandateIs
 
     return mandatesFilesData;
   } catch (error) {
+    if (error.publicMessage) throw error;
     throw new Error(`Error generando los datos para el archivo de mandato: ${error.message}`);
   }
 }
 
-export function validateMandateFileData(fileDataArray: MandateData[]): boolean {
+function validateMandateFileData(fileDataArray: MandateData[]): boolean {
   if (!Array.isArray(fileDataArray) || fileDataArray.length === 0) {
     throw new Error('No se recibieron datos de mandato para validar.');
   }
@@ -124,41 +125,47 @@ export function validateMandateFileData(fileDataArray: MandateData[]): boolean {
     const { client, company, orderType, vehiclePlate, actualDate } = fileData;
 
     let subjectType;
-    if (client.type === TMandateIsFor.Client) subjectType = 'cliente';
-    if (client.type === TMandateIsFor.RelatedPerson) subjectType = 'persona relacionada';
+    if (client.type === TMandateIsFor.Client) subjectType = 'Cliente';
+    if (client.type === TMandateIsFor.RelatedPerson) subjectType = 'Persona Relacionada';
 
     if (client.nif && company.nif) {
-      if (!client.fullName) throw new Error(`El representante de ${subjectType} no contiene nombre`);
+      if (!client.fullName) throw { publicMessage: `El representante de ${subjectType} no contiene nombre` };
 
-      if (!client.nif) throw new Error(`El representante de ${subjectType} no contiene NIF`);
+      if (!client.nif) throw { publicMessage: `El representante de ${subjectType} no contiene NIF` };
 
-      if (!client.address) throw new Error(`El representante de ${subjectType} no contiene dirección`);
+      if (!client.address) throw { publicMessage: `El representante de ${subjectType} no contiene dirección` };
 
-      if (!client.phoneNumber) throw new Error(`El ${subjectType} no contiene teléfono`);
+      if (!client.phoneNumber) throw { publicMessage: `${subjectType} no contiene teléfono` };
 
-      if (!company.fullName) throw new Error(`La empresa asociada al ${subjectType} no contiene nombre`);
+      if (!company.fullName) throw { publicMessage: `La empresa asociada al ${subjectType} no contiene nombre` };
 
-      if (!company.nif) throw new Error(`La empresa asociada al ${subjectType} no contiene NIF`);
+      if (!company.nif) throw { publicMessage: `La empresa asociada al ${subjectType} no contiene NIF` };
     } else {
-      if (!client.fullName) throw new Error(`El ${subjectType} no contiene nombre`);
+      if (!client.fullName) throw { publicMessage: `${subjectType} no contiene nombre` };
 
-      if (!client.nif) throw new Error(`El ${subjectType} no contiene NIF`);
+      if (!client.nif) throw { publicMessage: `${subjectType} no contiene NIF` };
 
-      if (!client.address) throw new Error(`El ${subjectType} no contiene dirección`);
+      if (!client.address) throw { publicMessage: `${subjectType} no contiene dirección` };
     }
 
-    if (!orderType) throw new Error(`El pedido asociado al ${subjectType} no contiene 'Tipo de Pedido'`);
+    if (!orderType) throw { publicMessage: `El pedido asociado al ${subjectType} no contiene 'Tipo de Pedido'` };
 
-    if (!vehiclePlate) throw new Error(`El pedido asociado al ${subjectType} no contiene matrícula`);
+    if (!vehiclePlate) throw { publicMessage: `El pedido asociado al ${subjectType} no contiene matrícula` };
 
     if (!actualDate.year)
-      throw new Error(`La fecha actual del pedido asociado al ${subjectType} no contiene año (contactar con soporte)`);
+      throw {
+        publicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene año (contactar con soporte)`,
+      };
 
     if (!actualDate.month)
-      throw new Error(`La fecha actual del pedido asociado al ${subjectType} no contiene mes (contactar con soporte)`);
+      throw {
+        publicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene mes (contactar con soporte)`,
+      };
 
     if (!actualDate.day)
-      throw new Error(`La fecha actual del pedido asociado al ${subjectType} no contiene día (contactar con soporte)`);
+      throw {
+        publicMessage: `La fecha actual del pedido asociado al ${subjectType} no contiene día (contactar con soporte)`,
+      };
   });
 
   return true;

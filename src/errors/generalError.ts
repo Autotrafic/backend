@@ -47,14 +47,15 @@ export function catchControllerError(
   message: string,
   requestBody: any,
   nextFunction: NextFunction,
-  errorCode: number = 500
+  errorCode: number = 500,
+  publicMessage?: string
 ) {
-  console.log(error);
   const finalError = new CustomError(
     errorCode,
-    `${message}: ${error.message}`,
-    `${message}
-      ${error}.
+    `${publicMessage ?? `${message}: ${error.message}`}`,
+    `${message}: ${error.message}
+    
+----------------------------------------------
 
     Body: ${JSON.stringify(requestBody)}`
   );
