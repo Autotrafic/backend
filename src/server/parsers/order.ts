@@ -1,6 +1,7 @@
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
 import { DatabaseOrder, WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import {
+  AutonomousCommunity,
   autonomousCommunityMap,
   AutonomousCommunityValue,
   reverseAutonomousCommunityMap,
@@ -9,13 +10,13 @@ import {
 } from '../../interfaces/enums';
 import { OrderDetailsBody, WhatsappOrder } from '../../interfaces/import/order';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
-import { TAutonomousCommunity, TotalumOrder } from '../../interfaces/totalum/pedido';
+import { TotalumOrder } from '../../interfaces/totalum/pedido';
 
-function parseAutonomousCommunityToTotalum(value: AutonomousCommunityValue): TAutonomousCommunity {
+function parseAutonomousCommunityToTotalum(value: AutonomousCommunityValue): AutonomousCommunity {
   return autonomousCommunityMap[value];
 }
 
-function parseAutonomousCommunityToEnum(value: TAutonomousCommunity): AutonomousCommunityValue {
+function parseAutonomousCommunityToEnum(value: AutonomousCommunity): AutonomousCommunityValue {
   return reverseAutonomousCommunityMap[value];
 }
 

@@ -4,8 +4,8 @@ interface TCollaborator {
   _id: string;
   nombre: string;
   modalidad_de_contacto: 'WhatsApp' | 'Email';
-  whatsapp: number;
-  email: number;
+  whatsapp: string;
+  email: string;
   nombre_gestor: string;
   nif_gestor: string;
   num_colegiado_gestor: number;

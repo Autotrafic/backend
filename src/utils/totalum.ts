@@ -1,7 +1,4 @@
-import { TotalumApiSdk } from 'totalum-api-sdk';
-import { totalumOptions } from './constants';
-
-const totalumSdk = new TotalumApiSdk(totalumOptions);
+import { AutonomousCommunity } from '../interfaces/enums';
 
 export const ovidiuPartnerData = {
   nombre_gestor: 'Ovidiu Sebastian Ilie',
@@ -11,3 +8,19 @@ export const ovidiuPartnerData = {
   despacho_profesional: 'OVIDIU SEBASTIAN ILIE',
   domicilio_despacho_profesional: 'Vilanova i la Geltrú, calle Camí dels Tamarius nº 88 C.P.08800',
 };
+
+export function isOrderForCollaborator(autonomousCommunity: AutonomousCommunity): boolean {
+  return (
+    autonomousCommunity === AutonomousCommunity.Canarias ||
+    autonomousCommunity === AutonomousCommunity.Murcia ||
+    autonomousCommunity === AutonomousCommunity.Navarra ||
+    autonomousCommunity === AutonomousCommunity.PaisVasco ||
+    autonomousCommunity === AutonomousCommunity.LaRioja
+  );
+}
+
+export function isClientAPartner(client: TExtendedClient): boolean {
+  if (!client?._id) return false;
+
+  return !!client?.socio_profesional;
+}

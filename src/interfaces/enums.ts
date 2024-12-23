@@ -1,5 +1,3 @@
-import { TAutonomousCommunity } from './totalum/pedido';
-
 export enum Fuel {
   GASOLINA = 'G',
   DIESEL = 'D',
@@ -64,26 +62,6 @@ export enum AutonomousCommunityValue {
   VALENCIA = 'VAL',
 }
 
-export const autonomousCommunityMap: Record<AutonomousCommunityValue, TAutonomousCommunity> = {
-  [AutonomousCommunityValue.ANDALUCIA]: 'Andalucía',
-  [AutonomousCommunityValue.ARAGON]: 'Aragón',
-  [AutonomousCommunityValue.ASTURIAS]: 'Asturias',
-  [AutonomousCommunityValue.CANARIAS]: 'Canarias',
-  [AutonomousCommunityValue.CANTABRIA]: 'Cantabria',
-  [AutonomousCommunityValue.CASTILLA_LA_MANCHA]: 'Castilla la Mancha',
-  [AutonomousCommunityValue.CASTILLA_LEON]: 'Castilla y León',
-  [AutonomousCommunityValue.CATALUNA]: 'Cataluña',
-  [AutonomousCommunityValue.EXTREMADURA]: 'Extremadura',
-  [AutonomousCommunityValue.GALICIA]: 'Galicia',
-  [AutonomousCommunityValue.ISLAS_BALEARES]: 'Baleares',
-  [AutonomousCommunityValue.LA_RIOJA]: 'La Rioja',
-  [AutonomousCommunityValue.MADRID]: 'Madrid',
-  [AutonomousCommunityValue.MURCIA]: 'Murcia',
-  [AutonomousCommunityValue.NAVARRA]: 'Navarra',
-  [AutonomousCommunityValue.PAIS_VASCO]: 'País Vasco',
-  [AutonomousCommunityValue.VALENCIA]: 'Valencia',
-};
-
 export enum AutonomousCommunity {
   Andalucia = 'Andalucía',
   Aragon = 'Aragón',
@@ -103,6 +81,26 @@ export enum AutonomousCommunity {
   PaisVasco = 'País Vasco',
   Valencia = 'Valencia',
 }
+
+export const autonomousCommunityMap: Record<AutonomousCommunityValue, AutonomousCommunity> = {
+  [AutonomousCommunityValue.ANDALUCIA]: AutonomousCommunity.Andalucia,
+  [AutonomousCommunityValue.ARAGON]: AutonomousCommunity.Aragon,
+  [AutonomousCommunityValue.ASTURIAS]: AutonomousCommunity.Asturias,
+  [AutonomousCommunityValue.CANARIAS]: AutonomousCommunity.Canarias,
+  [AutonomousCommunityValue.CANTABRIA]: AutonomousCommunity.Cantabria,
+  [AutonomousCommunityValue.CASTILLA_LA_MANCHA]: AutonomousCommunity.CastillaLaMancha,
+  [AutonomousCommunityValue.CASTILLA_LEON]: AutonomousCommunity.CastillaLeon,
+  [AutonomousCommunityValue.CATALUNA]: AutonomousCommunity.Cataluna,
+  [AutonomousCommunityValue.EXTREMADURA]: AutonomousCommunity.Extremadura,
+  [AutonomousCommunityValue.GALICIA]: AutonomousCommunity.Galicia,
+  [AutonomousCommunityValue.ISLAS_BALEARES]: AutonomousCommunity.IslasBaleares,
+  [AutonomousCommunityValue.LA_RIOJA]: AutonomousCommunity.LaRioja,
+  [AutonomousCommunityValue.MADRID]: AutonomousCommunity.Madrid,
+  [AutonomousCommunityValue.MURCIA]: AutonomousCommunity.Murcia,
+  [AutonomousCommunityValue.NAVARRA]: AutonomousCommunity.Navarra,
+  [AutonomousCommunityValue.PAIS_VASCO]: AutonomousCommunity.PaisVasco,
+  [AutonomousCommunityValue.VALENCIA]: AutonomousCommunity.Valencia,
+};
 
 export enum TOrderState {
   PendienteTramitarA9 = 'Pendiente Tramitar A9',
@@ -198,7 +196,7 @@ export enum TMomentPayment {
   AfterProcedure = 'Despues del tramite',
 }
 
-export const reverseAutonomousCommunityMap: Record<TAutonomousCommunity, AutonomousCommunityValue> = {
+export const reverseAutonomousCommunityMap: Record<AutonomousCommunity, AutonomousCommunityValue> = {
   Andalucía: AutonomousCommunityValue.ANDALUCIA,
   Aragón: AutonomousCommunityValue.ARAGON,
   Asturias: AutonomousCommunityValue.ASTURIAS,

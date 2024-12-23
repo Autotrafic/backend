@@ -4,7 +4,7 @@ import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
 import { MandateData, MandatePartner } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
-import { ovidiuPartnerData } from '../../utils/totalum';
+import { isClientAPartner, isOrderForCollaborator, ovidiuPartnerData } from '../../utils/totalum';
 import { parsePdfUrlToBase64 } from '../parsers/file';
 import { extractDriveFolderIdFromLink } from '../parsers/other';
 import { parseTotalumOrderToMandateFileData } from '../parsers/totalum';
@@ -18,7 +18,12 @@ import {
   updateOrderById,
 } from '../services/totalum';
 import { uploadBase64FileToDrive } from '../services/googleDrive';
-import { mandateSignedByBuyerMessage, mandateSignedBySellerMessage } from '../../utils/messages';
+import {
+  getMandatesSignedMessageForCollaborator,
+  mandateSignedByBuyerMessage,
+  mandateSignedBySellerMessage,
+  mandatesSignedMessage,
+} from '../../utils/messages';
 
 export async function notifyForMandate(fileData: MandateData) {
   try {
@@ -264,6 +269,7 @@ export async function processSignedMandate(mandates: TExtendedMandate[], newSubm
 
     if (mandatesSigned) {
       await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
+      await notifySignedMandates(order);
     }
   }
 }
@@ -285,6 +291,21 @@ async function notifySignedMandate(areMandatesSigned: boolean, mandateIsFor: TMa
     }
   } catch (error) {
     throw new Error(`Error notifying signed mandate: ${error.message}`);
+  }
+}
+
+async function notifySignedMandates(order: TExtendedOrder) {
+  try {
+    if (isOrderForCollaborator(order.comunidad_autonoma)) {
+      await sendWhatsappMessage({
+        phoneNumber: order.gestoria_colaboradora.whatsapp,
+        message: getMandatesSignedMessageForCollaborator(order.matricula, order.documentos),
+      });
+    } else if (!isClientAPartner(order.cliente)) {
+      await sendWhatsappMessage({ phoneNumber: order.cliente.telefono, message: mandatesSignedMessage });
+    }
+  } catch (error) {
+    throw new Error(`Error notifying when all mandates signed: ${error.message}`);
   }
 }
 
