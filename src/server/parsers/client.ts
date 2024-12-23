@@ -1,5 +1,6 @@
 import Client from '../../database/models/Client/Client';
 import { WhatsappOrder } from '../../interfaces/import/order';
+import { TClient } from '../../interfaces/totalum/cliente';
 
 export default function parseClientFromPrimitive(client: TClient): Client {
   if (!client) return null;
