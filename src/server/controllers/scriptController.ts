@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
-import { getClientByNif, getMandatesByFilter } from '../services/totalum';
+import { getClientByNif, getExtendedOrderById, getMandatesByFilter } from '../services/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const existingClient = await getClientByNif('06622679J');
-    res.status(200).json({ existingClient });
+    const orderMandates = await getExtendedOrderById( '6767024a279beb4507a62dbb');
+    res.status(200).json({ orderMandates });
   } catch (error) {
     console.log(error);
     const finalError = new CustomError(

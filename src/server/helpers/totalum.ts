@@ -13,12 +13,12 @@ import { arePreviousWhatsappMessages, sendWhatsappMessage } from '../services/no
 import {
   createMandate,
   generatePdfByTotalumTemplate,
-  getMandatesByFilter,
-  getOrderById,
+  getExtendedOrderById,
   updateMandateById,
   updateOrderById,
 } from '../services/totalum';
 import { uploadBase64FileToDrive } from '../services/googleDrive';
+import { mandateSignedByBuyerMessage, mandateSignedBySellerMessage } from '../../utils/messages';
 
 export async function notifyForMandate(fileData: MandateData) {
   try {
@@ -194,9 +194,10 @@ export function validateRelatedPerson(relatedPersons: TExtendedRelatedPerson[]):
 
 export async function areOrderMandatesSigned(orderId: string): Promise<boolean> {
   try {
-    const orderMandates = await getMandatesByFilter('totalum_order_id', orderId);
+    const extendedOrder = await getExtendedOrderById(orderId);
+    const orderMandates: TMandate[] = extendedOrder.mandato ?? [];
 
-    const hasAtLeastOneSigned = (mandates: TExtendedMandate[], type: TMandateIsFor) =>
+    const hasAtLeastOneSigned = (mandates: TMandate[], type: TMandateIsFor) =>
       mandates.some((mandate) => mandate.mandato_es_para === type && mandate.estado === TMandateState.Signed);
 
     const clientSigned = hasAtLeastOneSigned(orderMandates, TMandateIsFor.Client);
@@ -244,14 +245,14 @@ export async function processDeclinedMandate(mandates: any[]) {
   }
 }
 
-export async function processSignedMandate(mandates: any[], newSubmissionId: number) {
+export async function processSignedMandate(mandates: TExtendedMandate[], newSubmissionId: number) {
   for (let mandate of mandates) {
     await updateMandateById(mandate._id, { estado: TMandateState.Signed });
 
     if (!mandate.pedido?._id)
       throw new Error(`Se ha actualizado el mandato sin estar relacionado a ningún pedido: ${JSON.stringify(mandate)}`);
 
-    const order = await getOrderById(mandate.pedido._id);
+    const order = await getExtendedOrderById(mandate.pedido._id);
 
     const submission = await getSubmissionById(newSubmissionId);
     const signedFiles = submission.documents;
@@ -259,10 +260,31 @@ export async function processSignedMandate(mandates: any[], newSubmissionId: num
     await processSignedFiles(signedFiles, order);
 
     const mandatesSigned = await areOrderMandatesSigned(order._id);
+    await notifySignedMandate(mandatesSigned, mandate.mandato_es_para, order);
 
     if (mandatesSigned) {
       await updateOrderById(order._id, { mandatos: TOrderMandate.Adjuntados });
     }
+  }
+}
+
+async function notifySignedMandate(areMandatesSigned: boolean, mandateIsFor: TMandateIsFor, order: TExtendedOrder) {
+  try {
+    if (!areMandatesSigned) {
+      if (mandateIsFor === TMandateIsFor.Client) {
+        const phone = order.cliente.telefono;
+        phone && (await sendWhatsappMessage({ phoneNumber: phone, message: mandateSignedByBuyerMessage }));
+      }
+
+      if (mandateIsFor === TMandateIsFor.RelatedPerson) {
+        for (let relatedPerson of order.persona_relacionada) {
+          const phone = relatedPerson.cliente.telefono;
+          phone && (await sendWhatsappMessage({ phoneNumber: phone, message: mandateSignedBySellerMessage }));
+        }
+      }
+    }
+  } catch (error) {
+    throw new Error(`Error notifying signed mandate: ${error.message}`);
   }
 }
 

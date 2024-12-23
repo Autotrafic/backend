@@ -1,6 +1,7 @@
 import { AutonomousCommunityValue } from '../enums';
 import { ExtendedTotalumShipment } from './envio';
 import { TCollaborator } from './gestoria_colaboradora';
+import { TMandate } from './mandato';
 import { TExtendedProfessionalPartner } from './socio_profesional';
 
 export interface TotalumOrder {
@@ -32,6 +33,7 @@ export interface TExtendedOrder extends Omit<TotalumOrder, 'cliente' | 'socio_pr
   persona_relacionada: TExtendedRelatedPerson[];
   socio_profesional: TExtendedProfessionalPartner;
   gestoria_colaboradora: TCollaborator;
+  mandato: TMandate[];
 }
 
 interface TotalumParsedOrder {
