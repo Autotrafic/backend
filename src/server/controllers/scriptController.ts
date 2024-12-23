@@ -3,12 +3,13 @@ import { TotalumApiSdk } from 'totalum-api-sdk';
 import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import { getClientByNif, getExtendedOrderById, getMandatesByFilter } from '../services/totalum';
+import { sendMandates } from '../handlers/totalum';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const orderMandates = await getExtendedOrderById( '6767024a279beb4507a62dbb');
+    const orderMandates = await sendMandates('676929589adfdd0d2803f5ee', { client: true, relatedPerson: false });
     res.status(200).json({ orderMandates });
   } catch (error) {
     console.log(error);

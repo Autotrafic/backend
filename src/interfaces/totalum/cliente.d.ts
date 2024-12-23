@@ -48,7 +48,7 @@ interface TRelatedPersonRelation {
 
 interface TExtendedClient extends TClient {
   socio_profesional: TProfessionalPartner;
-  representante: TRepresentative;
+  representante: TRepresentative[];
 }
 
 type TClientType = 'Particular' | 'Autónomo' | 'Empresa';

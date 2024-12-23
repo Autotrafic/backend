@@ -19,11 +19,15 @@ export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandat
       const clientFullName = `${nombre_o_razon_social} ${primer_apellido || ''} ${segundo_apellido || ''}`.trim();
 
       let clientData: MandateClient;
-      if (representante && representante.nif) {
+      if (representante && representante.length > 0) {
+        const representativeFullName = `${representante[0].nombre_o_razon_social} ${
+          representante[0].primer_apellido || ''
+        } ${representante[0].segundo_apellido || ''}`.trim();
+
         clientData = {
           type: clientType,
-          fullName: representante.nombre_o_razon_social,
-          nif: representante.nif,
+          fullName: representativeFullName,
+          nif: representante[0].nif,
           address: direccion,
           phoneNumber,
         };
@@ -38,7 +42,7 @@ export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandat
       }
 
       let companyData: MandateCompany;
-      if (representante && representante.nif) {
+      if (representante && representante.length > 0) {
         companyData = { fullName: clientFullName, nif: nif };
       } else {
         companyData = { fullName: '', nif: '' };
