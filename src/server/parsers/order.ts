@@ -41,12 +41,25 @@ export function parseOrderFromWebToTotalum(webOrder: WebOrder): Partial<TotalumO
 }
 
 export function parseOrderFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): Partial<TotalumOrder> {
-  const { orderType, totalInvoiced, autonomousCommunity, vehiclePlate, firstTouchDate, mandates } = whatsappOrder;
+  const {
+    orderType,
+    totalInvoiced,
+    autonomousCommunity,
+    vehiclePlate,
+    firstTouchDate,
+    mandates,
+    professionalPartner,
+    seller,
+  } = whatsappOrder;
 
   let orderState;
+
+  const isSellerProfessional = professionalPartner.nif === seller.nif;
+
   if (
-    (orderType === TOrderType.Transferencia && totalInvoiced !== 129.95 && totalInvoiced !== 94.95) ||
-    orderType === TOrderType.EntregaCompraventa
+    ((orderType === TOrderType.Transferencia && totalInvoiced !== 129.95 && totalInvoiced !== 94.95) ||
+      orderType === TOrderType.EntregaCompraventa) &&
+    !isSellerProfessional
   ) {
     orderState = TOrderState.PendientePagoITP;
   } else {

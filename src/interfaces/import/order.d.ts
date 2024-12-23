@@ -38,6 +38,7 @@ export interface WhatsappOrder {
 
 interface WProfessionalPartner {
   id: string | null;
+  nif: string | null;
   driveId: string | null;
 }
 
