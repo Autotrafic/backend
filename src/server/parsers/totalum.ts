@@ -3,7 +3,8 @@ import { DMandateIsFor } from '../../interfaces/import/totalum';
 import { MandateClient, MandateCompany, MandateData } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { getCurrentSpanishDate } from '../../utils/funcs';
-import { ensureMandatePartner, validateRelatedPerson } from '../helpers/totalum';
+import { isClientAPartner } from '../../utils/totalum';
+import { ensureMandatePartner, validateRelatedPersons } from '../helpers/totalum';
 import { parsePhoneNumberToE164 } from './other';
 
 export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandateIsFor: DMandateIsFor): MandateData[] {
@@ -55,13 +56,17 @@ export function parseTotalumOrderToMandateFileData(order: TExtendedOrder, mandat
 
     const result: MandateData[] = [];
 
-    if (mandateIsFor.client) {
+    if (mandateIsFor.client && !isClientAPartner(cliente)) {
       result.push(createMandateData(cliente, TMandateIsFor.Client));
     }
 
     if (mandateIsFor.relatedPerson) {
-      const relatedPerson = validateRelatedPerson(relatedPersons);
-      result.push(createMandateData(relatedPerson.cliente, TMandateIsFor.RelatedPerson));
+      validateRelatedPersons(relatedPersons);
+
+      for (let relatedPerson of relatedPersons) {
+        if (!isClientAPartner(relatedPerson.cliente))
+          result.push(createMandateData(relatedPerson.cliente, TMandateIsFor.RelatedPerson));
+      }
     }
 
     return result;

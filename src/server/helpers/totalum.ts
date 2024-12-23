@@ -183,17 +183,15 @@ function validateMandateFileData(fileDataArray: MandateData[]): boolean {
   return true;
 }
 
-export function validateRelatedPerson(relatedPersons: TExtendedRelatedPerson[]): TExtendedRelatedPerson {
+export function validateRelatedPersons(relatedPersons: TExtendedRelatedPerson[]) {
   if (!relatedPersons || relatedPersons.length < 1) {
     throw new Error(
       `El pedido no contiene ninguna persona relacionada. Para la acción que quieres hacer, se necesita que exista una.`
     );
-  } else if (relatedPersons.length > 1) {
+  } else if (relatedPersons.length > 2) {
     throw new Error(
-      `El pedido contiene múltiples personas relacionadas. Para la acción que quieres hacer, sólo se permite que exista una.`
+      `El pedido contiene más de 2 personas relacionadas. Para la acción que quieres hacer, sólo se permite que existan dos como máximo.`
     );
-  } else {
-    return relatedPersons[0];
   }
 }
 
