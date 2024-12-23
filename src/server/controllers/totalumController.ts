@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import sseClientManager from '../../sse/sseClientManager';
 import { catchControllerError } from '../../errors/generalError';
 import { SendOrderMandatesBody, ToggleTotalumHeaderBody, UpdateTaskBody } from '../../interfaces/import/totalum';
-import { getAllCollaborators, getAllPendingTasks, getAllProfessionalParteners, updateTaskById } from '../services/totalum';
+import { getAllCollaborators, getAllPendingTasks, getExtendedPartners, updateTaskById } from '../services/totalum';
 import { parseTaskFromTotalum } from '../parsers/task';
 import { handleDocusealMandateEvent, sendMandates } from '../handlers/totalum';
 
@@ -44,7 +44,7 @@ export async function updateTotalumTask(req: UpdateTaskBody, res: Response, next
 
 export async function getAllTotalumProfessionalParteners(req: Request, res: Response, next: NextFunction) {
   try {
-    const professionalPartners = await getAllProfessionalParteners();
+    const professionalPartners = await getExtendedPartners();
 
     res.status(200).json({ professionalPartners });
   } catch (error) {

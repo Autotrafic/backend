@@ -9,6 +9,7 @@ import {
   TOrderType,
 } from '../../interfaces/enums';
 import { OrderDetailsBody, WhatsappOrder } from '../../interfaces/import/order';
+import { TClient } from '../../interfaces/totalum/cliente';
 import { TotalumShipment } from '../../interfaces/totalum/envio';
 import { TotalumOrder } from '../../interfaces/totalum/pedido';
 

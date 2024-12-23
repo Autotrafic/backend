@@ -1,3 +1,5 @@
+import { TProfessionalPartner } from "./socio_profesional";
+
 interface TClient {
   _id: string;
   tipo: string;

@@ -22,6 +22,7 @@ import {
 import { formatCurrentDateToSpain, parsePhoneNumberForWhatsApp } from '../parsers/other';
 import { WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
 import { sendWhatsappMessage } from '../services/notifier';
+import { TClient } from '../../interfaces/totalum/cliente';
 
 export function parseFromWhatsappToTotalum(whatsappOrder: WhatsappOrder): ParsedWhatsappOrder {
   const order = parseOrderFromWhatsappToTotalum(whatsappOrder);

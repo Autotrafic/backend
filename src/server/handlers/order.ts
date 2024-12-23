@@ -35,6 +35,7 @@ import {
   checkExistingTotalumRepresentative,
   parseFromWhatsappToTotalum,
 } from '../helpers/order';
+import { TClient } from '../../interfaces/totalum/cliente';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 

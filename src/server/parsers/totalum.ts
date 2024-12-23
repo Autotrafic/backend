@@ -1,5 +1,6 @@
 import { TMandateIsFor } from '../../interfaces/enums';
 import { DMandateIsFor } from '../../interfaces/import/totalum';
+import { TExtendedClient } from '../../interfaces/totalum/cliente';
 import { MandateClient, MandateCompany, MandateData } from '../../interfaces/totalum/other';
 import { TExtendedOrder } from '../../interfaces/totalum/pedido';
 import { getCurrentSpanishDate } from '../../utils/funcs';

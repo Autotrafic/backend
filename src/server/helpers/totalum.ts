@@ -24,6 +24,7 @@ import {
   mandateSignedBySellerMessage,
   mandatesSignedMessage,
 } from '../../utils/messages';
+import { TExtendedRelatedPerson } from '../../interfaces/totalum/cliente';
 
 export async function notifyForMandate(fileData: MandateData) {
   try {

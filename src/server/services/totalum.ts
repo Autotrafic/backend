@@ -9,7 +9,8 @@ import { Accounting } from '../../interfaces/totalum/contabilidad';
 import { parseAccountingFromTotalum } from '../parsers/logger';
 import { TExtendedMandate, TMandate } from '../../interfaces/totalum/mandato';
 import { MandateFileOptions } from '../../interfaces/totalum/other';
-import { TProfessionalPartner } from '../../interfaces/totalum/socio_profesional';
+import { TExtendedProfessionalPartner, TProfessionalPartner } from '../../interfaces/totalum/socio_profesional';
+import { TClient, TExtendedClient } from '../../interfaces/totalum/cliente';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
@@ -352,6 +353,25 @@ export async function getAllProfessionalParteners(): Promise<TProfessionalPartne
       throw new Error(`Error fetching Totalum professional partners. ${error.response.data.errors}`);
     } else {
       throw new Error(`Error fetching Totalum professional partners. Unknown error`);
+    }
+  }
+}
+
+export async function getExtendedPartners(): Promise<TExtendedProfessionalPartner[]> {
+  const nestedTreeStructure = {
+    socios_profesionales: {
+      cliente: { representante: {} },
+    },
+  };
+
+  try {
+    const response = await totalumSdk.crud.getNestedData(nestedTreeStructure);
+    return response.data.data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      throw new Error(`Error fetching Totalum extended professional partners. ${error.response.data.errors}`);
+    } else {
+      throw new Error(`Error fetching Totalum extended professional partners. Unknown error`);
     }
   }
 }
