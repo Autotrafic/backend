@@ -1,5 +1,5 @@
 import { TotalumParsedOrder } from '../../database/models/Order/Order';
-import { DatabaseOrder, WebOrder, WebOrderDetails } from '../../database/models/Order/WebOrder';
+import { DatabaseOrder, WebOrder } from '../../database/models/Order/WebOrder';
 import {
   AutonomousCommunity,
   autonomousCommunityMap,

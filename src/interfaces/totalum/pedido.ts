@@ -1,4 +1,5 @@
 import { AutonomousCommunity, AutonomousCommunityValue } from '../enums';
+import { TExtendedClient, TExtendedRelatedPerson } from './cliente';
 import { ExtendedTotalumShipment } from './envio';
 import { TCollaborator } from './gestoria_colaboradora';
 import { TMandate } from './mandato';

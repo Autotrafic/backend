@@ -1,4 +1,5 @@
 import { AutonomousCommunity } from '../interfaces/enums';
+import { TExtendedClient } from '../interfaces/totalum/cliente';
 
 export const ovidiuPartnerData = {
   nombre_gestor: 'Ovidiu Sebastian Ilie',
