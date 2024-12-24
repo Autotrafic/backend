@@ -58,6 +58,7 @@ interface WClient {
   phoneNumber: string;
   address: string;
   representative: { name: string; firstSurname: string; secondSurname: string; nif: string };
+  isPartner: boolean;
 }
 
 export interface OrderDetailsBody {

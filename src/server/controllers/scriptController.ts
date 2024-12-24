@@ -4,12 +4,13 @@ import { totalumOptions } from '../../utils/constants';
 import CustomError from '../../errors/CustomError';
 import { getClientByNif, getExtendedOrderById, getMandatesByFilter } from '../services/totalum';
 import { sendMandates } from '../handlers/totalum';
+import { arePreviousWhatsappMessages } from '../services/notifier';
 
 const totalumSdk = new TotalumApiSdk(totalumOptions);
 
 export async function runScript(req: Request, res: Response, next: NextFunction) {
   try {
-    const orderMandates = await sendMandates('676929589adfdd0d2803f5ee', { client: true, relatedPerson: false });
+    const orderMandates = await arePreviousWhatsappMessages('+34643048093')
     res.status(200).json({ orderMandates });
   } catch (error) {
     console.log(error);
