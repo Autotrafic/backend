@@ -120,6 +120,7 @@ export enum TOrderState {
   PendienteEntregarCorreos = 'Pendiente entrega Correos',
   PendientePagoDevolucionEnvio = 'Pendiente Pago Devolución Envío',
   PendientePagoTramite = 'Pendiente Pago Trámite',
+  Cancelado = 'Cancelado',
 }
 
 export enum TOrderType {
@@ -188,7 +189,7 @@ export enum TMandateState {
   Opened = 'Abierto',
   Signed = 'Firmado',
   Declined = 'Rechazado',
-  Sended = 'Enviado'
+  Sended = 'Enviado',
 }
 
 export enum TMomentPayment {

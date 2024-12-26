@@ -50,10 +50,10 @@ export async function checkShipmentsAvailability(): Promise<{ passedChecks: TChe
     const withSticker = shipment.con_distintivo === 'Si';
 
     if (passed.length > 0) {
-      passedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: passed, withSticker });
+      passedChecks.push({ reference: shipment.referencia ?? shipment.pedido[0]?.matricula, shipmentId: shipment._id, checks: passed, withSticker });
     }
     if (failed.length > 0) {
-      failedChecks.push({ reference: shipment.referencia, shipmentId: shipment._id, checks: failed, withSticker });
+      failedChecks.push({ reference: shipment.referencia ?? shipment.pedido[0]?.matricula, shipmentId: shipment._id, checks: failed, withSticker });
     }
   });
 

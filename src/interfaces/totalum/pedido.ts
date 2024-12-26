@@ -79,7 +79,8 @@ export type TState =
   | 'Pendiente devolución Correos'
   | 'Pendiente entrega Correos'
   | 'Pendiente Pago Devolución Envío'
-  | 'Pendiente Pago Trámite';
+  | 'Pendiente Pago Trámite'
+  | 'Cancelado';
 
 type TType =
   | 'Transferencia'
